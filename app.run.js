@@ -1,7 +1,7 @@
 (function(w,a,d,test){test.increments=[0,2,4,6,8,10,12,14,16];test.rateProgress=0;test.runningTime=a.localHost?4000:15000;test.hearbeatTime=1000;test.bytesCount=0;test.incrementsLast=test.increments[test.increments.length-1];test.xhrConnections=3;test.gaugeCircleOffset=0;test.gaugeCircleStrokeMin=404;test.gaugeCircleStrokeMax=609;test.gaugeCircleOffsetRef=test.gaugeCircleStrokeMax-test.gaugeCircleStrokeMin;test.gaugeNeedleRotateMin=44;test.gaugeNeedleRotateMax=320;test.gaugeNeedleRotateRef=test.gaugeNeedleRotateMax-test.gaugeNeedleRotateMin;function getTime(){return new w.Date().getTime()}
 function roundSpeedRate(num){return num.toFixed(2)}
 test.detailsToggle=function(){var nodes=a.query(".testDetailsToggle");a.toggleClass("unseen",nodes[0]);a.toggleClass("unseen",nodes[1])}
-test.speedRateMbps=function(rate){return roundSpeedRate(((rate*10)/125000))}
+test.speedRateMbps=function(rate){return roundSpeedRate(((rate)/125000))}
 test.maxIncrementRate=function(rate){return rate>=test.incrementsLast?test.incrementsLast:rate}
 test.abortXhr=function(){test.xhrData.forEach(function(item){item.abort()})}
 test.getBytesLoaded=function(){var count=0;test.xhrData.forEach(function(item){count+=item.response.length});return count}
