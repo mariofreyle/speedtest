@@ -676,7 +676,8 @@ function TestStage() {
         return data;
     }
     function speedRateMbps(rate) {
-        return (rate / 125000).toFixed(2); // convert bytes per second to megabits per second
+        var num = rate / 125000;
+        return num.toFixed(num < 10 ? 2 : 1); // convert bytes per second to megabits per second
     }
     function maxIncrementRate(rate) {
         return rate >= _TestConfig2.default.incrementsLast ? _TestConfig2.default.incrementsLast : rate;
