@@ -1223,7 +1223,6 @@ function TestStage() {
         // Iterval vars
         time = _App2.default.getTime(),
             intervalStartedTime,
-            averageSpeed,
             loadTime,
             transfer = {
             transferred: 0,
@@ -1280,6 +1279,10 @@ function TestStage() {
             speed: 0,
             results: []
         },
+            average = {
+            speed: 0,
+            instant: 0
+        },
             speedRate;
 
         loadTime = time - globalLoadStartTime;
@@ -1301,18 +1304,18 @@ function TestStage() {
             if (transfer.time > transfer.maxTime) {
                 transfer.maxTime = transfer.time;
             }
-            //console.log(transfer.time);
-            //            if(transfer.transferred > 0){
-            //                transfer.average.count += transfer.time;
-            //                transfer.average.len += 1;
-            //                transfer.average.time = transfer.average.count / transfer.average.len;
-            //                console.log(transfer.maxTime, transfer.average.count, transfer.average.len)
-            //                
-            //                console.log(test.runType.download ? "[download]" : "[upload]", "average time:", transfer.average.time)
-            //            }
+            /*console.log(transfer.time);
+            if(transfer.transferred > 0){
+                transfer.average.count += transfer.time;
+                transfer.average.len += 1;
+                transfer.average.time = transfer.average.count / transfer.average.len;
+                console.log(transfer.maxTime, transfer.average.count, transfer.average.len)
+                
+                console.log(test.runType.download ? "[download]" : "[upload]", "average time:", transfer.average.time)
+            }*/
             if (transfer.transferred > 0) {
                 buffer.push({ loaded: loadedBytes, loadTime: loadTime, time: intervalTime });
-                if (buffer.time > 4000 && transfer.maxTime < 2000 && intervalTime < 10000) {
+                if (buffer.time > 2000 && transfer.maxTime < 2000 && intervalTime < 10000) {
                     buffer.splice(0, 1);
                     buffer._loadTime = buffer.loadTime;
                 }
@@ -1323,13 +1326,13 @@ function TestStage() {
             instant.speed = buffer.size > 0 ? buffer.size / (buffer.loadTime / 1000) : prev.instantSpeed;
 
             transfer.transferred > 0 && instant.results.push(instant.speed);
-            if (instant.results.length > (loadTime > 2000 ? 15 : 3) || transfer.time > 200 && instant.results.length > 5) {
+            if (instant.results.length > (loadTime > 2000 ? 10 : 3) || transfer.time > 200 && instant.results.length > 5) {
                 instant.results.splice(0, 1);
             }
 
-            averageSpeed = countArrayItems(instant.results) / instant.results.length;
+            average.speed = countArrayItems(instant.results) / instant.results.length;
 
-            speedRate = speedRateMbps(averageSpeed);
+            speedRate = speedRateMbps(average.speed);
 
             speedNumberElem.textContent(parseValue(speedRate));
             progressBarElem.style({ width: (time - intervalStartedTime) / runTime * 100 + "%" });
