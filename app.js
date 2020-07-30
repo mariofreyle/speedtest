@@ -1239,6 +1239,7 @@ function TestStage() {
             loadedBytes,
             prev = {
             instantSpeed: 0,
+            averageSpeed: 0,
             loaded: 0
         },
             buffer = {
@@ -1326,7 +1327,7 @@ function TestStage() {
             instant.speed = buffer.size / (buffer.loadTime / 1000);
 
             transfer.transferred > 0 && instant.results.push(instant.speed);
-            if (instant.results.length > (loadTime > 2000 ? 10 : 3) || transfer.time > 200 && instant.results.length > 5) {
+            if (instant.results.length > (loadTime > 2000 ? 5 : 3) || transfer.time > 200 && instant.results.length > 5) {
                 instant.results.splice(0, 1);
             }
 
@@ -1342,6 +1343,7 @@ function TestStage() {
             testConsole.state("instant: " + (instant.speed / 125000).toFixed(2) + "mbps, average: " + speedRate + "mbps, transf: " + loadedData(transfer.transferred) + ", loaded: " + loadedData(loadedBytes) + ", time: " + loadTime / 1000 + "s");
 
             prev.instantSpeed = instant.speed;
+            prev.averageSpeed = average.speed;
             prev.loaded = loadedBytes;
         }
 
