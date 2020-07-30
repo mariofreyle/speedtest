@@ -1315,7 +1315,7 @@ function TestStage() {
             }*/
             if (transfer.transferred > 0) {
                 buffer.push({ loaded: loadedBytes, loadTime: loadTime, time: intervalTime });
-                if (buffer.time > 2000 && transfer.maxTime < 2000 && intervalTime < 10000) {
+                if (buffer.time > 3000 && transfer.maxTime < 2000 && intervalTime < 10000) {
                     buffer.splice(0, 1);
                     buffer._loadTime = buffer.loadTime;
                 }
@@ -1323,9 +1323,9 @@ function TestStage() {
                 buffer.loadTime = loadTime - buffer.items[0].loadTime;
             }
 
-            instant.speed = buffer.size > 0 ? buffer.size / (buffer.loadTime / 1000) : prev.instantSpeed;
+            instant.speed = buffer.size / (buffer.loadTime / 1000);
 
-            transfer.transferred > 0 && instant.results.push(instant.speed);
+            instant.results.push(instant.speed);
             if (instant.results.length > (loadTime > 2000 ? 10 : 3) || transfer.time > 200 && instant.results.length > 5) {
                 instant.results.splice(0, 1);
             }
