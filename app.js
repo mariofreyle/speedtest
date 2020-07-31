@@ -1316,7 +1316,7 @@ function TestStage() {
             }*/
             if (transfer.transferred > 0) {
                 buffer.push({ loaded: loadedBytes, loadTime: loadTime, time: intervalTime });
-                if (buffer.time > 3000 && transfer.maxTime < 2000 && intervalTime < 10000) {
+                if (buffer.time > 3000 && transfer.maxTime < 2500 && intervalTime < 10000) {
                     buffer.splice(0, 1);
                     buffer._loadTime = buffer.loadTime;
                 }
