@@ -1323,7 +1323,7 @@ function TestStage() {
             instant.speed = buffer.size / (buffer.time / 1000);
 
             transfer.transferred > 0 && instant.results.push(instant.speed);
-            if (instant.results.length > (loadTime > 2000 ? 12 : 12) || transfer.time > 200 && instant.results.length > 12) {
+            if (instant.results.length > (loadTime > 2000 ? 3 : 3) || transfer.time > 200 && instant.results.length > 12) {
                 instant.results.splice(0, 1);
             }
             average.speed = countArrayItems(instant.results) / instant.results.length;
