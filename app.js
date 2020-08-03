@@ -1405,7 +1405,7 @@ function TestStage() {
 
         target.addEventListener("progress", function (e) {
             time = _App2.default.getTime();
-            req.loaded = e.loaded - firstTransferred;
+            req.loaded = prev.loaded;
             transfer.time = time - (prev.progressTime || time);
             if (transfer.time > req.maxTransferTime) {
                 req.maxTransferTime = transfer.time;
