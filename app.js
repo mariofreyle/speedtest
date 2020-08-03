@@ -1252,7 +1252,7 @@ function TestStage() {
             splice: function splice() {
                 var time = buffer.items[buffer.items.length - 1].time - buffer.items[1].time;
 
-                if (time >= 3000) {
+                if (time >= 2000) {
                     buffer.items.splice(0, 1);
                     buffer._time = time;
                 }
