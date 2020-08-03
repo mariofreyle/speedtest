@@ -1329,7 +1329,7 @@ function TestStage() {
             average.speed = countArrayItems(instant.results) / instant.results.length;
             average.results.push(average.speed);
             average.maxLen = Math.round(transfer.average.time / _TestConfig2.default.hearbeatTime) || 1;
-            average.maxLen = average.maxLen > 5 ? 5 : average.maxLen;
+            average.maxLen = average.maxLen > 10 ? 10 : average.maxLen;
 
             if (average.results.length > average.maxLen) {
                 average.results.splice(0, average.results.length - average.maxLen);
