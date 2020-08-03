@@ -1252,7 +1252,7 @@ function TestStage() {
             splice: function splice() {
                 var time = buffer.items[buffer.items.length - 1].time - buffer.items[1].time;
 
-                if (time >= 2000) {
+                if (time >= 3000) {
                     buffer.items.splice(0, 1);
                     buffer._time = time;
                 }
@@ -1323,7 +1323,7 @@ function TestStage() {
             instant.speed = buffer.size / (buffer.time / 1000);
 
             transfer.transferred > 0 && instant.results.push(instant.speed);
-            if (instant.results.length > (loadTime > 2000 ? 50 : 50) || transfer.time > 200 && instant.results.length > 50) {
+            if (instant.results.length > (loadTime > 2000 ? 12 : 12) || transfer.time > 200 && instant.results.length > 12) {
                 instant.results.splice(0, 1);
             }
             average.speed = countArrayItems(instant.results) / instant.results.length;
