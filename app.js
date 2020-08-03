@@ -1323,13 +1323,13 @@ function TestStage() {
             instant.speed = buffer.size / (buffer.time / 1000);
 
             transfer.transferred > 0 && instant.results.push(instant.speed);
-            if (instant.results.length > (loadTime > 2000 ? 5 : 3) || transfer.time > 200 && instant.results.length > 5) {
+            if (instant.results.length > (loadTime > 2000 ? 37 : 3) || transfer.time > 200 && instant.results.length > 37) {
                 instant.results.splice(0, 1);
             }
             average.speed = countArrayItems(instant.results) / instant.results.length;
             average.results.push(average.speed);
             average.maxLen = Math.round(transfer.average.time / _TestConfig2.default.hearbeatTime) || 1;
-            average.maxLen = average.maxLen > 10 ? 10 : average.maxLen;
+            average.maxLen = average.maxLen > 1 ? 1 : average.maxLen;
 
             if (average.results.length > average.maxLen) {
                 average.results.splice(0, average.results.length - average.maxLen);
