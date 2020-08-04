@@ -995,10 +995,10 @@ var test = window.test = {
     uploadRunTime: isLocal ? 1000 * 8 : 15000,
     hearbeatTime: 80,
     connections: {
-        count: 3,
+        count: 1,
         multi: 3,
         single: 1,
-        mode: "multi"
+        mode: "single"
     },
     resultsPrecision: 1,
     xhrData: [],
@@ -1289,6 +1289,15 @@ function TestStage() {
                 i = str.indexOf(".");
             return str.substr(0, val >= 1 ? i + 2 : i + 3);
         }
+        function getInstantSpeed(time) {
+            var speed = 0;
+            connections.requests.forEach(function (req) {
+                if (req.bufferSize) {
+                    speed += req.bufferSize / ((time - req.bufferTime) / 1000);
+                }
+            });
+            return speed;
+        }
         function intervalCallback() {
             time = _App2.default.getTime();
             loadTime = time - globalLoadStartTime;
@@ -1307,21 +1316,25 @@ function TestStage() {
                 transfer.average.time = transfer.average.count / transfer.average.len;
                 
                 //console.log(test.runType.download ? "[download]" : "[upload]", "average time:", Math.round(transfer.average.time), "max time:", transfer.maxTime)
-            }*/
-            if (transfer.transferred > 0) {
-                buffer.items.push({ loaded: loadedBytes, time: loadTime });
-                if (transfer.maxTime < 2500 && intervalTime < 10000) {
+            }
+            if(transfer.transferred > 0){
+                buffer.items.push({loaded: loadedBytes, time: loadTime});
+                if(transfer.maxTime < 2500 && intervalTime < 10000){
                     buffer.splice();
                 }
                 buffer.update();
-            } else {
+            }else{
                 buffer.time = loadTime - buffer.items[0].time;
             }
-
+            
+            
             instant.speed = buffer.size / (buffer.time / 1000);
+            */
+
+            instant.speed = getInstantSpeed(time);
 
             transfer.transferred > 0 && instant.results.push(instant.speed);
-            if (instant.results.length > (loadTime > 2000 ? 12 : 3) || transfer.time > 100 && instant.results.length > 5 && instant.results.length < 10) {
+            if (instant.results.length > (loadTime > 2000 ? 12 : 3) || transfer.time > 100 && instant.results.length > 3 && instant.results.length < 10) {
                 instant.results.splice(0, 1);
             }
 
@@ -1351,7 +1364,7 @@ function TestStage() {
                 stopTest();
 
                 connections.requests.forEach(function (req) {
-                    testConsole.state("xhr " + req.id + " loaded: " + (req.loaded / 1000000).toFixed(3) + "MB, maxTransferTime: " + req.maxTransferTime + "ms");
+                    testConsole.state("xhr " + req.id + " loaded: " + (req.loaded / 1000000).toFixed(3) + "MB, maxTime: " + req.maxTransferTime + "ms, avgTime: " + Math.round(req.avgTransferTime) + "ms");
                 });
 
                 testConsole.state("loaded: " + (getLoadedBytes() / 1000000).toFixed(2) + "MB, finalSpeed: " + (getLoadedBytes() / 125000 / ((_App2.default.getTime() - globalLoadStartTime) / 1000)).toFixed(2) + "mbps, bufferTime: " + buffer._time + "ms, maxTransferTime: " + transfer.maxTime + "ms, time: " + (_App2.default.getTime() - globalLoadStartTime) / 1000 + "s");
@@ -1381,32 +1394,50 @@ function TestStage() {
             progressTime: 0
         },
             transfer = {
-            time: 0
+            time: 0,
+            average: 0
         },
+            buffer = [{
+            loaded: 0,
+            time: 0
+        }],
             time;
 
         req.loaded = 0;
-        req.firstTransferred = 0;
         req.id = connections.requests.length + 1;
         req.maxTransferTime = 0;
+        req.avgTransferTime = 0;
+        req.bufferSize = 0;
+        req.bufferTime = 0;
 
         target.addEventListener("progress", function (e) {
             time = _App2.default.getTime();
             req.loaded = e.loaded - firstTransferred;
             transfer.time = time - (prev.progressTime || time);
+            transfer.average += transfer.time;
             if (transfer.time > req.maxTransferTime) {
                 req.maxTransferTime = transfer.time;
             }
 
-            if (!globalLoadStartTime) globalLoadStartTime = time;
+            if (!globalLoadStartTime && progressCount == 2) globalLoadStartTime = time;
             if (!intervalStarted && progressCount == 3) startInterval();
             if (!firstTransferred) {
-                firstTransferred = e.loaded, req.firstTransferred = e.loaded;
+                firstTransferred = e.loaded;
                 testConsole.state("xhr " + req.id + " first transfer: " + loadedData(e.loaded));
             } else if (_TestConfig2.default.runType.upload) {
-                testConsole.state("xhr " + req.id + " transfer " + progressCount + ": " + loadedData(req.loaded - prev.loaded) + ", time: " + (time - globalLoadStartTime) / 1000 + "s");
+                //testConsole.state("xhr " + req.id + " transfer " + progressCount + ": " + loadedData(req.loaded - prev.loaded) + ", time: " + ((time - globalLoadStartTime) / 1000) + "s");
             }
 
+            if (progressCount > 1) {
+                buffer.push({ loaded: req.loaded, time: time });
+                if (buffer[buffer.length - 1].time - buffer[1].time >= 3000) {
+                    buffer.splice(0, 1);
+                }
+                req.bufferSize = buffer[buffer.length - 2].loaded - buffer[0].loaded;
+                req.bufferTime = buffer[0].time || globalLoadStartTime;
+            }
+
+            req.avgTransferTime = transfer.average / (progressCount - 1 || 1);
             prev.loaded = e.loaded - firstTransferred;
             prev.progressTime = time;
             progressCount++;
