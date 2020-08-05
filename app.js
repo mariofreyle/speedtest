@@ -1000,7 +1000,7 @@ var test = window.test = {
         single: 1,
         mode: "single"
     },
-    resultsPrecision: 1,
+    resultsPrecision: 2,
     xhrData: [],
     downloadServers: ["https://m0006.movispeed.es/apolo/data/a100m.dat", "https://open.cachefly.net/downloading", "https://fl-us-ping.vultr.com/vultr.com.100MB.bin"],
     gaugeCircleStrokeMin: 404,
@@ -1426,9 +1426,9 @@ function TestStage() {
             if (!firstTransferred) {
                 firstTransferred = e.loaded;
                 testConsole.state("xhr " + req.id + " first transfer: " + loadedData(e.loaded));
-            } else if (_TestConfig2.default.runType.upload) {}
-            //testConsole.state("xhr " + req.id + " transfer " + progressCount + ": " + loadedData(req.loaded - prev.loaded) + ", time: " + ((time - globalLoadStartTime) / 1000) + "s");
-
+            } else if (_TestConfig2.default.runType.upload) {
+                testConsole.state("xhr " + req.id + " transfer " + progressCount + ": " + loadedData(req.loaded - prev.loaded) + ", time: " + (time - globalLoadStartTime) / 1000 + "s");
+            }
 
             /*if(progressCount > 1){
                 buffer.push({loaded: req.loaded, time: time});
@@ -1442,10 +1442,10 @@ function TestStage() {
             if (progressCount > 1) {
                 buffer.push({ transferred: transfer.transferred, time: time });
                 req.bufferLoaded += transfer.transferred;
-                //                if(buffer.length > 1 && (buffer[buffer.length - 1].time - buffer[1].time) >= (req.maxTransferTime > 3000 ? req.maxTransferTime : 3000)){
-                //                    req.bufferLoaded -= buffer[0].transferred;
-                //                    buffer.splice(0, 1);
-                //                }
+                if (buffer.length > 1 && buffer[buffer.length - 1].time - buffer[1].time >= (req.maxTransferTime > 3000 ? req.maxTransferTime : 3000)) {
+                    req.bufferLoaded -= buffer[0].transferred;
+                    buffer.splice(0, 1);
+                }
                 req.bufferSize = req.bufferLoaded - (buffer.length > 1 ? buffer[buffer.length - 1].transferred : 0);
                 req.bufferTime = buffer[0].time;
             }
