@@ -1000,7 +1000,7 @@ var test = window.test = {
         single: 1,
         mode: "multi"
     },
-    resultsPrecision: 2,
+    resultsPrecision: 1,
     xhrData: [],
     downloadServers: ["https://m0006.movispeed.es/apolo/data/a100m.dat", "https://open.cachefly.net/downloading", "https://fl-us-ping.vultr.com/vultr.com.100MB.bin"],
     gaugeCircleStrokeMin: 404,
