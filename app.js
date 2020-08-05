@@ -1397,24 +1397,19 @@ function TestStage() {
             time: 0,
             average: 0
         },
-            buffer = [/*{
-                      loaded: 0,
-                      time: 0
-                      }*/],
+            buffer = [],
             time;
 
         req.loaded = 0;
         req.id = connections.requests.length + 1;
         req.maxTransferTime = 0;
         req.avgTransferTime = 0;
-        req.bufferLoaded = 0;
         req.bufferSize = 0;
         req.bufferTime = 0;
 
         target.addEventListener("progress", function (e) {
             time = _App2.default.getTime();
-            req.loaded = e.loaded - firstTransferred;
-            transfer.transferred = req.loaded - prev.loaded;
+            req.loaded = e.loaded;
             transfer.time = time - (prev.progressTime || time);
             transfer.average += transfer.time;
             if (transfer.time > req.maxTransferTime) {
@@ -1438,20 +1433,18 @@ function TestStage() {
                 req.bufferSize = buffer[buffer.length - 2].loaded - buffer[0].loaded;
                 req.bufferTime = buffer[0].time || globalLoadStartTime;
             }*/
-
-            if (progressCount > 1) {
-                buffer.push({ transferred: transfer.transferred, time: time });
-                req.bufferLoaded += transfer.transferred;
-                if (buffer.length > 1 && buffer[buffer.length - 1].time - buffer[1].time >= (req.maxTransferTime > 3000 ? req.maxTransferTime : 3000)) {
-                    req.bufferLoaded -= buffer[0].transferred;
+            buffer.push({ loaded: req.loaded, time: time });
+            if (progressCount > 2) {
+                if (buffer.length > 3 && buffer[buffer.length - 1].time - buffer[1].time >= 3000) {
                     buffer.splice(0, 1);
                 }
-                req.bufferSize = req.bufferLoaded - (buffer.length > 1 ? buffer[buffer.length - 1].transferred : 0);
+                req.bufferSize = buffer[buffer.length - 2].loaded - buffer[0].loaded;
+                //req.bufferSize = buffer[buffer.length - 1].loaded - buffer[0].loaded;
                 req.bufferTime = buffer[0].time;
             }
 
             req.avgTransferTime = transfer.average / (progressCount - 1 || 1);
-            prev.loaded = e.loaded - firstTransferred;
+            prev.loaded = req.loaded;
             prev.progressTime = time;
             progressCount++;
         });
