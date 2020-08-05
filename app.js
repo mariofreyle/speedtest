@@ -1442,10 +1442,10 @@ function TestStage() {
             if (progressCount > 1) {
                 buffer.push({ transferred: transfer.transferred, time: time });
                 req.bufferLoaded += transfer.transferred;
-                if (buffer.length > 1 && buffer[buffer.length - 1].time - buffer[1].time >= (req.maxTransferTime > 3000 ? req.maxTransferTime : 3000)) {
-                    req.bufferLoaded -= buffer[0].transferred;
-                    buffer.splice(0, 1);
-                }
+                //                if(buffer.length > 1 && (buffer[buffer.length - 1].time - buffer[1].time) >= (req.maxTransferTime > 3000 ? req.maxTransferTime : 3000)){
+                //                    req.bufferLoaded -= buffer[0].transferred;
+                //                    buffer.splice(0, 1);
+                //                }
                 req.bufferSize = req.bufferLoaded - (buffer.length > 1 ? buffer[buffer.length - 1].transferred : 0);
                 req.bufferTime = buffer[0].time;
             }
