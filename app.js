@@ -1000,7 +1000,7 @@ var test = window.test = {
         single: 1,
         mode: "multi"
     },
-    resultsPrecision: 1,
+    resultsPrecision: 2,
     xhrData: [],
     downloadServers: ["https://m0006.movispeed.es/apolo/data/a100m.dat", "https://open.cachefly.net/downloading", "https://fl-us-ping.vultr.com/vultr.com.100MB.bin"],
     gaugeCircleStrokeMin: 404,
@@ -1321,7 +1321,7 @@ function TestStage() {
             instant.speed = buffer.size / (buffer.time / 1000);
 
             transfer.transferred > 0 && instant.results.push(instant.speed);
-            if (instant.results.length > (loadTime > 2000 ? 12 : 3) || transfer.time > 100 && instant.results.length > 5 && instant.results.length < 10) {
+            if (instant.results.length > (loadTime > 2000 ? 3 : 3) || transfer.time > 100 && instant.results.length > 5 && instant.results.length < 10) {
                 instant.results.splice(0, 1);
             }
 
