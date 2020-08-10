@@ -995,12 +995,12 @@ var test = window.test = {
     uploadRunTime: isLocal ? 1000 * 8 : 15000,
     hearbeatTime: 80,
     connections: {
-        count: 3,
+        count: 1,
         multi: 3,
         single: 1,
-        mode: "multi"
+        mode: "single"
     },
-    resultsPrecision: 2,
+    resultsPrecision: 1,
     xhrData: [],
     downloadServers: ["https://m0006.movispeed.es/apolo/data/a100m.dat", "https://open.cachefly.net/downloading", "https://fl-us-ping.vultr.com/vultr.com.100MB.bin"],
     gaugeCircleStrokeMin: 404,
@@ -1287,7 +1287,49 @@ function TestStage() {
             if (_TestConfig2.default.resultsPrecision > 1) return val;
             var str = val.toString(),
                 i = str.indexOf(".");
-            return str.substr(0, val >= 1 ? i + 2 : i + 3);
+            return str.substr(0, val >= 10 ? i + 2 : i + 3);
+        }
+        function getInstantSpeed(time, intervalTime) {
+            var speed = 0,
+                loaded,
+                loadTime,
+                buffer,
+                bufferLen,
+                i;
+            connections.requests.forEach(function (req) {
+                var average = { count: 0, time: 0 },
+                    loaded1 = 0,
+                    loadTime1 = 0;
+                buffer = req.buffer;
+                bufferLen = buffer.length;
+
+                if (bufferLen < 2) return;
+
+                if (buffer[bufferLen - 1].time - buffer[1].time >= 3000 && intervalTime < 10000) {
+                    buffer.splice(0, 1);
+                    bufferLen--;
+                }
+
+                for (i = 0; i < bufferLen; i++) {
+                    average.count += buffer[i].transferTime;
+                    loaded1 += buffer[i].transferred;
+                    loadTime1 += buffer[i].transferTime;
+                }
+
+                average.time = average.count / bufferLen;
+
+                loaded = buffer[bufferLen - 1].loaded - buffer[0].loaded;
+                loadTime = time - buffer[0].time;
+
+                loadTime += average.time;
+
+                //console.log("average time: ", average.time);
+                //console.log("loaded", loaded, ",", "loaded1", loaded1);
+                //console.log("loadTime", loadTime - average.time, ",", "loadTime1", loadTime1);
+
+                speed += loaded / (loadTime / 1000);
+            });
+            return speed;
         }
         function intervalCallback() {
             time = _App2.default.getTime();
@@ -1308,17 +1350,18 @@ function TestStage() {
                 
                 //console.log(test.runType.download ? "[download]" : "[upload]", "average time:", Math.round(transfer.average.time), "max time:", transfer.maxTime)
             }*/
-            if (transfer.transferred > 0) {
-                buffer.items.push({ loaded: loadedBytes, time: loadTime });
-                if (transfer.maxTime < 2500 && intervalTime < 10000) {
-                    buffer.splice();
-                }
-                buffer.update();
-            } else {
-                buffer.time = loadTime - buffer.items[0].time;
-            }
+            //            if(transfer.transferred > 0){
+            //                buffer.items.push({loaded: loadedBytes, time: loadTime});
+            //                if(transfer.maxTime < 2500 && intervalTime < 10000){
+            //                    buffer.splice();
+            //                }
+            //                buffer.update();
+            //            }else{
+            //                buffer.time = loadTime - buffer.items[0].time;
+            //            }
 
-            instant.speed = buffer.size / (buffer.time / 1000);
+            //instant.speed = buffer.size / (buffer.time / 1000);
+            instant.speed = getInstantSpeed(time, intervalTime);
 
             transfer.transferred > 0 && instant.results.push(instant.speed);
             if (instant.results.length > (loadTime > 2000 ? 3 : 3) || transfer.time > 100 && instant.results.length > 5 && instant.results.length < 10) {
@@ -1376,35 +1419,31 @@ function TestStage() {
         var target = _TestConfig2.default.runType.download ? req : req.upload,
             firstTransferred = 0,
             progressCount = 1,
-            prev = {
-            loaded: 0,
-            progressTime: 0
-        },
-            transfer = {
-            time: 0
-        },
+            prev = { loaded: 0, progressTime: 0 },
+            transfer = { transferred: 0, time: 0 },
             time;
 
         req.loaded = 0;
-        req.firstTransferred = 0;
         req.id = connections.requests.length + 1;
         req.maxTransferTime = 0;
+        req.buffer = [];
 
         target.addEventListener("progress", function (e) {
             time = _App2.default.getTime();
+            firstTransferred = firstTransferred || e.loaded;
             req.loaded = e.loaded - firstTransferred;
+            transfer.transferred = req.loaded - prev.loaded;
             transfer.time = time - (prev.progressTime || time);
-            if (transfer.time > req.maxTransferTime) {
-                req.maxTransferTime = transfer.time;
-            }
+            if (transfer.time > req.maxTransferTime) req.maxTransferTime = transfer.time;
 
             if (!globalLoadStartTime) globalLoadStartTime = time;
             if (!intervalStarted && progressCount == 3) startInterval();
-            if (!firstTransferred) {
-                firstTransferred = e.loaded, req.firstTransferred = e.loaded;
+            if (progressCount == 1) {
                 testConsole.state("xhr " + req.id + " first transfer: " + loadedData(e.loaded));
-            } else if (_TestConfig2.default.runType.upload) {
-                testConsole.state("xhr " + req.id + " transfer " + progressCount + ": " + loadedData(req.loaded - prev.loaded) + ", time: " + (time - globalLoadStartTime) / 1000 + "s");
+            } else {
+                if (_TestConfig2.default.runType.upload) testConsole.state("xhr " + req.id + " transfer " + progressCount + ": " + loadedData(req.loaded - prev.loaded) + ", time: " + (time - globalLoadStartTime) / 1000 + "s");
+
+                req.buffer.push({ transferred: transfer.transferred, loaded: req.loaded, transferTime: transfer.time, time: time });
             }
 
             prev.loaded = e.loaded - firstTransferred;
@@ -1619,7 +1658,7 @@ function GaugeContainer() {
         if (_TestConfig2.default.resultsPrecision > 1) return val;
         var str = val.toString(),
             i = str.indexOf(".");
-        return str.substr(0, val >= 1 ? i + 2 : i + 3);
+        return str.substr(0, val >= 10 ? i + 2 : i + 3);
     }
     function updateSpeed(speedRate) {
         currentSpeed = speedRate;
