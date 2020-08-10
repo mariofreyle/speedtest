@@ -1321,7 +1321,7 @@ function TestStage() {
             instant.speed = buffer.size / (buffer.time / 1000);
 
             transfer.transferred > 0 && instant.results.push(instant.speed);
-            if (instant.results.length > (loadTime > 2000 ? 12 : 3) || transfer.time > 100 && instant.results.length > 5 && instant.results.length < 10) {
+            if (instant.results.length > (loadTime > 2000 ? 10 : 3) || transfer.time > 100 && instant.results.length > 5 && instant.results.length < 10) {
                 instant.results.splice(0, 1);
             }
 
