@@ -1289,7 +1289,7 @@ function TestStage() {
                 i = str.indexOf(".");
             return str.substr(0, val >= 10 ? i + 2 : i + 3);
         }
-        function getInstantSpeed(time, intervalTime) {
+        function getInstantSpeed(time, loadTime, intervalTime) {
             var speed = 0,
                 loaded,
                 loadTime,
@@ -1327,7 +1327,7 @@ function TestStage() {
                 //console.log("loaded", loaded, ",", "loaded1", loaded1);
                 //console.log("loadTime", loadTime - average.time, ",", "loadTime1", loadTime1);
 
-                speed += loaded / (loadTime / 1000);
+                speed += loaded1 / (loadTime / 1000);
             });
             return speed;
         }
@@ -1361,7 +1361,7 @@ function TestStage() {
             //            }
 
             //instant.speed = buffer.size / (buffer.time / 1000);
-            instant.speed = getInstantSpeed(time, intervalTime);
+            instant.speed = getInstantSpeed(time, loadTime, intervalTime);
 
             transfer.transferred > 0 && instant.results.push(instant.speed);
             if (instant.results.length > (loadTime > 2000 ? 3 : 3) || transfer.time > 100 && instant.results.length > 5 && instant.results.length < 10) {
