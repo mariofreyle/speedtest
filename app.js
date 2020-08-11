@@ -995,10 +995,10 @@ var test = window.test = {
     uploadRunTime: isLocal ? 1000 * 8 : 15000,
     hearbeatTime: 80,
     connections: {
-        count: 1,
+        count: 3,
         multi: 3,
         single: 1,
-        mode: "single"
+        mode: "multi"
     },
     resultsPrecision: 1,
     xhrData: [],
@@ -1406,8 +1406,7 @@ function TestStage() {
                         if (_TestConfig2.default.runType.download) {
                             _App2.default.event("runTest", { runType: "upload" });
                         } else {
-                            _App2.default.event("closeTest");
-                            closeGauge();
+                            _App2.default.event("closeTest"), closeGauge();
                         }
                     }, 500);
                 }, 500);
