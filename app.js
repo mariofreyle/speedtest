@@ -1327,6 +1327,7 @@ function TestStage() {
             connections.requests.forEach(function (req) {
                 if (req.buffer) {
                     speed += req.buffer.size / ((time - req.buffer.time + req.buffer.averageTime) / 1000);
+                    //speed += req.buffer.size / ((time - req.buffer.time) / 1000);
                 }
             });
             return speed;
@@ -1432,7 +1433,7 @@ function TestStage() {
             time = _App2.default.getTime();
             if (!globalLoadStartTime) globalLoadStartTime = time;
             if (!firstTransferred) firstTransferred = e.loaded;
-            req.loaded = e.loaded - firstTransferred;
+            req.loaded = e.loaded;
             transfer.transferred = req.loaded - prev.loaded;
             transfer.time = time - (prev.progressTime || time);
             if (transfer.time > req.maxTransferTime) req.maxTransferTime = transfer.time;
@@ -1442,12 +1443,14 @@ function TestStage() {
                 testConsole.state("xhr " + req.id + " first transfer: " + loadedData(e.loaded));
             } else {
                 if (_TestConfig2.default.runType.upload) testConsole.state("xhr " + req.id + " transfer " + progressCount + ": " + loadedData(req.loaded - prev.loaded) + ", time: " + (time - globalLoadStartTime) / 1000 + "s");
+            }
 
-                buffer.items.push({ transferred: transfer.transferred, transferTime: transfer.time, time: time });
-                buffer.size += transfer.transferred;
-                buffer.time += transfer.time;
+            buffer.items.push({ transferred: transfer.transferred, transferTime: transfer.time, time: progressCount == 1 ? globalLoadStartTime : time });
+            buffer.size += transfer.transferred;
+            buffer.time += transfer.time;
 
-                if (buffer.items.length > 1 && buffer.items[buffer.items.length - 1].time - buffer.items[1].time >= 4000 && intervalTime < 10000) {
+            if (buffer.items.length > 1) {
+                if (buffer.items[buffer.items.length - 1].time - buffer.items[1].time >= 4000 && intervalTime < 10000) {
                     buffer.size -= buffer.items[0].transferred;
                     buffer.time -= buffer.items[0].transferTime;
                     buffer.items.splice(0, 1);
@@ -1460,8 +1463,8 @@ function TestStage() {
                 };
             }
 
-            prev.loaded = e.loaded - firstTransferred;
-            prev.progressTime = progressCount == 1 ? globalLoadStartTime : time;
+            prev.loaded = e.loaded;
+            prev.progressTime = time;
             progressCount++;
         });
     }
