@@ -574,7 +574,7 @@ var app = function (window, document) {
                 url += "?" + encodeUrlParams(config.get);
             }
 
-            xhr.open(type, url, true);
+            xhr.open(config.type ? config.type : type, url, true);
 
             typeof xhrCallback == "function" && xhrCallback(xhr);
 
@@ -588,8 +588,7 @@ var app = function (window, document) {
                                 response = JSON.parse(response);
                                 JSONParsed = true;
                             } catch (e) {
-                                fail();
-                                return;
+                                return fail();
                             }
                             JSONParsed && config.success && config.success(response);
                         } else {
@@ -606,11 +605,6 @@ var app = function (window, document) {
 
             !isFormData && !contentType && xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             contentType && xhr.setRequestHeader("Content-type", contentType);
-            //xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-            //xhr.setRequestHeader("X-App-Fetch", "data");
-            for (var prop in headers) {
-                xhr.setRequestHeader(prop, headers[prop]);
-            }
 
             xhr.send(postData);
 
@@ -1014,7 +1008,7 @@ var test = window.test = {
 };
 
 test.increments = [0, 1, 5, 10, 20, 30, 50, 75, 100];
-test.downloadURL = isLocal ? URL_BASE + "/download/download.file" : test.downloadServers[1], test.uploadURL = isLocal ? URL_BASE + "/upload/upload.file" : "https://m0006.movispeed.es/apolo/subida.php", test.gaugeCircleOffsetRef = test.gaugeCircleStrokeMax - test.gaugeCircleStrokeMin;
+test.downloadURL = isLocal ? URL_BASE + "/download/download.file" : test.downloadServers[2], test.uploadURL = isLocal ? URL_BASE + "/upload/upload.file" : "https://m0006.movispeed.es/apolo/subida.php", test.gaugeCircleOffsetRef = test.gaugeCircleStrokeMax - test.gaugeCircleStrokeMin;
 test.gaugeNeedleRotateRef = test.gaugeNeedleRotateMax - test.gaugeNeedleRotateMin; // in deg
 test.tempFile = function (size) {
     var str = "11";
@@ -1365,7 +1359,7 @@ function TestStage() {
             instant.speed = getInstantSpeed(time, loadTime, intervalTime);
 
             /*transfer.transferred > 0 && */instant.results.push(!transfer.transferred && prev.instantSpeed ? (instant.speed + prev.instantSpeed) / 2 : instant.speed);
-            if (instant.results.length > (loadTime > 1500 ? 3 : 3) /* || (transfer.time > 100 && instant.results.length > 3 && instant.results.length < 10)*/) {
+            if (instant.results.length > (loadTime > 1500 ? 3 : 5) /* || (transfer.time > 100 && instant.results.length > 3 && instant.results.length < 10)*/) {
                     instant.results.splice(0, 1);
                 }
 
@@ -1482,7 +1476,8 @@ function TestStage() {
             _TestConfig2.default.runType.set(e.runType);
 
             var data = _TestConfig2.default.runType.download ? null : fileData(),
-                xhr;
+                xhr,
+                initialRequests = [];
 
             testConsole.state("starting measures...");
 
@@ -1493,16 +1488,36 @@ function TestStage() {
             intervalTime = 0;
             intervalStarted = false;
 
-            for (var i = 0; i < _TestConfig2.default.connections.count; i++) {
-                xhr = _App2.default.fetch({
-                    xhr: requestConfig,
-                    url: _TestConfig2.default.runType.download ? _TestConfig2.default.downloadURL : _TestConfig2.default.uploadURL,
-                    get: { v: _App2.default.random(6) + "" + _App2.default.getTime() },
-                    post: data,
-                    fail: breakTest,
-                    success: breakTest
-                });
-                connections.requests.push(xhr);
+            function send() {
+                for (var i = 0; i < _TestConfig2.default.connections.count; i++) {
+                    xhr = _App2.default.fetch({
+                        xhr: requestConfig,
+                        url: _TestConfig2.default.runType.download ? _TestConfig2.default.downloadURL : _TestConfig2.default.uploadURL,
+                        get: { v: _App2.default.random(6) + "" + _App2.default.getTime() },
+                        post: data,
+                        fail: breakTest,
+                        success: breakTest
+                    });
+                    connections.requests.push(xhr);
+                }
+            }
+            if (_TestConfig2.default.runType.download) {
+                for (var i = 0; i < _TestConfig2.default.connections.count; i++) {
+                    xhr = _App2.default.fetch({
+                        xhr: requestConfig,
+                        url: _TestConfig2.default.runType.download ? _TestConfig2.default.downloadURL : _TestConfig2.default.uploadURL,
+                        type: "HEAD",
+                        get: { v: _App2.default.random(6) + "" + _App2.default.getTime() },
+                        fail: breakTest,
+                        success: function success() {
+                            initialRequests.push(1);
+                            if (initialRequests.length == _TestConfig2.default.connections.count) send();
+                        }
+                    });
+                    connections.requests.push(xhr);
+                }
+            } else {
+                send();
             }
         },
         consoleToggle: function consoleToggle(e) {
