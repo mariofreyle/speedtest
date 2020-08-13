@@ -1425,7 +1425,7 @@ function TestStage() {
 
         target.addEventListener("progress", function (e) {
             time = _App2.default.getTime();
-            if (!globalLoadStartTime && progressCount == 2) globalLoadStartTime = time;
+            if (!globalLoadStartTime) globalLoadStartTime = time;
             if (!firstTransferred) firstTransferred = e.loaded;
             req.loaded = e.loaded - firstTransferred;
             transfer.transferred = req.loaded - prev.loaded;
