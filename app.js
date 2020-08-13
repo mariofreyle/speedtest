@@ -989,10 +989,9 @@ var test = window.test = {
     uploadRunTime: isLocal ? 1000 * 8 : 15000,
     hearbeatTime: 80,
     connections: {
-        count: 3,
+        mode: "single",
         multi: 3,
-        single: 1,
-        mode: "multi"
+        single: 1
     },
     resultsPrecision: 1,
     xhrData: [],
@@ -1008,7 +1007,7 @@ var test = window.test = {
 };
 
 test.increments = [0, 1, 5, 10, 20, 30, 50, 75, 100];
-test.downloadURL = isLocal ? URL_BASE + "/download/download.file" : test.downloadServers[2], test.uploadURL = isLocal ? URL_BASE + "/upload/upload.file" : "https://m0006.movispeed.es/apolo/subida.php", test.gaugeCircleOffsetRef = test.gaugeCircleStrokeMax - test.gaugeCircleStrokeMin;
+test.downloadURL = isLocal ? URL_BASE + "/download/download.file" : test.downloadServers[2], test.uploadURL = isLocal ? URL_BASE + "/upload/upload.file" : "https://m0006.movispeed.es/apolo/subida.php", test.connections.count = test.connections[test.connections.mode], test.gaugeCircleOffsetRef = test.gaugeCircleStrokeMax - test.gaugeCircleStrokeMin;
 test.gaugeNeedleRotateRef = test.gaugeNeedleRotateMax - test.gaugeNeedleRotateMin; // in deg
 test.tempFile = function (size) {
     var str = "11";
@@ -1425,26 +1424,25 @@ function TestStage() {
 
         target.addEventListener("progress", function (e) {
             time = _App2.default.getTime();
-            if (!globalLoadStartTime) globalLoadStartTime = time;
+            if (!globalLoadStartTime && progressCount == 2) globalLoadStartTime = time;
             if (!firstTransferred) firstTransferred = e.loaded;
-            req.loaded = e.loaded;
+            req.loaded = e.loaded - firstTransferred;
             transfer.transferred = req.loaded - prev.loaded;
             transfer.time = time - (prev.progressTime || time);
             if (transfer.time > req.maxTransferTime) req.maxTransferTime = transfer.time;
 
-            if (!intervalStarted && progressCount == 2) startInterval();
+            if (!intervalStarted && progressCount == 3) startInterval();
             if (progressCount == 1) {
                 testConsole.state("xhr " + req.id + " first transfer: " + loadedData(e.loaded));
             } else {
                 if (_TestConfig2.default.runType.upload) testConsole.state("xhr " + req.id + " transfer " + progressCount + ": " + loadedData(req.loaded - prev.loaded) + ", time: " + (time - globalLoadStartTime) / 1000 + "s");
             }
+            if (progressCount > 2) {
+                buffer.items.push({ transferred: transfer.transferred, transferTime: transfer.time, time: time });
+                buffer.size += transfer.transferred;
+                buffer.time += transfer.time;
 
-            buffer.items.push({ transferred: transfer.transferred, transferTime: transfer.time, time: progressCount == 1 ? globalLoadStartTime : time });
-            buffer.size += transfer.transferred;
-            buffer.time += transfer.time;
-
-            if (buffer.items.length > 1) {
-                if (buffer.items[buffer.items.length - 1].time - buffer.items[1].time >= 4000 && intervalTime < 10000) {
+                if (buffer.items.length > 1 && buffer.items[buffer.items.length - 1].time - buffer.items[1].time >= 4000 && intervalTime < 10000) {
                     buffer.size -= buffer.items[0].transferred;
                     buffer.time -= buffer.items[0].transferTime;
                     buffer.items.splice(0, 1);
@@ -1457,7 +1455,7 @@ function TestStage() {
                 };
             }
 
-            prev.loaded = e.loaded;
+            prev.loaded = e.loaded - firstTransferred;
             prev.progressTime = time;
             progressCount++;
         });
@@ -1476,8 +1474,7 @@ function TestStage() {
             _TestConfig2.default.runType.set(e.runType);
 
             var data = _TestConfig2.default.runType.download ? null : fileData(),
-                xhr,
-                initialRequests = [];
+                xhr;
 
             testConsole.state("starting measures...");
 
@@ -1488,36 +1485,16 @@ function TestStage() {
             intervalTime = 0;
             intervalStarted = false;
 
-            function send() {
-                for (var i = 0; i < _TestConfig2.default.connections.count; i++) {
-                    xhr = _App2.default.fetch({
-                        xhr: requestConfig,
-                        url: _TestConfig2.default.runType.download ? _TestConfig2.default.downloadURL : _TestConfig2.default.uploadURL,
-                        get: { v: _App2.default.random(6) + "" + _App2.default.getTime() },
-                        post: data,
-                        fail: breakTest,
-                        success: breakTest
-                    });
-                    connections.requests.push(xhr);
-                }
-            }
-            if (_TestConfig2.default.runType.download) {
-                for (var i = 0; i < _TestConfig2.default.connections.count; i++) {
-                    xhr = _App2.default.fetch({
-                        xhr: requestConfig,
-                        url: _TestConfig2.default.runType.download ? _TestConfig2.default.downloadURL : _TestConfig2.default.uploadURL,
-                        type: "HEAD",
-                        get: { v: _App2.default.random(6) + "" + _App2.default.getTime() },
-                        fail: breakTest,
-                        success: function success() {
-                            initialRequests.push(1);
-                            if (initialRequests.length == _TestConfig2.default.connections.count) send();
-                        }
-                    });
-                    connections.requests.push(xhr);
-                }
-            } else {
-                send();
+            for (var i = 0; i < _TestConfig2.default.connections.count; i++) {
+                xhr = _App2.default.fetch({
+                    xhr: requestConfig,
+                    url: _TestConfig2.default.runType.download ? _TestConfig2.default.downloadURL : _TestConfig2.default.uploadURL,
+                    get: { v: _App2.default.random(6) + "" + _App2.default.getTime() },
+                    post: data,
+                    fail: breakTest,
+                    success: breakTest
+                });
+                connections.requests.push(xhr);
             }
         },
         consoleToggle: function consoleToggle(e) {
