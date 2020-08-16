@@ -1256,7 +1256,7 @@ function TestStage() {
                     bufferTime = last.time - buffer.items[1].time,
                     maxTime = buffer.maxTime / 2;
 
-                if (bufferTime >= buffer.maxTime) {
+                /*if (bufferTime >= buffer.maxTime) {
                     for (var i = bufferLen - 1; i >= 0; i--) {
                         spliceLen--;
                         if (last.time - buffer.items[i].time >= maxTime) {
@@ -1270,7 +1270,7 @@ function TestStage() {
                     buffer.items.splice(0, spliceLen);
                 }
 
-                return;
+                return;*/
 
                 if (bufferTime >= 3000) {
                     buffer.items.splice(0, 1);
