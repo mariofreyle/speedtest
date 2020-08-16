@@ -565,6 +565,7 @@ var app = function (window, document) {
                 contentType = config.contentType || null,
                 headers = config.headers || {},
                 xhr = new XMLHttpRequest(),
+                send = config.preventSend ? 0 : 1,
                 fail = function fail() {
                 console.log("Request Fail: " + url);
                 config.fail && config.fail();
@@ -606,7 +607,11 @@ var app = function (window, document) {
             !isFormData && !contentType && xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             contentType && xhr.setRequestHeader("Content-type", contentType);
 
-            xhr.send(postData);
+            xhr._send = function () {
+                xhr.send(postData);
+            };
+
+            send && xhr._send();
 
             return xhr;
         },
@@ -985,11 +990,11 @@ var test = window.test = {
     increments: [0, 2, 4, 6, 8, 10, 12, 14, 16],
     rateProgress: 0,
     uploadFileDup: 24,
-    downloadRunTime: isLocal ? 1000 * 8 : 15000,
-    uploadRunTime: isLocal ? 1000 * 8 : 15000,
+    downloadRunTime: isLocal ? 1000 * 15 : 15000,
+    uploadRunTime: isLocal ? 1000 * 15 : 15000,
     hearbeatTime: 80,
     connections: {
-        mode: "single",
+        mode: "multi",
         multi: 3,
         single: 1
     },
@@ -1007,7 +1012,7 @@ var test = window.test = {
 };
 
 test.increments = [0, 1, 5, 10, 20, 30, 50, 75, 100];
-test.downloadURL = isLocal ? URL_BASE + "/download/download.file" : test.downloadServers[2], test.uploadURL = isLocal ? URL_BASE + "/upload/upload.file" : "https://m0006.movispeed.es/apolo/subida.php", test.connections.count = test.connections[test.connections.mode], test.gaugeCircleOffsetRef = test.gaugeCircleStrokeMax - test.gaugeCircleStrokeMin;
+test.downloadURL = isLocal ? URL_BASE + "/download/download.file" : test.downloadServers[1], test.uploadURL = isLocal ? URL_BASE + "/upload/upload.file" : "https://m0006.movispeed.es/apolo/subida.php", test.connections.count = test.connections[test.connections.mode], test.gaugeCircleOffsetRef = test.gaugeCircleStrokeMax - test.gaugeCircleStrokeMin;
 test.gaugeNeedleRotateRef = test.gaugeNeedleRotateMax - test.gaugeNeedleRotateMin; // in deg
 test.tempFile = function (size) {
     var str = "11";
@@ -1245,9 +1250,29 @@ function TestStage() {
                 time: 0
             }],
             splice: function splice() {
-                var time = buffer.items[buffer.items.length - 1].time - buffer.items[1].time;
+                var bufferLen = buffer.items.length,
+                    spliceLen = bufferLen,
+                    last = buffer.items[bufferLen - 1],
+                    bufferTime = last.time - buffer.items[1].time,
+                    maxTime = buffer.maxTime / 2;
 
-                if (time >= 3000) {
+                if (bufferTime >= buffer.maxTime) {
+                    for (var i = bufferLen - 1; i >= 0; i--) {
+                        spliceLen--;
+                        if (last.time - buffer.items[i].time >= maxTime) {
+                            break;
+                        }
+                    }
+                    if (spliceLen > 0) {
+                        testConsole.state("buffer cuted");
+                    }
+
+                    buffer.items.splice(0, spliceLen);
+                }
+
+                return;
+
+                if (bufferTime >= 3000) {
                     buffer.items.splice(0, 1);
                     buffer._time = time;
                 }
@@ -1262,7 +1287,8 @@ function TestStage() {
                 buffer.time = last.time - first.time;
             },
             size: 0,
-            time: 0
+            time: 0,
+            maxTime: 3000
         },
             instant = {
             speed: 0,
@@ -1283,38 +1309,6 @@ function TestStage() {
                 i = str.indexOf(".");
             return str.substr(0, val >= 1 ? i + 2 : i + 3);
         }
-        /*function getInstantSpeed(time, loadTime, intervalTime){
-            var speed = 0, loadTime, buffer, bufferLen, i;
-            connections.requests.forEach(function(req){
-                var average = {count: 0, time: 0}, loaded = 0;
-                buffer = req.buffer;
-                bufferLen = buffer.length;
-                
-                if(bufferLen == 0) return;
-                
-                if(bufferLen > 1 && (buffer[bufferLen - 1].time - buffer[1].time) >= 4000 && intervalTime < 10000){
-                    buffer.splice(0, 1);
-                    bufferLen--;
-                }
-                
-                for(i = 0; i < bufferLen; i++){
-                    average.count += buffer[i].transferTime;
-                    loaded += buffer[i].transferred;
-                }
-                
-                average.time = average.count / (bufferLen - 1 || 1);
-                
-                //loadTime = (time - buffer[0].time) + average.time;
-                loadTime = (time - buffer[0].time) + average.time;
-                
-                //console.log("average time: ", average.time);
-                //console.log("loaded", loaded, ",", "loaded1", loaded1);
-                //console.log("loadTime", loadTime - average.time, ",", "loadTime1", loadTime1);
-                
-                speed += loaded / (loadTime / 1000);
-            });
-            return speed;
-        }*/
         function getInstantSpeed(time, loadTime, intervalTime) {
             var speed = 0;
             connections.requests.forEach(function (req) {
@@ -1335,6 +1329,7 @@ function TestStage() {
             transfer.time = time - transfer.lastTime;
             if (transfer.time > transfer.maxTime) {
                 transfer.maxTime = transfer.time;
+                buffer.maxTime = 3000 + transfer.maxTime;
             }
             /*
             if(transfer.transferred > 0 && prev.transferTime > 0){
@@ -1344,21 +1339,21 @@ function TestStage() {
                 
                 //console.log(test.runType.download ? "[download]" : "[upload]", "average time:", Math.round(transfer.average.time), "max time:", transfer.maxTime)
             }*/
-            //            if(transfer.transferred > 0){
-            //                buffer.items.push({loaded: loadedBytes, time: loadTime});
-            //                if(transfer.maxTime < 2500 && intervalTime < 10000){
-            //                    buffer.splice();
-            //                }
-            //                buffer.update();
-            //            }else{
-            //                buffer.time = loadTime - buffer.items[0].time;
-            //            }
+            if (transfer.transferred > 0) {
+                buffer.items.push({ loaded: loadedBytes, time: loadTime });
+                if (transfer.maxTime < 2500 && intervalTime < 10000) {
+                    buffer.splice();
+                }
+                buffer.update();
+            } else {
+                buffer.time = loadTime - buffer.items[0].time;
+            }
 
-            //instant.speed = buffer.size / (buffer.time / 1000);
-            instant.speed = getInstantSpeed(time, loadTime, intervalTime);
+            instant.speed = buffer.size / (buffer.time / 1000);
+            //instant.speed = getInstantSpeed(time, loadTime, intervalTime);
 
-            /*transfer.transferred > 0 && */ //instant.results.push(!transfer.transferred && prev.instantSpeed ? (instant.speed + prev.instantSpeed) / 2 : instant.speed);
-            instant.results.push(instant.speed);
+            /*transfer.transferred > 0 && */instant.results.push(!transfer.transferred && prev.instantSpeed ? (instant.speed + prev.instantSpeed) / 2 : instant.speed);
+            //instant.results.push(instant.speed);
             if (instant.results.length > (loadTime > 1500 ? 3 : 5) /* || (transfer.time > 100 && instant.results.length > 3 && instant.results.length < 10)*/) {
                     instant.results.splice(0, 1);
                 }
@@ -1423,7 +1418,27 @@ function TestStage() {
         req.id = connections.requests.length + 1;
         req.maxTransferTime = 0;
 
-        target.addEventListener("progress", function (e) {
+        function progressDownload(e) {
+            time = _App2.default.getTime();
+            if (!globalLoadStartTime) globalLoadStartTime = time;
+            if (!firstTransferred && _TestConfig2.default.runType.upload) firstTransferred = e.loaded;
+            req.loaded = e.loaded - firstTransferred;
+            transfer.transferred = req.loaded - prev.loaded;
+            transfer.time = time - (prev.progressTime || time);
+            if (transfer.time > req.maxTransferTime) req.maxTransferTime = transfer.time;
+
+            if (!intervalStarted && progressCount == 2) startInterval();
+            if (progressCount == 1) {
+                testConsole.state("xhr " + req.id + " first transfer: " + loadedData(e.loaded));
+            } else if (_TestConfig2.default.runType.upload) {
+                testConsole.state("xhr " + req.id + " transfer " + progressCount + ": " + loadedData(transfer.transferred) + ", time: " + (time - globalLoadStartTime) / 1000 + "s");
+            }
+
+            prev.loaded = req.loaded;
+            prev.progressTime = time;
+            progressCount++;
+        }
+        function progressUpload(e) {
             time = _App2.default.getTime();
             if (!globalLoadStartTime) globalLoadStartTime = time;
             if (!firstTransferred) firstTransferred = e.loaded;
@@ -1459,7 +1474,9 @@ function TestStage() {
             prev.loaded = e.loaded - firstTransferred;
             prev.progressTime = time;
             progressCount++;
-        });
+        }
+
+        target.addEventListener("progress", progressDownload);
     }
 
     this.events = {
@@ -1474,28 +1491,32 @@ function TestStage() {
             //return;
             _TestConfig2.default.runType.set(e.runType);
 
-            var data = _TestConfig2.default.runType.download ? null : fileData(),
-                xhr;
+            var uploadData = _TestConfig2.default.runType.download ? null : fileData(),
+                i;
 
             testConsole.state("starting measures...");
 
             connections = {
-                requests: []
+                requests: [],
+                count: _TestConfig2.default.connections.count
             };
             globalLoadStartTime = 0;
             intervalTime = 0;
             intervalStarted = false;
 
-            for (var i = 0; i < _TestConfig2.default.connections.count; i++) {
-                xhr = _App2.default.fetch({
+            for (i = 0; i < connections.count; i++) {
+                connections.requests.push(_App2.default.fetch({
                     xhr: requestConfig,
                     url: _TestConfig2.default.runType.download ? _TestConfig2.default.downloadURL : _TestConfig2.default.uploadURL,
-                    get: { v: _App2.default.random(6) + "" + _App2.default.getTime() },
-                    post: data,
+                    get: { v: _App2.default.random(6) + "_" + _App2.default.getTime() },
+                    post: uploadData,
                     fail: breakTest,
-                    success: breakTest
-                });
-                connections.requests.push(xhr);
+                    success: breakTest,
+                    preventSend: true
+                }));
+            }
+            for (i = 0; i < connections.count; i++) {
+                connections.requests[i]._send();
             }
         },
         consoleToggle: function consoleToggle(e) {
