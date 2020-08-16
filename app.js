@@ -1504,6 +1504,12 @@ function TestStage() {
             intervalTime = 0;
             intervalStarted = false;
 
+            function sendRequests() {
+                for (i = 0; i < connections.count; i++) {
+                    connections.requests[i]._send();
+                }
+            }
+
             for (i = 0; i < connections.count; i++) {
                 connections.requests.push(_App2.default.fetch({
                     xhr: requestConfig,
@@ -1515,9 +1521,16 @@ function TestStage() {
                     preventSend: true
                 }));
             }
-            for (i = 0; i < connections.count; i++) {
-                connections.requests[i]._send();
+            if (_TestConfig2.default.runType.download) {
+                return _App2.default.fetch({
+                    url: _TestConfig2.default.runType.download ? _TestConfig2.default.downloadURL : _TestConfig2.default.uploadURL,
+                    type: "HEAD",
+                    get: { v: _App2.default.random(6) + "_" + _App2.default.getTime() },
+                    fail: breakTest,
+                    success: sendRequests
+                });
             }
+            sendRequests();
         },
         consoleToggle: function consoleToggle(e) {
             consoleWrapper.toggleClass("hidden");
