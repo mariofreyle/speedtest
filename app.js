@@ -584,7 +584,7 @@ var app = function (window, document) {
                     if (xhr.status == 200) {
                         var response = xhr.responseText,
                             JSONParsed = false;
-                        if (xhr.getResponseHeader("Content-Type").search("application/json") > -1) {
+                        if (xhr.getResponseHeader("Content-Type") && xhr.getResponseHeader("Content-Type").search("application/json") > -1) {
                             try {
                                 response = JSON.parse(response);
                                 JSONParsed = true;
