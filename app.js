@@ -990,7 +990,7 @@ var test = window.test = {
     increments: [0, 2, 4, 6, 8, 10, 12, 14, 16],
     rateProgress: 0,
     uploadFileDup: 24,
-    downloadRunTime: isLocal ? 1000 * 8 : 1500000,
+    downloadRunTime: isLocal ? 1000 * 8 : 15000,
     uploadRunTime: isLocal ? 1000 * 8 : 15000,
     hearbeatTime: 80,
     connections: {
