@@ -1269,7 +1269,7 @@ function TestStage(props) {
                 
                 return;
                 */
-                if (bufferTime >= buffer.maxTime && 0) {
+                if (bufferTime >= buffer.maxTime) {
                     buffer.items.splice(0, 1);
                     buffer._time = time;
                 }
@@ -1285,7 +1285,7 @@ function TestStage(props) {
             },
             size: 0,
             time: 0,
-            maxTime: 7000
+            maxTime: 3000
         },
             instant = {
             speed: 0,
@@ -1338,7 +1338,7 @@ function TestStage(props) {
             }*/
             if (transfer.transferred > 0) {
                 buffer.items.push({ loaded: loadedBytes, time: loadTime });
-                if (transfer.maxTime < 2500 && intervalTime < 10000000) {
+                if (transfer.maxTime < 2500 && intervalTime < 6500) {
                     buffer.splice();
                 }
                 buffer.update();
