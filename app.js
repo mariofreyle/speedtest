@@ -1269,7 +1269,7 @@ function TestStage(props) {
                 
                 return;
                 */
-                if (bufferTime >= buffer.maxTime) {
+                if (bufferTime >= buffer.maxTime && 0) {
                     buffer.items.splice(0, 1);
                     buffer._time = time;
                 }
