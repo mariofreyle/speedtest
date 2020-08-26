@@ -1285,7 +1285,7 @@ function TestStage(props) {
             },
             size: 0,
             time: 0,
-            maxTime: 3000
+            maxTime: 7000
         },
             instant = {
             speed: 0,
@@ -1326,7 +1326,7 @@ function TestStage(props) {
             transfer.time = time - transfer.lastTime;
             if (transfer.time > transfer.maxTime) {
                 transfer.maxTime = transfer.time;
-                buffer.maxTime = 3000 + transfer.maxTime;
+                //buffer.maxTime = 7000 + transfer.maxTime;
             }
             /*
             if(transfer.transferred > 0 && prev.transferTime > 0){
