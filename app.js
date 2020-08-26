@@ -1168,7 +1168,9 @@ function TestStage(props) {
         connections && connections.requests && connections.requests.forEach(function (req) {
             req.abort && req.abort();
         });
-        connections && connections.initialRequest && connections.initialRequest.abort && connections.initialRequest.abort();
+        connections && connections.initial && connections.initial.requests.forEach(function (req) {
+            req.abort && req.abort();
+        });
     }
     function toggleConnectionsMode(mode) {
         multiModeButton.removeClass("active"), singleModeButton.removeClass("active");
