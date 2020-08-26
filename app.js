@@ -572,7 +572,7 @@ var app = function (window, document) {
             };
 
             if (config.get) {
-                url += "?" + encodeUrlParams(config.get);
+                url += (url && url.indexOf("?") > -1 ? "&" : "?") + encodeUrlParams(config.get);
             }
 
             xhr.open(config.type ? config.type : type, url, true);
@@ -1000,7 +1000,7 @@ var test = window.test = {
     },
     resultsPrecision: 1,
     xhrData: [],
-    downloadServers: ["https://m0006.movispeed.es/apolo/data/a100m.dat", "https://open.cachefly.net/downloading", "https://fl-us-ping.vultr.com/vultr.com.100MB.bin"],
+    downloadServers: ["https://m0006.movispeed.es/apolo/data/a100m.dat", "https://open.cachefly.net/downloading", "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", "https://speed-test.cfapps.io/network?module=download&size=104857600"],
     gaugeCircleStrokeMin: 404,
     gaugeCircleStrokeMax: 194,
     gaugeNeedleRotateMin: 49, // in deg
@@ -1012,7 +1012,7 @@ var test = window.test = {
 };
 
 test.increments = [0, 1, 5, 10, 20, 30, 50, 75, 100];
-test.downloadURL = isLocal ? URL_BASE + "/download/download.file" : test.downloadServers[1], test.uploadURL = isLocal ? URL_BASE + "/upload/upload.file" : "https://m0006.movispeed.es/apolo/subida.php", test.connections.count = test.connections[test.connections.mode], test.gaugeCircleOffsetRef = test.gaugeCircleStrokeMax - test.gaugeCircleStrokeMin;
+test.downloadURL = isLocal ? URL_BASE + "/download/download.file" : test.downloadServers[3], test.uploadURL = isLocal ? URL_BASE + "/upload/upload.file" : "https://m0006.movispeed.es/apolo/subida.php", test.connections.count = test.connections[test.connections.mode], test.gaugeCircleOffsetRef = test.gaugeCircleStrokeMax - test.gaugeCircleStrokeMin;
 test.gaugeNeedleRotateRef = test.gaugeNeedleRotateMax - test.gaugeNeedleRotateMin; // in deg
 test.tempFile = function (size) {
     var str = "11";
@@ -1351,7 +1351,7 @@ function TestStage(props) {
 
             /*transfer.transferred > 0 && */instant.results.push(!transfer.transferred && prev.instantSpeed ? (instant.speed + prev.instantSpeed) / 2 : instant.speed);
             //instant.results.push(instant.speed);
-            if (instant.results.length > (loadTime > 2000 ? 5 : 10) /* || (transfer.time > 100 && instant.results.length > 3 && instant.results.length < 10)*/) {
+            if (instant.results.length > (loadTime > 2500 ? 5 : 10) /* || (transfer.time > 100 && instant.results.length > 3 && instant.results.length < 10)*/) {
                     instant.results.splice(0, 1);
                 }
 
