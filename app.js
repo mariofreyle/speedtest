@@ -1000,7 +1000,7 @@ var test = window.test = {
     },
     resultsPrecision: 1,
     xhrData: [],
-    downloadServers: ["https://m0006.movispeed.es/apolo/data/a100m.dat", "https://open.cachefly.net/downloading", "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", "https://speed-test.cfapps.io/network?module=download&size=104857600"],
+    servers: [{ name: "Local", download: URL_BASE + "/download/download.file", upload: URL_BASE + "/upload/upload.file" }, { name: "Movispeed - Madrid, ES", download: "https://m0006.movispeed.es/apolo/data/a100m.dat", upload: "https://m0006.movispeed.es/apolo/subida.php" }, { name: "cachefly.net - Dalas, US", download: "https://open.cachefly.net/downloading", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "vultr.com - Miami, US", download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "cfapps.io - US", download: "https://speed-test.cfapps.io/network?module=download&size=104857600", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "Fireprobe.net - Washington, US", download: "https://s12-je1rw.fireinfra.net/?action=download&size=100", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }],
     gaugeCircleStrokeMin: 404,
     gaugeCircleStrokeMax: 194,
     gaugeNeedleRotateMin: 49, // in deg
@@ -1011,8 +1011,13 @@ var test = window.test = {
     }
 };
 
+test.selectedServer = test.servers[isLocal ? 0 : 5];
+test.downloadURL = test.selectedServer.download;
+test.uploadURL = test.selectedServer.upload;
+test.connections.count = test.connections[test.connections.mode];
 test.increments = [0, 1, 5, 10, 20, 30, 50, 75, 100];
-test.downloadURL = isLocal ? URL_BASE + "/download/download.file" : test.downloadServers[1], test.uploadURL = isLocal ? URL_BASE + "/upload/upload.file" : "https://m0006.movispeed.es/apolo/subida.php", test.connections.count = test.connections[test.connections.mode], test.gaugeCircleOffsetRef = test.gaugeCircleStrokeMax - test.gaugeCircleStrokeMin;
+
+test.gaugeCircleOffsetRef = test.gaugeCircleStrokeMax - test.gaugeCircleStrokeMin;
 test.gaugeNeedleRotateRef = test.gaugeNeedleRotateMax - test.gaugeNeedleRotateMin; // in deg
 test.tempFile = function (size) {
     var str = "11";
@@ -1485,12 +1490,15 @@ function TestStage(props) {
                 for (i = 0; i < connections.count; i++) {
                     connections.initial.requests.push(_App2.default.fetch({
                         url: _TestConfig2.default.runType.download ? _TestConfig2.default.downloadURL : _TestConfig2.default.uploadURL,
-                        type: "HEAD",
+                        type: "GET",
                         get: { v: _App2.default.random(6) + "_" + _App2.default.time() },
                         fail: breakTest,
-                        success: function success() {
-                            connections.initial.success += 1;
-                            if (connections.initial.success == connections.initial.requests.length) sendRequests();
+                        xhr: function xhr(_xhr) {
+                            _xhr.onprogress = function () {
+                                _xhr.abort();
+                                connections.initial.success += 1;
+                                if (connections.initial.success == connections.initial.requests.length) sendRequests();
+                            };
                         }
                     }));
                 }
