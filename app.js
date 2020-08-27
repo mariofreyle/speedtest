@@ -1012,7 +1012,7 @@ var test = window.test = {
 };
 
 test.increments = [0, 1, 5, 10, 20, 30, 50, 75, 100];
-test.downloadURL = isLocal ? URL_BASE + "/download/download.file" : test.downloadServers[3], test.uploadURL = isLocal ? URL_BASE + "/upload/upload.file" : "https://m0006.movispeed.es/apolo/subida.php", test.connections.count = test.connections[test.connections.mode], test.gaugeCircleOffsetRef = test.gaugeCircleStrokeMax - test.gaugeCircleStrokeMin;
+test.downloadURL = isLocal ? URL_BASE + "/download/download.file" : test.downloadServers[1], test.uploadURL = isLocal ? URL_BASE + "/upload/upload.file" : "https://m0006.movispeed.es/apolo/subida.php", test.connections.count = test.connections[test.connections.mode], test.gaugeCircleOffsetRef = test.gaugeCircleStrokeMax - test.gaugeCircleStrokeMin;
 test.gaugeNeedleRotateRef = test.gaugeNeedleRotateMax - test.gaugeNeedleRotateMin; // in deg
 test.tempFile = function (size) {
     var str = "11";
@@ -1459,65 +1459,44 @@ function TestStage(props) {
             connections = {
                 requests: [],
                 count: _TestConfig2.default.connections.count,
-                initial: { requests: [], success: 0 },
-                sendRequests: 0
+                initial: { requests: [], success: 0 }
             };
             globalLoadStartTime = 0;
             intervalTime = 0;
             intervalStarted = false;
 
-            function random() {
-                return _App2.default.random(6) + "_" + _App2.default.time();
-            }
             function sendRequests() {
                 for (i = 0; i < connections.count; i++) {
                     connections.requests[i]._send();
                 }
             }
-            function pinRequest() {
-                _App2.default.fetch({
+            for (i = 0; i < connections.count; i++) {
+                connections.requests.push(_App2.default.fetch({
+                    xhr: requestConfig,
                     url: _TestConfig2.default.runType.download ? _TestConfig2.default.downloadURL : _TestConfig2.default.uploadURL,
-                    type: "HEAD",
-                    get: { v: random() },
+                    get: { v: _App2.default.random(6) + "_" + _App2.default.time() },
+                    post: uploadData,
                     fail: breakTest,
-                    success: function success() {
-                        connections.sendRequests ? sendRequests() : pinRequest();
-                    }
-                });
+                    success: breakTest,
+                    preventSend: true
+                }));
             }
             if (_TestConfig2.default.runType.download) {
-                pinRequest();
-            }
-            setTimeout(function () {
-                connections.sendRequests = 1;
                 for (i = 0; i < connections.count; i++) {
-                    connections.requests.push(_App2.default.fetch({
-                        xhr: requestConfig,
+                    connections.initial.requests.push(_App2.default.fetch({
                         url: _TestConfig2.default.runType.download ? _TestConfig2.default.downloadURL : _TestConfig2.default.uploadURL,
-                        get: { v: random() },
-                        post: uploadData,
+                        type: "HEAD",
+                        get: { v: _App2.default.random(6) + "_" + _App2.default.time() },
                         fail: breakTest,
-                        success: breakTest,
-                        preventSend: true
+                        success: function success() {
+                            connections.initial.success += 1;
+                            if (connections.initial.success == connections.initial.requests.length) sendRequests();
+                        }
                     }));
                 }
-                if (_TestConfig2.default.runType.download) {
-                    //                    for(i = 0; i < connections.count; i++){
-                    //                        connections.initial.requests.push(app.fetch({
-                    //                            url: test.runType.download ? test.downloadURL : test.uploadURL,
-                    //                            type: "HEAD",
-                    //                            get: {v: random()},
-                    //                            fail: breakTest,
-                    //                            success: function(){
-                    //                                connections.initial.success += 1;
-                    //                                if(connections.initial.success == connections.initial.requests.length) sendRequests();
-                    //                            }
-                    //                        }));
-                    //                    }
-                    return;
-                }
-                sendRequests();
-            }, _TestConfig2.default.runType.download ? 2600 : 1);
+                return;
+            }
+            sendRequests();
         },
         consoleToggle: function consoleToggle(e) {
             consoleWrapper.toggleClass("hidden");
@@ -1587,10 +1566,10 @@ function StartButton(props) {
         startWrapper.addClass("anim");
 
         _App2.default.event("initializeTest");
-        _App2.default.event("runTest", { runType: "download" });
 
         setTimeout(function () {
             $this.removeComponent();
+            _App2.default.event("runTest", { runType: "download" });
         }, 2600);
     };
     this.componentDidMount = function () {
