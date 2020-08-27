@@ -1486,7 +1486,7 @@ function TestStage(props) {
                 for (i = 0; i < connections.count; i++) {
                     connections.initial.requests.push(_App2.default.fetch({
                         url: _TestConfig2.default.runType.download ? _TestConfig2.default.downloadURL : _TestConfig2.default.uploadURL,
-                        type: "GET",
+                        type: "HEAD",
                         get: { v: _App2.default.random(6) + "_" + _App2.default.time() },
                         fail: breakTest,
                         succes: function succes(xhr) {
