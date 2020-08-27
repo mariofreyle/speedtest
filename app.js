@@ -1489,7 +1489,7 @@ function TestStage(props) {
                         type: "HEAD",
                         get: { v: _App2.default.random(6) + "_" + _App2.default.time() },
                         fail: breakTest,
-                        succes: function succes(xhr) {
+                        success: function success() {
                             connections.initial.success += 1;
                             if (connections.initial.success == connections.initial.requests.length) sendRequests();
                         }
