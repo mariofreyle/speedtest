@@ -1051,6 +1051,8 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _App = __webpack_require__(1);
 
 var _App2 = _interopRequireDefault(_App);
@@ -1472,35 +1474,56 @@ function TestStage(props) {
 
             function sendRequests() {
                 for (i = 0; i < connections.count; i++) {
-                    connections.requests[i]._send();
+                    connections.requests.push(_App2.default.fetch({
+                        xhr: requestConfig,
+                        url: _TestConfig2.default.runType.download ? _TestConfig2.default.downloadURL : _TestConfig2.default.uploadURL,
+                        get: { v: _App2.default.random(6) + "_" + _App2.default.time() },
+                        post: uploadData,
+                        fail: breakTest,
+                        success: breakTest
+                    }));
                 }
             }
-            for (i = 0; i < connections.count; i++) {
-                connections.requests.push(_App2.default.fetch({
-                    xhr: requestConfig,
-                    url: _TestConfig2.default.runType.download ? _TestConfig2.default.downloadURL : _TestConfig2.default.uploadURL,
-                    get: { v: _App2.default.random(6) + "_" + _App2.default.time() },
-                    post: uploadData,
-                    fail: breakTest,
-                    success: breakTest,
-                    preventSend: true
-                }));
-            }
+            //            for(i = 0; i < connections.count; i++){
+            //                connections.requests.push(app.fetch({
+            //                    xhr: requestConfig,
+            //                    url: test.runType.download ? test.downloadURL : test.uploadURL,
+            //                    get: {v: app.random(6) + "_" + app.time()},
+            //                    post: uploadData,
+            //                    fail: breakTest,
+            //                    success: breakTest,
+            //                    preventSend: true
+            //                }));
+            //            }
             if (_TestConfig2.default.runType.download) {
                 for (i = 0; i < connections.count; i++) {
-                    connections.initial.requests.push(_App2.default.fetch({
-                        url: _TestConfig2.default.runType.download ? _TestConfig2.default.downloadURL : _TestConfig2.default.uploadURL,
-                        type: "GET",
-                        get: { v: _App2.default.random(6) + "_" + _App2.default.time() },
-                        fail: breakTest,
-                        xhr: function xhr(_xhr) {
-                            _xhr.onprogress = function () {
-                                _xhr.abort();
+                    if (_typeof(window.method) === void 0) window.method = 1;
+                    if (window.method) {
+                        connections.initial.requests.push(_App2.default.fetch({
+                            url: _TestConfig2.default.runType.download ? _TestConfig2.default.downloadURL : _TestConfig2.default.uploadURL,
+                            type: "GET",
+                            get: { v: _App2.default.random(6) + "_" + _App2.default.time() },
+                            fail: breakTest,
+                            succes: function succes(xhr) {
                                 connections.initial.success += 1;
                                 if (connections.initial.success == connections.initial.requests.length) sendRequests();
-                            };
-                        }
-                    }));
+                            }
+                        }));
+                    } else {
+                        connections.initial.requests.push(_App2.default.fetch({
+                            url: _TestConfig2.default.runType.download ? _TestConfig2.default.downloadURL : _TestConfig2.default.uploadURL,
+                            type: "GET",
+                            get: { v: _App2.default.random(6) + "_" + _App2.default.time() },
+                            fail: breakTest,
+                            xhr: function xhr(_xhr) {
+                                _xhr.onprogress = function () {
+                                    _xhr.abort();
+                                    connections.initial.success += 1;
+                                    if (connections.initial.success == connections.initial.requests.length) sendRequests();
+                                };
+                            }
+                        }));
+                    }
                 }
                 return;
             }
