@@ -1011,7 +1011,7 @@ var test = window.test = {
     }
 };
 
-test.selectedServer = test.servers[isLocal ? 0 : 5];
+test.selectedServer = test.servers[isLocal ? 0 : 3];
 test.downloadURL = test.selectedServer.download;
 test.uploadURL = test.selectedServer.upload;
 test.connections.count = test.connections[test.connections.mode];
