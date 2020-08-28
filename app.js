@@ -1011,7 +1011,7 @@ var test = window.test = {
     }
 };
 
-test.selectedServer = test.servers[isLocal ? 0 : 3];
+test.selectedServer = test.servers[isLocal ? 0 : 5];
 test.downloadURL = test.selectedServer.download;
 test.uploadURL = test.selectedServer.upload;
 test.connections.count = test.connections[test.connections.mode];
@@ -1482,21 +1482,21 @@ function TestStage(props) {
                     }));
                 }
             }
-            if (_TestConfig2.default.runType.download) {
-                for (i = 0; i < connections.count; i++) {
-                    connections.initial.requests.push(_App2.default.fetch({
-                        url: _TestConfig2.default.runType.download ? _TestConfig2.default.downloadURL : _TestConfig2.default.uploadURL,
-                        type: "HEAD",
-                        get: { v: _App2.default.random(6) + "_" + _App2.default.time() },
-                        fail: breakTest,
-                        success: function success() {
-                            connections.initial.success += 1;
-                            if (connections.initial.success == connections.initial.requests.length) sendRequests();
-                        }
-                    }));
-                }
-                return;
-            }
+            //            if(test.runType.download){
+            //                for(i = 0; i < connections.count; i++){
+            //                    connections.initial.requests.push(app.fetch({
+            //                        url: test.runType.download ? test.downloadURL : test.uploadURL,
+            //                        type: "HEAD",
+            //                        get: {v: app.random(6) + "_" + app.time()},
+            //                        fail: breakTest,
+            //                        success: function(){
+            //                            connections.initial.success += 1;
+            //                            if(connections.initial.success == connections.initial.requests.length) sendRequests();
+            //                        }
+            //                    }));
+            //                }
+            //                return;
+            //            }
             sendRequests();
         },
         consoleToggle: function consoleToggle(e) {
