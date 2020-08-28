@@ -619,8 +619,7 @@ var app = function (window, document) {
             var isComponent = typeof _name == "function",
                 hasRef = !(typeof _name == "string"),
                 props = _props || {},
-                childsArray = isArray(_childs),
-                childs = childsArray ? _childs : [],
+                childs = [],
                 arsLen = arguments.length,
                 component = null,
                 node = null,
@@ -630,10 +629,17 @@ var app = function (window, document) {
                 index,
                 item;
 
-            if (!childsArray) {
-                for (index = 2; index < arsLen; index++) {
-                    item = arguments[index];
-
+            for (index = 2; index < arsLen; index++) {
+                item = arguments[index];
+                if (isArray(item)) {
+                    var itemLen = item.length,
+                        _index,
+                        _item;
+                    for (var _index = 0; _index < itemLen; _index++) {
+                        _item = item[_index];
+                        _item && childs.push(_item);
+                    }
+                } else {
                     item && childs.push(item);
                 }
             }
@@ -1172,9 +1178,6 @@ function TestStage(props) {
         connections && connections.requests && connections.requests.forEach(function (req) {
             req.abort && req.abort();
         });
-        //connections && connections.initial && connections.initial.requests.forEach(function (req) {
-        //    req.abort && req.abort();
-        //});
     }
     function toggleConnectionsMode(mode) {
         multiModeButton.removeClass("active"), singleModeButton.removeClass("active");
@@ -1254,30 +1257,10 @@ function TestStage(props) {
                 time: 0
             }],
             splice: function splice() {
-                var bufferLen = buffer.items.length,
-                    spliceLen = bufferLen,
-                    last = buffer.items[bufferLen - 1],
-                    bufferTime = last.time - buffer.items[1].time,
-                    maxTime = buffer.maxTime / 2;
-                /*
-                if(bufferTime >= buffer.maxTime){
-                    for(var i = bufferLen - 1; i >= 0; i--){
-                        spliceLen--;
-                        if(last.time - buffer.items[i].time >= maxTime){
-                            break;
-                        }
-                    }
-                    if(spliceLen > 0){
-                        testConsole.state("buffer cuted");
-                    }
-                      buffer.items.splice(0, spliceLen);
-                }
-                
-                return;
-                */
+                var bufferTime = buffer.items[buffer.items.length - 1].time - buffer.items[1].time;
+
                 if (bufferTime >= buffer.maxTime) {
                     buffer.items.splice(0, 1);
-                    buffer._time = time;
                 }
             },
             update: function update() {
@@ -1355,7 +1338,7 @@ function TestStage(props) {
             instant.speed = buffer.size / (buffer.time / 1000);
             //instant.speed = getInstantSpeed(time, loadTime, intervalTime);
 
-            /*transfer.transferred > 0 && */instant.results.push(!transfer.transferred && prev.instantSpeed && (loadTime < 4000 || test.runType.download) ? (instant.speed + prev.instantSpeed) / 2 : instant.speed);
+            /*transfer.transferred > 0 && */instant.results.push(!transfer.transferred && prev.instantSpeed && loadTime < 4000 ? (instant.speed + prev.instantSpeed) / 2 : instant.speed);
             //instant.results.push(instant.speed);
             if (instant.results.length > (loadTime > 2500 ? 5 : 10) /* || (transfer.time > 100 && instant.results.length > 3 && instant.results.length < 10)*/) {
                     instant.results.splice(0, 1);
@@ -1467,8 +1450,7 @@ function TestStage(props) {
             connections = {
                 server: _TestConfig2.default.servers[_TestConfig2.default.selectedServer],
                 requests: [],
-                count: _TestConfig2.default.connections.count,
-                initial: { requests: [], success: 0 }
+                count: _TestConfig2.default.connections.count
             };
             globalLoadStartTime = 0;
             intervalTime = 0;
@@ -1486,21 +1468,6 @@ function TestStage(props) {
                     }));
                 }
             }
-            //            if(test.runType.download){
-            //                for(i = 0; i < connections.count; i++){
-            //                    connections.initial.requests.push(app.fetch({
-            //                        url: test.runType.download ? connections.server.download : connections.server.upload,
-            //                        type: "HEAD",
-            //                        get: {v: app.random(6) + "_" + app.time()},
-            //                        fail: breakTest,
-            //                        success: function(){
-            //                            connections.initial.success += 1;
-            //                            if(connections.initial.success == connections.initial.requests.length) sendRequests();
-            //                        }
-            //                    }));
-            //                }
-            //                return;
-            //            }
             sendRequests();
         },
         consoleToggle: function consoleToggle(e) {
@@ -1535,7 +1502,7 @@ function TestStage(props) {
         }
     };
     this.render = function () {
-        return (0, _App.createElement)(testStage, { className: "testStage" + (props.fadeIn ? " fadeIn" : "") }, (0, _App.createElement)("section", { className: "resultsArea" }, (0, _App.createElement)(resultsContainer, { className: "resultsData" }, (0, _App.createElement)("button", { className: "stageClose", title: "Cerrar Prueba", "aria-label": "Cerrar Prueba", onclick: $this.closeStage }, (0, _App.svgIcon)("close")), (0, _App.createElement)(resultDownload, { className: "resultItem resultDownload" }, (0, _App.createElement)("div", { className: "resultContainer" }, (0, _App.createElement)("div", { className: "resultHeader" }, (0, _App.createElement)("div", { className: "resultHeaderWrapper" }, (0, _App.createElement)("div", { className: "resultIcon" }, (0, _App.svgIcon)("downlink")), (0, _App.createElement)("div", { className: "resultTitle" }, (0, _App.createElement)("b", { textContent: "DESCARGAR" })), (0, _App.createElement)("div", { className: "resultUnit textHolder" }, (0, _App.createElement)("span", { textContent: "Mbps" })))), (0, _App.createElement)("div", { className: "resultBody" }, (0, _App.createElement)(speedDownloadNumber, { className: "resultValue speedDownloadNumber" }, (0, _App.createElement)("span", { textContent: "- -" }))), (0, _App.createElement)("div", { className: "progressBarWrapper" }, (0, _App.createElement)("div", { className: "progressBar" })))), (0, _App.createElement)(resultUpload, { className: "resultItem resultUpload" }, (0, _App.createElement)("div", { className: "resultContainer" }, (0, _App.createElement)("div", { className: "resultHeader" }, (0, _App.createElement)("div", { className: "resultHeaderWrapper" }, (0, _App.createElement)("div", { className: "resultIcon" }, (0, _App.svgIcon)("uplink")), (0, _App.createElement)("div", { className: "resultTitle" }, (0, _App.createElement)("b", { textContent: "SUBIR" })), (0, _App.createElement)("div", { className: "resultUnit textHolder" }, (0, _App.createElement)("span", { textContent: "Mbps" })))), (0, _App.createElement)("div", { className: "resultBody" }, (0, _App.createElement)(speedUploadNumber, { className: "resultValue speedUploadNumber" }, (0, _App.createElement)("span", { textContent: "- -" }))), (0, _App.createElement)("div", { className: "progressBarWrapper" }, (0, _App.createElement)("div", { className: "progressBar" }))))), (0, _App.createElement)("div", { className: "resultsGraph hidden" }, (0, _App.svgIcon)("resultGraph", 0), (0, _App.svgIcon)("resultGraph", 0))), (0, _App.createElement)(stageMain, { className: "stageMain" }, (0, _App.createElement)(_StartButton2.default, { textContent: "COMENZAR", action: 1 })), (0, _App.createElement)(consoleWrapper, { className: "testConsoleWrapper hidden" }, (0, _App.createElement)(consoleElem, { readonly: "", spellcheck: "false", value: "waiting to start the test..." }), (0, _App.createElement)("div", { className: "testSettings" }, (0, _App.createElement)("div", { className: "testSettings-item" }, (0, _App.createElement)("label", { className: "testSettings-label textHolder", for: "testSettings-setTime" }, (0, _App.createElement)("b", { textContent: "Test time: " })), (0, _App.createElement)("div", { className: "testSettings-input" }, (0, _App.createElement)(testTimeInput, { className: "testSettings-inputElem", id: "testSettings-setTime", type: "number", min: "1", value: _TestConfig2.default.runTime / 1000 }), (0, _App.createElement)("div", { className: "testSettings-inputBorder" }))), (0, _App.createElement)("div", { className: "testSettings-item" }, (0, _App.createElement)("label", { className: "testSettings-label textHolder", for: "testSettings-setServer" }, (0, _App.createElement)("b", { textContent: "Server: " })), (0, _App.createElement)("div", { className: "testSettings-input" }, (0, _App.createElement)(serverSelectElem, { className: "testSettings-selectElem", id: "testSettings-setServer" }, _TestConfig2.default.servers.map(function (item, index) {
+        return (0, _App.createElement)(testStage, { className: "testStage" + (props.fadeIn ? " fadeIn" : "") }, (0, _App.createElement)("section", { className: "resultsArea" }, (0, _App.createElement)(resultsContainer, { className: "resultsData" }, (0, _App.createElement)("button", { className: "stageClose", title: "Cerrar Prueba", "aria-label": "Cerrar Prueba", onclick: $this.closeStage }, (0, _App.svgIcon)("close")), (0, _App.createElement)(resultDownload, { className: "resultItem resultDownload" }, (0, _App.createElement)("div", { className: "resultContainer" }, (0, _App.createElement)("div", { className: "resultHeader" }, (0, _App.createElement)("div", { className: "resultHeaderWrapper" }, (0, _App.createElement)("div", { className: "resultIcon" }, (0, _App.svgIcon)("downlink")), (0, _App.createElement)("div", { className: "resultTitle" }, (0, _App.createElement)("b", { textContent: "DESCARGAR" })), (0, _App.createElement)("div", { className: "resultUnit textHolder" }, (0, _App.createElement)("span", { textContent: "Mbps" })))), (0, _App.createElement)("div", { className: "resultBody" }, (0, _App.createElement)(speedDownloadNumber, { className: "resultValue speedDownloadNumber" }, (0, _App.createElement)("span", { textContent: "- -" }))), (0, _App.createElement)("div", { className: "progressBarWrapper" }, (0, _App.createElement)("div", { className: "progressBar" })))), (0, _App.createElement)(resultUpload, { className: "resultItem resultUpload" }, (0, _App.createElement)("div", { className: "resultContainer" }, (0, _App.createElement)("div", { className: "resultHeader" }, (0, _App.createElement)("div", { className: "resultHeaderWrapper" }, (0, _App.createElement)("div", { className: "resultIcon" }, (0, _App.svgIcon)("uplink")), (0, _App.createElement)("div", { className: "resultTitle" }, (0, _App.createElement)("b", { textContent: "SUBIR" })), (0, _App.createElement)("div", { className: "resultUnit textHolder" }, (0, _App.createElement)("span", { textContent: "Mbps" })))), (0, _App.createElement)("div", { className: "resultBody" }, (0, _App.createElement)(speedUploadNumber, { className: "resultValue speedUploadNumber" }, (0, _App.createElement)("span", { textContent: "- -" }))), (0, _App.createElement)("div", { className: "progressBarWrapper" }, (0, _App.createElement)("div", { className: "progressBar" }))))), (0, _App.createElement)("div", { className: "resultsGraph hidden" }, (0, _App.svgIcon)("resultGraph", 0), (0, _App.svgIcon)("resultGraph", 0))), (0, _App.createElement)(stageMain, { className: "stageMain" }, (0, _App.createElement)(_StartButton2.default, { textContent: "COMENZAR", action: 1 })), (0, _App.createElement)(consoleWrapper, { className: "testConsoleWrapper hidden" }, (0, _App.createElement)(consoleElem, { readonly: "", spellcheck: "false", value: "waiting to start the test..." }), (0, _App.createElement)("div", { className: "testSettings" }, (0, _App.createElement)("div", { className: "testSettings-item" }, (0, _App.createElement)("label", { className: "testSettings-label textHolder", for: "testSettings-setTime" }, (0, _App.createElement)("b", { textContent: "Test time: " })), (0, _App.createElement)("div", { className: "testSettings-input setTime" }, (0, _App.createElement)(testTimeInput, { className: "testSettings-inputElem", id: "testSettings-setTime", type: "number", min: "1", value: _TestConfig2.default.runTime / 1000 }), (0, _App.createElement)("div", { className: "testSettings-inputBorder" }))), (0, _App.createElement)("div", { className: "testSettings-item" }, (0, _App.createElement)("label", { className: "testSettings-label textHolder", for: "testSettings-setServer" }, (0, _App.createElement)("b", { textContent: "Server: " })), (0, _App.createElement)("div", { className: "testSettings-input setServer" }, (0, _App.createElement)(serverSelectElem, { className: "testSettings-selectElem", id: "testSettings-setServer" }, _TestConfig2.default.servers.map(function (item, index) {
             return index > 0 || isLocal ? index != _TestConfig2.default.selectedServer ? (0, _App.createElement)("option", { value: index, textContent: item.name }) : (0, _App.createElement)("option", { value: index, selected: "", textContent: item.name }) : null;
         })))))), (0, _App.createElement)("footer", { className: "stage-footer" }, (0, _App.createElement)("div", { className: "footerItem" }, (0, _App.createElement)("div", { className: "footerItem-details" }, (0, _App.createElement)("div", { className: "footerItem-icon" }, (0, _App.svgIcon)("user")), (0, _App.createElement)("div", { className: "footerItem-content" }, (0, _App.createElement)(ispNameElem, { className: "footerItem-title ispName", textContent: _TestConfig2.default.user.isp || "- -" }), (0, _App.createElement)(publicIpElem, { className: "footerItem-description textHolder" + (_TestConfig2.default.user.ip && _TestConfig2.default.user.ip.split("").indexOf(":") > -1 ? " hidden" : ""), textContent: _TestConfig2.default.user.ip || "- -" })))), (0, _App.createElement)("div", { className: "footerItem" }, (0, _App.createElement)("div", { className: "footerItem-details" }, (0, _App.createElement)("div", { className: "footerItem-icon" }, (0, _App.svgIcon)("connections")), (0, _App.createElement)("div", { className: "footerItem-content" }, (0, _App.createElement)("div", { className: "footerItem-title", textContent: "Conexiones" }), (0, _App.createElement)("div", { className: "footerItem-description" }, (0, _App.createElement)("div", { className: "testModeToggle-wrapper" }, (0, _App.createElement)(multiModeButton, { className: "testModeToggle-button" + (_TestConfig2.default.connections.mode == "multi" ? " active" : ""), textContent: "Multi", onclick: function onclick() {
                 toggleConnectionsMode("multi");
