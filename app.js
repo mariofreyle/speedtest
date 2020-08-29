@@ -1252,16 +1252,22 @@ function TestStage(props) {
             buffer = {
             items: [{
                 loaded: 0,
-                loadTime: 0,
+                loadTime: globalLoadStartTime,
                 time: 0
             }],
             splice: function splice() {
-                return;
-                var bufferTime = buffer.items[buffer.items.length - 1].time - buffer.items[1].time;
+                var bufferTime = buffer.items[buffer.items.length - 1].time - buffer.items[1].time,
+                    refTime;
 
                 if (bufferTime >= buffer.maxTime) {
                     buffer.items.splice(0, 1);
+                    buffer.update();
+                    refTime = buffer.items[0].loadTime - globalLoadStartTime;
+                    buffer.refSize = buffer.size / (buffer.time / 1000) * (refTime / 1000);
+                    return;
                 }
+
+                buffer.update();
             },
             update: function update() {
                 var first, last;
@@ -1272,6 +1278,7 @@ function TestStage(props) {
                 buffer.size = last.loaded - first.loaded;
                 buffer.time = last.time - first.time;
             },
+            refSize: 0,
             size: 0,
             time: 0,
             maxTime: 1500
@@ -1295,16 +1302,6 @@ function TestStage(props) {
                 i = str.indexOf(".");
             return str.substr(0, val >= 1 ? i + 2 : i + 3);
         }
-        function getInstantSpeed(time, loadTime, intervalTime) {
-            var speed = 0;
-            connections.requests.forEach(function (req) {
-                if (req.buffer) {
-                    speed += req.buffer.size / ((time - req.buffer.time + req.buffer.averageTime) / 1000);
-                    //speed += req.buffer.size / ((time - req.buffer.time) / 1000);
-                }
-            });
-            return speed;
-        }
         function intervalCallback() {
             time = _App2.default.time();
             loadTime = time - globalLoadStartTime;
@@ -1315,7 +1312,7 @@ function TestStage(props) {
             transfer.time = time - transfer.lastTime;
             if (transfer.time > transfer.maxTime) {
                 transfer.maxTime = transfer.time;
-                //buffer.maxTime = 3000 + transfer.maxTime;
+                buffer.maxTime = 1500 + transfer.maxTime;
             }
             /*
             if(transfer.transferred > 0 && prev.transferTime > 0){
@@ -1326,17 +1323,19 @@ function TestStage(props) {
                 //console.log(test.runType.download ? "[download]" : "[upload]", "average time:", Math.round(transfer.average.time), "max time:", transfer.maxTime)
             }*/
             if (transfer.transferred > 0) {
-                buffer.items.push({ loaded: loaded, time: loadTime });
+                buffer.items.push({ loaded: loaded, time: loadTime, loadTime: time });
                 if (transfer.maxTime < 2500 && intervalTime < 5000) {
                     buffer.splice();
+                } else {
+                    buffer.update();
                 }
-                buffer.update();
             } else {
                 buffer.time = loadTime - buffer.items[0].time;
             }
 
-            instant.speed = buffer.size / (buffer.time / 1000);
-            //instant.speed = getInstantSpeed(time, loadTime, intervalTime);
+            //instant.speed = buffer.size / (buffer.time / 1000);
+            instant.speed = (buffer.refSize + buffer.size) / (loadTime / 1000);
+            console.log(buffer.refSize, buffer.size, loadTime / 1000);
 
             /*transfer.transferred > 0 && */instant.results.push(!transfer.transferred && prev.instantSpeed && loadTime < 4000 ? (instant.speed + prev.instantSpeed) / 2 : instant.speed);
             //instant.results.push(instant.speed);
