@@ -1019,7 +1019,7 @@ var test = window.test = {
         single: { download: 1, upload: 1 }
     },
     resultsPrecision: 1,
-    servers: [{ name: "Local", download: URL_BASE + "/download/download.file", upload: URL_BASE + "/upload/upload.file" }, { name: "vultr.com - Miami, US", download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "cachefly.net - Dalas, US", download: "https://open.cachefly.net/downloading", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "fireprobe.net - Washington, US", download: "https://s12-je1rw.fireinfra.net/?action=download&size=100", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "cfapps.io - US", download: "https://speed-test.cfapps.io/network?module=download&size=104857600", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "movispeed.es - Madrid, ES", download: "https://m0006.movispeed.es/apolo/data/a100m.dat", upload: "https://m0006.movispeed.es/apolo/subida.php" }],
+    servers: [{ name: "Local", download: URL_BASE + "/download/download.file", upload: URL_BASE + "/upload/upload.file" }, { name: "vultr.com - Miami, US", preconnect: 1, download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "cachefly.net - Dalas, US", preconnect: 1, download: "https://open.cachefly.net/downloading", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "fireprobe.net - Washington, US", download: "https://s12-je1rw.fireinfra.net/?action=download&size=100", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "cfapps.io - US", download: "https://speed-test.cfapps.io/network?module=download&size=104857600", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "movispeed.es - Madrid, ES", preconnect: 1, download: "https://m0006.movispeed.es/apolo/data/a100m.dat", upload: "https://m0006.movispeed.es/apolo/subida.php" }],
     gaugeCircleStrokeMin: 404,
     gaugeCircleStrokeMax: 194,
     gaugeNeedleRotateMin: 49, // in deg
@@ -1030,7 +1030,7 @@ var test = window.test = {
     }
 };
 
-test.selectedServer = isLocal ? 0 : 3;
+test.selectedServer = isLocal ? 0 : 2;
 test.increments = [0, 1, 5, 10, 20, 30, 50, 75, 100];
 
 test.gaugeCircleOffsetRef = test.gaugeCircleStrokeMax - test.gaugeCircleStrokeMin;
@@ -1175,6 +1175,9 @@ function TestStage(props) {
     function stopTest() {
         clearInterval(intervalHeartbeat);
         connections && connections.requests && connections.requests.forEach(function (req) {
+            req.abort && req.abort();
+        });
+        connections && connections.preconnect && connections.preconnect.requests.forEach(function (req) {
             req.abort && req.abort();
         });
     }
@@ -1460,6 +1463,7 @@ function TestStage(props) {
 
             connections = {
                 server: _TestConfig2.default.servers[_TestConfig2.default.selectedServer],
+                preconnect: { requests: [], success: 0 },
                 requests: [],
                 count: _TestConfig2.default.connections[_TestConfig2.default.connections.mode][_TestConfig2.default.runType.download ? "download" : "upload"],
                 loaded: 0
@@ -1479,6 +1483,21 @@ function TestStage(props) {
                         success: breakTest
                     }));
                 }
+            }
+            if (connections.server.preconnect && _TestConfig2.default.runType.download) {
+                for (i = 0; i < connections.count; i++) {
+                    connections.requests.push(_App2.default.fetch({
+                        url: _TestConfig2.default.runType.download ? connections.server.download : connections.server.upload,
+                        get: { v: _App2.default.random(6) + "_" + _App2.default.time() },
+                        type: "HEAD",
+                        fail: breakTest,
+                        success: function success() {
+                            connections.preconnect.success += 1;
+                            if (connections.preconnect.success == connections.preconnect.requests.length) sendRequests();
+                        }
+                    }));
+                }
+                return;
             }
             sendRequests();
         },
