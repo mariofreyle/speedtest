@@ -1335,7 +1335,7 @@ function TestStage(props) {
 
             //instant.speed = buffer.size / (buffer.time / 1000);
             instant.speed = (buffer.refSize + buffer.size) / (loadTime / 1000);
-            console.log(buffer.refSize, buffer.size, loadTime / 1000);
+            //console.log(buffer.refSize, buffer.size, loadTime / 1000);
 
             /*transfer.transferred > 0 && */instant.results.push(!transfer.transferred && prev.instantSpeed && loadTime < 4000 ? (instant.speed + prev.instantSpeed) / 2 : instant.speed);
             //instant.results.push(instant.speed);
