@@ -1340,7 +1340,7 @@ function TestStage(props) {
             instant.speed = (buffer.refSize + buffer.size) / (loadTime / 1000);
             //console.log(buffer.refSize, buffer.size, loadTime / 1000);
 
-            /*transfer.transferred > 0 && */instant.results.push(!transfer.transferred && prev.instantSpeed && loadTime < 4000 ? (instant.speed + prev.instantSpeed) / 2 : instant.speed);
+            /*transfer.transferred > 0 && */instant.results.push(!transfer.transferred && prev.instantSpeed && (loadTime < 4000 || _TestConfig2.default.runType.download) ? (instant.speed + prev.instantSpeed) / 2 : instant.speed);
             //instant.results.push(instant.speed);
             if (instant.results.length > (loadTime > 2500 ? 5 : 10) /* || (transfer.time > 100 && instant.results.length > 3 && instant.results.length < 10)*/) {
                     instant.results.splice(0, 1);
