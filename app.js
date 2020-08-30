@@ -1318,7 +1318,7 @@ function TestStage(props) {
                 
                 //console.log(test.runType.download ? "[download]" : "[upload]", "average time:", Math.round(transfer.average.time), "max time:", transfer.maxTime)
             }*/
-            if (record && transfer.time > 280 && _TestConfig2.default.runType.download && loadTime > 1000) {
+            if (record && transfer.time > 280 && _TestConfig2.default.runType.download && loadTime > 1000 && 0) {
                 record = 0;
                 setTimeout(function () {
                     record = 1;
