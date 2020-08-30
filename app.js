@@ -1326,7 +1326,7 @@ function TestStage(props) {
             }
             if (transfer.transferred > 0) {
                 buffer.items.push({ loaded: loaded, time: loadTime, loadTime: time });
-                if (transfer.maxTime < 1500 && intervalTime < 5000) {
+                if (transfer.maxTime < 1500 && intervalTime < 5000 && test.runType.download) {
                     buffer.splice();
                 }
                 buffer.update();
