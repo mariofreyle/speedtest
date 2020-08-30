@@ -1318,7 +1318,7 @@ function TestStage(props) {
                 
                 //console.log(test.runType.download ? "[download]" : "[upload]", "average time:", Math.round(transfer.average.time), "max time:", transfer.maxTime)
             }*/
-            if (record && transfer.time > 280 && _TestConfig2.default.runType.download && loadTime > 1000 && 0) {
+            if (record && transfer.time > 280 && _TestConfig2.default.runType.download && loadTime > 1000) {
                 record = 0;
                 setTimeout(function () {
                     record = 1;
@@ -1326,7 +1326,7 @@ function TestStage(props) {
             }
             if (transfer.transferred > 0) {
                 buffer.items.push({ loaded: loaded, time: loadTime, loadTime: time });
-                if (transfer.maxTime < 1500 && intervalTime < 5000 && test.runType.download) {
+                if (transfer.maxTime < 1500 && intervalTime < 5000 && _TestConfig2.default.runType.download) {
                     buffer.splice();
                 }
                 buffer.update();
@@ -1337,7 +1337,7 @@ function TestStage(props) {
             //instant.speed = (buffer.refSize + buffer.size) / (loadTime / 1000);
             instant.speed = buffer.size / (buffer.time / 1000);
 
-            if (record) {
+            if (record && transfer.transferred) {
 
                 instant.results.push(!transfer.transferred && prev.instantSpeed ? (instant.speed + prev.instantSpeed) / 2 : instant.speed);
 
@@ -1426,7 +1426,7 @@ function TestStage(props) {
                 testConsole.state("xhr " + req.id + " first transfer: " + loadedData(e.loaded));
                 req.firstProgressTime = time;
             } else if (_TestConfig2.default.runType.upload) {
-                testConsole.state("xhr " + req.id + " transfer " + progressCount + ": " + loadedData(transfer.transferred) + ", time: " + (time - globalLoadStartTime) / 1000 + "s");
+                testConsole.state("xhr " + req.id + " transfer " + progressCount + ": " + loadedData(transfer.transferred) + ", time: " + transfer.time + "ms, " + (time - globalLoadStartTime) / 1000 + "s");
             }
 
             prev.loaded = e.loaded;
