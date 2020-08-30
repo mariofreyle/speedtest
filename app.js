@@ -1341,7 +1341,7 @@ function TestStage(props) {
 
                 instant.results.push(!transfer.transferred && prev.instantSpeed ? (instant.speed + prev.instantSpeed) / 2 : instant.speed);
 
-                if (instant.results.length > (loadTime > 2500 ? 5 : 10)) {
+                if (instant.results.length > (loadTime > 2500 ? 1 : 1)) {
                     instant.results.splice(0, 1);
                 }
 
