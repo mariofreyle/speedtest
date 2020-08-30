@@ -1019,7 +1019,7 @@ var test = window.test = {
         single: { download: 1, upload: 1 }
     },
     resultsPrecision: 1,
-    servers: [{ name: "Local", download: URL_BASE + "/download/download.file", upload: URL_BASE + "/upload/upload.file" }, { name: "vultr.com - Miami, US", preconnect: 1, download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "cachefly.net - Dalas, US", preconnect: 1, download: "https://open.cachefly.net/downloading", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "fireprobe.net - Washington, US", download: "https://s12-je1rw.fireinfra.net/?action=download&size=100", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "cfapps.io - US", download: "https://speed-test.cfapps.io/network?module=download&size=104857600", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "movispeed.es - Madrid, ES", preconnect: 1, download: "https://m0006.movispeed.es/apolo/data/a100m.dat", upload: "https://m0006.movispeed.es/apolo/subida.php" }],
+    servers: [{ name: "Local", download: URL_BASE + "/download/download.file", upload: URL_BASE + "/upload/upload.file" }, { name: "vultr.com - Miami", preconnect: 1, download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "cachefly.net - Chicago", preconnect: 1, download: "https://open.cachefly.net/downloading", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "fireprobe.net - Washington", download: "https://s12-je1rw.fireinfra.net/?action=download&size=100", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "cfapps.io - Washington", download: "https://speed-test.cfapps.io/network?module=download&size=104857600", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "movispeed.es - Madrid", preconnect: 1, download: "https://m0006.movispeed.es/apolo/data/a100m.dat", upload: "https://m0006.movispeed.es/apolo/subida.php" }, { name: "fireprobe.net - Sydney", download: "https://s87-lggif.fireinfra.net/?action=download&size=100", upload: "https://s87-lggif.fireinfra.net/?action=xupload" }, { name: "fireprobe.net - Singapore", download: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100", upload: "https://s281-tnorz.fireinfra.net:9114/?action=xupload" }],
     gaugeCircleStrokeMin: 404,
     gaugeCircleStrokeMax: 194,
     gaugeNeedleRotateMin: 49, // in deg
@@ -1030,7 +1030,7 @@ var test = window.test = {
     }
 };
 
-test.selectedServer = isLocal ? 0 : 2;
+test.selectedServer = isLocal ? 0 : 4;
 test.increments = [0, 1, 5, 10, 20, 30, 50, 75, 100];
 
 test.gaugeCircleOffsetRef = test.gaugeCircleStrokeMax - test.gaugeCircleStrokeMin;
@@ -1318,7 +1318,7 @@ function TestStage(props) {
                 
                 //console.log(test.runType.download ? "[download]" : "[upload]", "average time:", Math.round(transfer.average.time), "max time:", transfer.maxTime)
             }*/
-            if (record && transfer.time > 280 && _TestConfig2.default.runType.download) {
+            if (record && transfer.time > 280 && _TestConfig2.default.runType.download && loadTime > 1000) {
                 record = 0;
                 setTimeout(function () {
                     record = 1;
@@ -1453,7 +1453,7 @@ function TestStage(props) {
             //return;
             _TestConfig2.default.runType.set(e.runType);
             _TestConfig2.default.runTime = parseNumber(testTimeInput.value(), 1, 1800) * 1000;
-            _TestConfig2.default.connections.multi.download = parseNumber(connectionsInput.value(), 1, 20);
+            _TestConfig2.default.connections.multi.download = parseNumber(connectionsInput.value(), 2, 20);
             _TestConfig2.default.selectedServer = parseInt(serverSelectElem.value());
 
             var uploadData = _TestConfig2.default.runType.download ? null : fileData(),
