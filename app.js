@@ -1318,12 +1318,10 @@ function TestStage(props) {
                 
                 //console.log(test.runType.download ? "[download]" : "[upload]", "average time:", Math.round(transfer.average.time), "max time:", transfer.maxTime)
             }*/
-            if (record && transfer.time > 280 && _TestConfig2.default.runType.download && loadTime > 1000) {
-                record = 0;
-                setTimeout(function () {
-                    record = 1;
-                }, transfer.time > 1000 ? 1000 : transfer.time);
-            }
+            //            if(record && transfer.time > 280 && test.runType.download && loadTime > 1000){
+            //                record = 0;
+            //                setTimeout(function(){ record = 1; }, transfer.time > 1000 ? 1000 : transfer.time);
+            //            }
             if (transfer.transferred > 0) {
                 buffer.items.push({ loaded: loaded, time: loadTime, loadTime: time });
                 if (transfer.maxTime < 1500 && intervalTime < 5000 && _TestConfig2.default.runType.download) {
@@ -1337,21 +1335,21 @@ function TestStage(props) {
             //instant.speed = (buffer.refSize + buffer.size) / (loadTime / 1000);
             instant.speed = buffer.size / (buffer.time / 1000);
 
-            if (record && transfer.transferred) {
+            //if(record && transfer.transferred){
 
-                instant.results.push(!transfer.transferred && prev.instantSpeed ? (instant.speed + prev.instantSpeed) / 2 : instant.speed);
+            instant.results.push(!transfer.transferred && prev.instantSpeed ? (instant.speed + prev.instantSpeed) / 2 : instant.speed);
 
-                if (instant.results.length > (loadTime > 2500 ? 1 : 1)) {
-                    instant.results.splice(0, 1);
-                }
-
-                average.speed = countArrayItems(instant.results) / instant.results.length;
-
-                speedRate = speedRateMbps(average.speed);
-
-                speedNumberElem.textContent(parseValue(speedRate));
-                _App2.default.event("updateGauge", { speedRate: speedRate });
+            if (instant.results.length > (loadTime > 2500 ? 5 : 10)) {
+                instant.results.splice(0, 1);
             }
+
+            average.speed = countArrayItems(instant.results) / instant.results.length;
+
+            speedRate = speedRateMbps(average.speed);
+
+            speedNumberElem.textContent(parseValue(speedRate));
+            _App2.default.event("updateGauge", { speedRate: speedRate });
+            //}
 
             progressBarElem.style({ width: (time - intervalStartedTime) / runTime * 100 + "%" });
 
