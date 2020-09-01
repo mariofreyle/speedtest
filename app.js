@@ -1106,6 +1106,7 @@ function TestStage(props) {
         connections,
         intervalStarted,
         globalLoadStartTime,
+        firstTransferred,
         intervalTime,
         intervalHeartbeat,
         testConsole;
@@ -1281,7 +1282,8 @@ function TestStage(props) {
         },
             instant = {
             speed: 0,
-            results: []
+            results: [],
+            maxResults: 0
         },
             average = {
             speed: 0,
@@ -1332,13 +1334,13 @@ function TestStage(props) {
                 //buffer.maxTime = 1500 + transfer.maxTime;
             }
 
-            /*if(transfer.transferred > 0 && prev.transferTime > 0){
+            if (transfer.transferred > 0 && prev.transferTime > 0) {
                 transfer.average.count += prev.transferTime;
                 transfer.average.len += 1;
                 transfer.average.time = transfer.average.count / transfer.average.len;
-                
-                console.log(test.runType.download ? "[download]" : "[upload]", "average time:", Math.round(transfer.average.time), "max time:", transfer.maxTime)
-            }*/
+
+                //console.log(test.runType.download ? "[download]" : "[upload]", "average time:", Math.round(transfer.average.time), "max time:", transfer.maxTime)
+            }
             /*if(record && transfer.time > 280 && test.runType.download && loadTime > 1000){
                 record = 0;
                 setTimeout(function(){ record = 1; }, transfer.time > 1000 ? 1000 : transfer.time);
@@ -1358,20 +1360,21 @@ function TestStage(props) {
             */
             instant.speed = getInstantSpeed();
 
-            if (transfer.transferred || transfer.time > 1260 || intervalTime < 1040) {
-                instant.results.push(!transfer.transferred && prev.instantSpeed ? (instant.speed + prev.instantSpeed) / 2 : instant.speed);
-
-                if (instant.results.length > (loadTime > 2500 ? 5 : 5)) {
-                    instant.results.splice(0, 1);
-                }
-
-                average.speed = countArrayItems(instant.results) / instant.results.length;
-
-                speedRate = speedRateMbps(average.speed);
-
-                speedNumberElem.textContent(parseValue(speedRate));
-                _App2.default.event("updateGauge", { speedRate: speedRate });
+            //if(){
+            instant.results.push(!transfer.transferred && prev.instantSpeed ? (instant.speed + prev.instantSpeed) / 2 : instant.speed);
+            instant.maxResults = (loadTime > 2500 ? 5 : 5) + Math.round(transfer.average.time / 80);
+            instant.maxResults = instant.maxResults > 15 ? 15 : instant.maxResults;
+            if (instant.results.length > instant.maxResults) {
+                instant.results.splice(0, instant.results.length - instant.maxResults);
             }
+
+            average.speed = countArrayItems(instant.results) / instant.results.length;
+
+            speedRate = speedRateMbps(average.speed);
+
+            speedNumberElem.textContent(parseValue(speedRate));
+            _App2.default.event("updateGauge", { speedRate: speedRate });
+            //}
 
             progressBarElem.style({ width: (time - intervalStartedTime) / runTime * 100 + "%" });
 
@@ -1415,7 +1418,6 @@ function TestStage(props) {
     }
     function requestConfig(req) {
         var target = _TestConfig2.default.runType.download ? req : req.upload,
-            firstTransferred = 0,
             progressCount = 1,
             prev = { loaded: 0, progressTime: 0 },
             transfer = { transferred: 0, time: 0 },
@@ -1434,16 +1436,23 @@ function TestStage(props) {
         target.addEventListener("progress", function (e) {
             time = _App2.default.time();
             if (!globalLoadStartTime) globalLoadStartTime = time;
+            if (!firstTransferred) firstTransferred = e.loaded;
             transfer.transferred = e.loaded - prev.loaded;
             transfer.time = time - (prev.progressTime || time);
             if (transfer.time > req.maxTransferTime) req.maxTransferTime = transfer.time;
-            if (progressCount > 1) req.loaded += transfer.transferred, connections.loaded += transfer.transferred;
+            if (progressCount > 2) req.loaded += transfer.transferred, connections.loaded += transfer.transferred;
             req.lastProgressTime = time;
             req.progressCount = progressCount;
 
-            if (!intervalStarted && progressCount == 2) startInterval();
+            if (!intervalStarted && progressCount == 4) startInterval();
+            if (progressCount == 1) {
+                testConsole.state("xhr " + req.id + " first transfer: " + loadedData(e.loaded));
+                req.firstProgressTime = time;
+            } else if (_TestConfig2.default.runType.upload) {
+                testConsole.state("xhr " + req.id + " transfer " + progressCount + ": " + loadedData(transfer.transferred) + ", time: " + transfer.time + "ms, " + (time - globalLoadStartTime) / 1000 + "s");
+            }
 
-            if (progressCount > 1) {
+            if (progressCount > 2) {
                 if (time - buffer[bufferIndex].startTime < 300 && bufferIndex > 0) {
                     buffer[bufferIndex].loaded = e.loaded;
                     buffer[bufferIndex].time = time;
@@ -1455,15 +1464,8 @@ function TestStage(props) {
                     bufferIndex = buffer.length - 1;
                 }
                 req.buffer = buffer;
-
-                if (_TestConfig2.default.runType.upload) {
-                    testConsole.state("xhr " + req.id + " transfer " + progressCount + ": " + loadedData(transfer.transferred) + ", time: " + transfer.time + "ms, " + (time - globalLoadStartTime) / 1000 + "s");
-                }
-            } else {
-                testConsole.state("xhr " + req.id + " first transfer: " + loadedData(e.loaded));
-                req.firstProgressTime = time;
-
-                buffer.push({ loaded: 0, time: time, startTime: time });
+            } else if (progressCount == 2) {
+                buffer.push({ loaded: e.loaded, time: time, startTime: time });
             }
 
             prev.loaded = e.loaded;
@@ -1506,6 +1508,7 @@ function TestStage(props) {
                 loaded: 0
             };
             globalLoadStartTime = 0;
+            firstTransferred = 0;
             intervalTime = 0;
             intervalStarted = false;
 
