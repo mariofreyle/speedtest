@@ -1106,6 +1106,7 @@ function TestStage(props) {
         connections,
         intervalStarted,
         globalLoadStartTime,
+        intervalTime,
         intervalHeartbeat,
         testConsole;
 
@@ -1233,7 +1234,6 @@ function TestStage(props) {
         // Iterval vars
         time = _App2.default.time(),
             intervalStartedTime,
-            intervalTime,
             loadTime,
             record = 1,
             transfer = {
@@ -1298,6 +1298,20 @@ function TestStage(props) {
                 i = str.indexOf(".");
             return str.substr(0, val >= 1 ? i + 2 : i + 3);
         }
+        function getInstantSpeed() {
+            if (0) { var speed, buffer, loaded, loadTime; } else {
+                var loaded = 0,
+                    startTime = [];
+                connections.requests.forEach(function (req) {
+                    if (req.buffer) {
+                        buffer = req.buffer;
+                        loaded += buffer[buffer.length - 1].loaded - buffer[0].loaded;
+                        startTime.push(buffer[0].time);
+                    }
+                });
+                return loaded / ((time - Math.min.apply(null, startTime)) / 1000);
+            }
+        }
         function intervalCallback() {
             time = _App2.default.time();
             loadTime = time - globalLoadStartTime;
@@ -1322,34 +1336,34 @@ function TestStage(props) {
             //                record = 0;
             //                setTimeout(function(){ record = 1; }, transfer.time > 1000 ? 1000 : transfer.time);
             //            }
-            if (transfer.transferred > 0) {
-                buffer.items.push({ loaded: loaded, time: loadTime, loadTime: time });
-                if (transfer.maxTime < 1500 && intervalTime < 5000 && _TestConfig2.default.runType.download) {
-                    buffer.splice();
-                }
-                buffer.update();
-            } else {
-                buffer.time = loadTime - buffer.items[0].time;
-            }
+            //            if(transfer.transferred > 0){
+            //                buffer.items.push({loaded: loaded, time: loadTime, loadTime: time});
+            //                if(transfer.maxTime < 1500 && intervalTime < 5000 && test.runType.download){
+            //                    buffer.splice();
+            //                }
+            //                buffer.update();
+            //            }else{
+            //                buffer.time = loadTime - buffer.items[0].time;
+            //            }
 
             //instant.speed = (buffer.refSize + buffer.size) / (loadTime / 1000);
-            instant.speed = buffer.size / (buffer.time / 1000);
+            //instant.speed = buffer.size / (buffer.time / 1000);
+            instant.speed = getInstantSpeed();
 
-            //if(record && transfer.transferred){
+            if (transfer.transferred || transfer.time > 260 || loadTime < 1260) {
+                instant.results.push(!transfer.transferred && prev.instantSpeed ? (instant.speed + prev.instantSpeed) / 2 : instant.speed);
 
-            instant.results.push(!transfer.transferred && prev.instantSpeed ? (instant.speed + prev.instantSpeed) / 2 : instant.speed);
+                if (instant.results.length > (loadTime > 2500 ? 5 : 5)) {
+                    instant.results.splice(0, 1);
+                }
 
-            if (instant.results.length > (loadTime > 2500 ? 5 : 10)) {
-                instant.results.splice(0, 1);
+                average.speed = countArrayItems(instant.results) / instant.results.length;
+
+                speedRate = speedRateMbps(average.speed);
+
+                speedNumberElem.textContent(parseValue(speedRate));
+                _App2.default.event("updateGauge", { speedRate: speedRate });
             }
-
-            average.speed = countArrayItems(instant.results) / instant.results.length;
-
-            speedRate = speedRateMbps(average.speed);
-
-            speedNumberElem.textContent(parseValue(speedRate));
-            _App2.default.event("updateGauge", { speedRate: speedRate });
-            //}
 
             progressBarElem.style({ width: (time - intervalStartedTime) / runTime * 100 + "%" });
 
@@ -1397,6 +1411,8 @@ function TestStage(props) {
             progressCount = 1,
             prev = { loaded: 0, progressTime: 0 },
             transfer = { transferred: 0, time: 0 },
+            buffer = [],
+            bufferIndex = 0,
             time;
 
         req.loaded = 0;
@@ -1410,21 +1426,37 @@ function TestStage(props) {
         target.addEventListener("progress", function (e) {
             time = _App2.default.time();
             if (!globalLoadStartTime) globalLoadStartTime = time;
-            if (!firstTransferred && _TestConfig2.default.runType.upload) firstTransferred = e.loaded;
+            //if(!firstTransferred) firstTransferred = e.loaded;
             transfer.transferred = e.loaded - prev.loaded;
             transfer.time = time - (prev.progressTime || time);
             if (transfer.time > req.maxTransferTime) req.maxTransferTime = transfer.time;
-            if (progressCount > 1 || _TestConfig2.default.runType.download) connections.loaded += transfer.transferred;
-            req.loaded = e.loaded - firstTransferred;
+            if (progressCount > 1) req.loaded += transfer.transferred, connections.loaded += transfer.transferred;
             req.lastProgressTime = time;
             req.progressCount = progressCount;
 
             if (!intervalStarted && progressCount == 2) startInterval();
-            if (progressCount == 1) {
+
+            if (progressCount > 1) {
+                if (time - buffer[bufferIndex].startTime < 300 && bufferIndex > 0) {
+                    buffer[bufferIndex].loaded = e.loaded;
+                    buffer[bufferIndex].time = time;
+                } else {
+                    buffer.push({ loaded: e.loaded, time: time, startTime: time });
+                    if (buffer[buffer.length - 1].time - buffer[1].time >= 2000 && intervalTime < 5000 + req.maxTransferTime) {
+                        buffer.splice(0, 1);
+                    }
+                    bufferIndex = buffer.length - 1;
+                }
+                req.buffer = buffer;
+
+                if (_TestConfig2.default.runType.upload) {
+                    testConsole.state("xhr " + req.id + " transfer " + progressCount + ": " + loadedData(transfer.transferred) + ", time: " + transfer.time + "ms, " + (time - globalLoadStartTime) / 1000 + "s");
+                }
+            } else {
                 testConsole.state("xhr " + req.id + " first transfer: " + loadedData(e.loaded));
                 req.firstProgressTime = time;
-            } else if (_TestConfig2.default.runType.upload) {
-                testConsole.state("xhr " + req.id + " transfer " + progressCount + ": " + loadedData(transfer.transferred) + ", time: " + transfer.time + "ms, " + (time - globalLoadStartTime) / 1000 + "s");
+
+                buffer.push({ loaded: e.loaded, time: time, startTime: time });
             }
 
             prev.loaded = e.loaded;
@@ -1467,6 +1499,7 @@ function TestStage(props) {
                 loaded: 0
             };
             globalLoadStartTime = 0;
+            intervalTime = 0;
             intervalStarted = false;
 
             function sendRequests() {
