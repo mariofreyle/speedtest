@@ -1358,7 +1358,7 @@ function TestStage(props) {
             */
             instant.speed = getInstantSpeed();
 
-            if (transfer.transferred || transfer.time > 1260 || loadTime < 1260) {
+            if (transfer.transferred || transfer.time > 1260 || intervalTime < 1040) {
                 instant.results.push(!transfer.transferred && prev.instantSpeed ? (instant.speed + prev.instantSpeed) / 2 : instant.speed);
 
                 if (instant.results.length > (loadTime > 2500 ? 5 : 5)) {
@@ -1463,7 +1463,7 @@ function TestStage(props) {
                 testConsole.state("xhr " + req.id + " first transfer: " + loadedData(e.loaded));
                 req.firstProgressTime = time;
 
-                buffer.push({ loaded: e.loaded, time: time, startTime: time });
+                buffer.push({ loaded: 0, time: time, startTime: time });
             }
 
             prev.loaded = e.loaded;
