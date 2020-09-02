@@ -1362,10 +1362,12 @@ function TestStage(props) {
 
             //if(){
             instant.results.push(!transfer.transferred && prev.instantSpeed ? (instant.speed + prev.instantSpeed) / 2 : instant.speed);
+            //instant.results.push(instant.speed);
             instant.maxResults = (loadTime > 2500 ? 5 : 5) + Math.round(transfer.average.time / 80);
             instant.maxResults = instant.maxResults > 15 ? 15 : instant.maxResults;
-            if (instant.results.length > instant.maxResults) {
-                instant.results.splice(0, instant.results.length - instant.maxResults);
+            if (instant.results.length > 5) {
+                //instant.results.splice(0, instant.results.length - instant.maxResults);
+                instant.results.splice(0, 1);
             }
 
             average.speed = countArrayItems(instant.results) / instant.results.length;
@@ -1440,31 +1442,31 @@ function TestStage(props) {
             transfer.transferred = e.loaded - prev.loaded;
             transfer.time = time - (prev.progressTime || time);
             if (transfer.time > req.maxTransferTime) req.maxTransferTime = transfer.time;
-            if (progressCount > 2) req.loaded += transfer.transferred, connections.loaded += transfer.transferred;
+            if (progressCount > 1) req.loaded += transfer.transferred, connections.loaded += transfer.transferred;
             req.lastProgressTime = time;
             req.progressCount = progressCount;
 
             if (!intervalStarted && progressCount == 4) startInterval();
-            if (progressCount == 1) {
-                testConsole.state("xhr " + req.id + " first transfer: " + loadedData(e.loaded));
-                req.firstProgressTime = time;
-            } else if (_TestConfig2.default.runType.upload) {
-                testConsole.state("xhr " + req.id + " transfer " + progressCount + ": " + loadedData(transfer.transferred) + ", time: " + transfer.time + "ms, " + (time - globalLoadStartTime) / 1000 + "s");
-            }
 
-            if (progressCount > 2) {
+            if (progressCount > 1) {
                 if (time - buffer[bufferIndex].startTime < 300 && bufferIndex > 0) {
                     buffer[bufferIndex].loaded = e.loaded;
                     buffer[bufferIndex].time = time;
                 } else {
                     buffer.push({ loaded: e.loaded, time: time, startTime: time });
-                    if (buffer[buffer.length - 1].time - buffer[1].time >= 2000 && intervalTime < 5000 + req.maxTransferTime) {
-                        buffer.splice(0, 1);
-                    }
+                    //                    if(buffer[buffer.length - 1].time - buffer[1].time >= 2000 && intervalTime < (5000 + req.maxTransferTime)){
+                    //                        buffer.splice(0, 1);
+                    //                    }
                     bufferIndex = buffer.length - 1;
                 }
                 req.buffer = buffer;
-            } else if (progressCount == 2) {
+                if (_TestConfig2.default.runType.upload) {
+                    testConsole.state("xhr " + req.id + " transfer " + progressCount + ": " + loadedData(transfer.transferred) + ", time: " + transfer.time + "ms, " + (time - globalLoadStartTime) / 1000 + "s");
+                }
+            } else {
+                testConsole.state("xhr " + req.id + " first transfer: " + loadedData(e.loaded));
+                req.firstProgressTime = time;
+
                 buffer.push({ loaded: e.loaded, time: time, startTime: time });
             }
 
