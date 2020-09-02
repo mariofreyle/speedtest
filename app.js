@@ -1464,7 +1464,6 @@ function TestStage(props) {
                     testConsole.state("xhr " + req.id + " transfer " + progressCount + ": " + loadedData(transfer.transferred) + ", time: " + transfer.time + "ms, " + (time - globalLoadStartTime) / 1000 + "s");
                 }
             } else {
-                console.log(e.total);
                 testConsole.state("xhr " + req.id + " first transfer: " + loadedData(e.loaded));
                 req.firstProgressTime = time;
 
