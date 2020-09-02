@@ -1365,9 +1365,9 @@ function TestStage(props) {
             instant.results.push(instant.speed);
             instant.maxResults = (loadTime > 2500 ? 5 : 5) + Math.round(transfer.average.time / 80);
             instant.maxResults = instant.maxResults > 15 ? 15 : instant.maxResults;
-            if (instant.results.length > 5) {
-                //instant.results.splice(0, instant.results.length - instant.maxResults);
-                instant.results.splice(0, 1);
+            if (instant.results.length > instant.maxResults) {
+                instant.results.splice(0, instant.results.length - instant.maxResults);
+                //instant.results.splice(0, 1);
             }
 
             average.speed = countArrayItems(instant.results) / instant.results.length;
