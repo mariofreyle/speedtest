@@ -1533,18 +1533,21 @@ function TestStage(props) {
                 }
             }
             if (_TestConfig2.default.runType.download) {
-                for (i = 0; i < connections.count; i++) {
-                    connections.preconnect.requests.push(_App2.default.fetch({
-                        url: connections.server.download,
-                        get: { v: _App2.default.random(6) + "_" + _App2.default.time() },
-                        type: "HEAD",
-                        fail: breakTest,
-                        success: function success() {
+                //for(i = 0; i < connections.count; i++){
+                connections.preconnect.requests.push(_App2.default.fetch({
+                    url: connections.server.download,
+                    get: { v: _App2.default.random(6) + "_" + _App2.default.time() },
+                    fail: breakTest,
+                    xhr: function xhr(_xhr) {
+                        _xhr.onprogress = function () {
+                            _xhr.abort();
                             connections.preconnect.success += 1;
-                            if (connections.preconnect.success == connections.preconnect.requests.length) setTimeout(sendRequests, 1);
-                        }
-                    }));
-                }
+                            //if(connections.preconnect.success == connections.preconnect.requests.length) sendRequests();
+                            sendRequests();
+                        };
+                    }
+                }));
+                //}
                 return;
             }
             //            var prevLoaded = 0;
