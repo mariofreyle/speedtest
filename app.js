@@ -575,7 +575,9 @@ var app = function (window, document) {
                 url += (url && url.indexOf("?") > -1 ? "&" : "?") + encodeUrlParams(config.get);
             }
 
-            xhr.open(config.type ? config.type : type, url, true);
+            xhr.configUrl = url;
+
+            xhr.open(config.type ? config.type : type, url);
 
             typeof xhrCallback == "function" && xhrCallback(xhr);
 
@@ -591,9 +593,9 @@ var app = function (window, document) {
                             } catch (e) {
                                 return fail();
                             }
-                            JSONParsed && config.success && config.success(response);
+                            JSONParsed && config.success && config.success(response, xhr);
                         } else {
-                            config.success && config.success(response);
+                            config.success && config.success(response, xhr);
                         }
                     } else if (xhr.status == 404) {
                         fail();
@@ -1018,7 +1020,7 @@ var test = window.test = {
         multi: { download: 3, upload: 3 },
         single: { download: 1, upload: 1 }
     },
-    bufferEnabled: true,
+    bufferEnabled: false,
     resultsPrecision: 1,
     servers: [{ name: "Local", download: URL_BASE + "/download/download.file", upload: URL_BASE + "/upload/upload.file" }, { name: "vultr.com - Miami", preconnect: 1, download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "cachefly.net - Chicago", preconnect: 1, download: "https://open.cachefly.net/downloading", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "fireprobe.net - Washington", download: "https://s12-je1rw.fireinfra.net/?action=download&size=100", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "cfapps.io - Washington", download: "https://speed-test.cfapps.io/network?module=download&size=104857600", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "movispeed.es - Madrid", preconnect: 1, download: "https://m0006.movispeed.es/apolo/data/a100m.dat", upload: "https://m0006.movispeed.es/apolo/subida.php" }, { name: "fireprobe.net - Sydney", download: "https://s87-lggif.fireinfra.net/?action=download&size=100", upload: "https://s87-lggif.fireinfra.net/?action=xupload" }, { name: "fireprobe.net - Singapore", download: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100", upload: "https://s281-tnorz.fireinfra.net:9114/?action=xupload" }],
     gaugeCircleStrokeMin: 404,
@@ -1443,7 +1445,6 @@ function TestStage(props) {
         target.addEventListener("progress", function (e) {
             time = _App2.default.time();
             if (!globalLoadStartTime) globalLoadStartTime = time;
-            if (!firstTransferred) firstTransferred = e.loaded;
             transfer.transferred = e.loaded - prev.loaded;
             transfer.time = time - (prev.progressTime || time);
             if (transfer.time > req.maxTransferTime) req.maxTransferTime = transfer.time;
@@ -1532,31 +1533,33 @@ function TestStage(props) {
                     }));
                 }
             }
-            if (_TestConfig2.default.runType.download) {
-                //for(i = 0; i < connections.count; i++){
-                connections.preconnect.requests.push(_App2.default.fetch({
-                    url: connections.server.download,
-                    get: { v: _App2.default.random(6) + "_" + _App2.default.time() },
-                    fail: breakTest,
-                    xhr: function xhr(_xhr) {
-                        _xhr.onprogress = function () {
-                            _xhr.abort();
-                            connections.preconnect.success += 1;
-                            //if(connections.preconnect.success == connections.preconnect.requests.length) sendRequests();
-                            sendRequests();
-                        };
-                    }
-                }));
-                //}
+            /*
+            function sendRequests1(){
+                connections.requests.forEach(function(req){
+                    req.open("GET", req.configUrl);
+                    requestConfig(req);
+                    req.onload = breakTest;
+                    req.send();
+                });
+            }
+            if(test.runType.download){
+                var xhr;
+                for(i = 0; i < connections.count; i++){
+                    xhr = app.fetch({
+                        url: connections.server.download,
+                        get: {v: app.random(6) + "_" + app.time()},
+                        type: "HEAD",
+                        fail: breakTest,
+                        success: function(res, xhr){
+                            connections.preconnectSuccess += 1;
+                            if(connections.preconnectSuccess == connections.count) sendRequests1();
+                        }
+                    });
+                    connections.requests.push(xhr);
+                }
                 return;
             }
-            //            var prevLoaded = 0;
-            //            window.hey === void 0 && (window.hey = setInterval(function(){
-            //                
-            //                console.clear(), console.log("speedRate: " + loadedData(connections.loaded - prevLoaded) + "/s");
-            //                
-            //                prevLoaded = connections.loaded;
-            //            }, 1000));
+            */
             sendRequests();
         },
         consoleToggle: function consoleToggle(e) {
