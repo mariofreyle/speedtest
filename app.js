@@ -1700,11 +1700,7 @@ function GaugeContainer() {
         }
         return percent;
     }
-    function gaugeDashoffset(speedRate) {
-        var calc = _TestConfig2.default.gaugeCircleOffsetRef * calcGaugePercent(speedRate) / 100 + _TestConfig2.default.gaugeCircleStrokeMin;
-        document.querySelector(".gaugeCircleCurrentSpeed").setAttribute("stroke-dashoffset", calc);
-        return calc;
-    }
+
     function parseValue(val) {
         if (_TestConfig2.default.resultsPrecision > 1) return val;
         var str = val.toString(),
@@ -1734,6 +1730,10 @@ function GaugeContainer() {
 
             prevSpeed = currentSpeed;
         }
+    }
+    function gaugeDashoffset(speedRate) {
+        currentSpeed = speedRate;
+        updateGauge();
     }
 
     this.events = {
@@ -1766,7 +1766,7 @@ function GaugeContainer() {
     };
     this.render = function () {
         return (0, _App.createElement)(gaugeContainer, { className: "gaugeContainer" }, (0, _App.createElement)("div", { className: "gaugeInner" }, (0, _App.createElement)(incrementsContainer, { className: "incrementsContainer" }, increments.map(function (num, i) {
-            return (0, _App.createElement)("div", { className: "increment increment--" + i }, (0, _App.createElement)("b", { textContent: num }));
+            return (0, _App.createElement)("div", { className: "increment increment--" + i, textContent: num });
         })), (0, _App.createElement)(gaugeNeedle, { className: "gaugeNeedle" }, (0, _App.svgIcon)("gaugeNeedle")), (0, _App.createElement)(gaugeState, { className: "gaugeState" }, (0, _App.createElement)(speedDatils, { className: "speedDetailsContainer state unseen" }, (0, _App.createElement)(speedDetailsNumber, { className: "speedDetailsNumber" }, (0, _App.createElement)("span", { textContent: "0.0" })), (0, _App.createElement)("div", { className: "" }, (0, _App.createElement)("span", { className: "speedDetailsIcon" }, (0, _App.svgIcon)("uplink")), (0, _App.createElement)("span", { className: "speedDetailsUnit textHolder", textContent: "Mbps" }))), (0, _App.createElement)(connectingElem, { className: "connectingServer state textHolder" }, (0, _App.createElement)("b", { textContent: "Conectando..." })))), (0, _App.createElement)(gaugeIcon, { className: "gaugeAnim gaugeIcon" }, (0, _App.svgIcon)("gaugeVector")));
     };
 }
