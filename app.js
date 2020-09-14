@@ -1309,7 +1309,7 @@ function TestStage(props) {
             if (!buffer.lastTime) {
                 buffer.lastTime = time;
             }
-            if (time - buffer.lastTime >= 2000) {
+            if (time - buffer.lastTime >= 2000 + transfer.maxTime) {
                 buffer.loaded = connections.loaded - buffer.lastLoaded;
 
                 if (buffer.loaded > buffer.maxLoaded) {
