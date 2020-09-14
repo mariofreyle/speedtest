@@ -1315,10 +1315,10 @@ function TestStage(props) {
                 if (buffer.loaded > buffer.maxLoaded) {
                     buffer.maxLoaded = buffer.loaded;
                     if (buffer.lastLoaded) {
-                        //buffer.speed = buffer.loaded / (time - buffer.lastTime);
-                        //buffer.size = buffer.speed * loadTime;
-                        buffer.size = buffer.loaded;
-                        buffer.loadStartTime = buffer.lastTime;
+                        buffer.speed = buffer.loaded / (time - buffer.lastTime);
+                        buffer.size = buffer.speed * loadTime;
+                        //buffer.size = buffer.loaded;
+                        //buffer.loadStartTime = buffer.lastTime;
                         testConsole.state("buffer updated");
                     }
                 }
