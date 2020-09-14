@@ -575,9 +575,7 @@ var app = function (window, document) {
                 url += (url && url.indexOf("?") > -1 ? "&" : "?") + encodeUrlParams(config.get);
             }
 
-            xhr.configUrl = url;
-
-            xhr.open(config.type ? config.type : type, url);
+            xhr.open(config.type ? config.type : type, url, true);
 
             typeof xhrCallback == "function" && xhrCallback(xhr);
 
@@ -593,9 +591,9 @@ var app = function (window, document) {
                             } catch (e) {
                                 return fail();
                             }
-                            JSONParsed && config.success && config.success(response, xhr);
+                            JSONParsed && config.success && config.success(response);
                         } else {
-                            config.success && config.success(response, xhr);
+                            config.success && config.success(response);
                         }
                     } else if (xhr.status == 404) {
                         fail();
@@ -1013,14 +1011,14 @@ var test = window.test = {
     onprogress: false, // true = progress, false = waiting
     increments: [0, 2, 4, 6, 8, 10, 12, 14, 16],
     uploadFileDup: 24,
-    runTime: isLocal ? 1000 * 8 : 15000,
+    runTime: isLocal ? 1000 * 10 : 15000,
     hearbeatTime: 80,
     connections: {
         mode: "multi",
         multi: { download: 3, upload: 3 },
         single: { download: 1, upload: 1 }
     },
-    bufferEnabled: false,
+    bufferEnabled: true,
     resultsPrecision: 1,
     servers: [{ name: "Local", download: URL_BASE + "/download/download.file", upload: URL_BASE + "/upload/upload.file" }, { name: "vultr.com - Miami", preconnect: 1, download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "cachefly.net - Chicago", preconnect: 1, download: "https://open.cachefly.net/downloading", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "fireprobe.net - Washington", download: "https://s12-je1rw.fireinfra.net/?action=download&size=100", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "cfapps.io - Washington", download: "https://speed-test.cfapps.io/network?module=download&size=104857600", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "movispeed.es - Madrid", preconnect: 1, download: "https://m0006.movispeed.es/apolo/data/a100m.dat", upload: "https://m0006.movispeed.es/apolo/subida.php" }, { name: "fireprobe.net - Sydney", download: "https://s87-lggif.fireinfra.net/?action=download&size=100", upload: "https://s87-lggif.fireinfra.net/?action=xupload" }, { name: "fireprobe.net - Singapore", download: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100", upload: "https://s281-tnorz.fireinfra.net:9114/?action=xupload" }],
     gaugeCircleStrokeMin: 404,
@@ -1259,30 +1257,14 @@ function TestStage(props) {
             instantSpeed: 0
         },
             buffer = {
-            items: [{
-                loaded: 0,
-                loadTime: globalLoadStartTime,
-                time: 0
-            }],
-            splice: function splice() {
-                var bufferTime = buffer.items[buffer.items.length - 1].time - buffer.items[1].time;
-
-                if (bufferTime >= buffer.maxTime) {
-                    buffer.items.splice(0, 1);
-                }
-            },
-            update: function update() {
-                var first, last;
-
-                first = buffer.items[0];
-                last = buffer.items[buffer.items.length - 1];
-
-                buffer.size = last.loaded - first.loaded;
-                buffer.time = last.time - first.time;
-            },
+            enabled: _TestConfig2.default.bufferEnabled && _TestConfig2.default.runType.download,
             size: 0,
             time: 0,
-            maxTime: 1500
+            speed: 0,
+            loaded: 0,
+            lastLoaded: 0,
+            maxLoaded: 0,
+            lastTime: 0
         },
             instant = {
             speed: 0,
@@ -1304,28 +1286,6 @@ function TestStage(props) {
                 i = str.indexOf(".");
             return str.substr(0, val >= 1 ? i + 2 : i + 3);
         }
-        function getInstantSpeed() {
-            var loaded = 0,
-                startTime = [];
-            connections.requests.forEach(function (req) {
-                if (req.buffer) {
-                    buffer = req.buffer;
-                    loaded += buffer[buffer.length - 1].loaded - buffer[0].loaded;
-                    startTime.push(buffer[0].time);
-                }
-            });
-            return loaded / ((time - Math.min.apply(null, startTime)) / 1000);
-
-            var speed = 0;
-            connections.requests.forEach(function (req) {
-                if (req.buffer) {
-                    buffer = req.buffer;
-                    //speed += (buffer[buffer.length - 1].loaded - buffer[0].loaded) / (((time - buffer[0].time) + (req.firstProgressTime - globalLoadStartTime)) / 1000);
-                    speed += (buffer[buffer.length - 1].loaded - buffer[0].loaded) / ((time - buffer[0].time) / 1000);
-                }
-            });
-            return speed;
-        }
         function intervalCallback() {
             time = _App2.default.time();
             loadTime = time - globalLoadStartTime;
@@ -1334,10 +1294,7 @@ function TestStage(props) {
             transfer.transferred = loaded - prev.loaded;
             transfer.lastTime = transfer.transferred > 0 ? time : transfer.lastTime;
             transfer.time = time - transfer.lastTime;
-            if (transfer.time > transfer.maxTime) {
-                transfer.maxTime = transfer.time;
-                //buffer.maxTime = 1500 + transfer.maxTime;
-            }
+            if (transfer.time > transfer.maxTime) transfer.maxTime = transfer.time;
 
             if (transfer.transferred > 0 && prev.transferTime > 0) {
                 transfer.average.count += prev.transferTime;
@@ -1346,26 +1303,30 @@ function TestStage(props) {
 
                 //console.log(test.runType.download ? "[download]" : "[upload]", "average time:", Math.round(transfer.average.time), "max time:", transfer.maxTime)
             }
-            /*if(record && transfer.time > 280 && test.runType.download && loadTime > 1000){
-                record = 0;
-                setTimeout(function(){ record = 1; }, transfer.time > 1000 ? 1000 : transfer.time);
+            if (transfer.transferred) {
+                buffer.size += transfer.transferred;
             }
-            if(transfer.transferred > 0){
-                buffer.items.push({loaded: loaded, time: loadTime, loadTime: time});
-                if(transfer.maxTime < 1500 && intervalTime < 5000 && test.runType.download){
-                    buffer.splice();
-                }
-                buffer.update();
-            }else{
-                buffer.time = loadTime - buffer.items[0].time;
+            if (!buffer.lastTime) {
+                buffer.lastTime = time;
             }
-            
-            instant.speed = (buffer.refSize + buffer.size) / (loadTime / 1000);
-            instant.speed = buffer.size / (buffer.time / 1000);
-            */
-            instant.speed = getInstantSpeed();
+            if (time - buffer.lastTime >= 2000) {
+                buffer.loaded = connections.loaded - buffer.lastLoaded;
 
-            //if(transfer.transferred){
+                if (buffer.loaded > buffer.maxLoaded) {
+                    buffer.maxLoaded = buffer.loaded;
+                    if (buffer.lastLoaded) {
+                        buffer.speed = buffer.loaded / (time - buffer.lastTime);
+                        buffer.size = buffer.speed * loadTime;
+                        testConsole.state("buffer updated");
+                    }
+                }
+
+                buffer.lastLoaded = connections.loaded;
+                buffer.lastTime = time;
+            }
+
+            instant.speed = buffer.size / (loadTime / 1000);
+
             //instant.results.push(!transfer.transferred && prev.instantSpeed ? (instant.speed + prev.instantSpeed) / 2 : instant.speed);
             instant.results.push(instant.speed);
             instant.maxResults = (loadTime > 2500 ? 5 : 5) + Math.round(transfer.average.time / 80);
@@ -1381,8 +1342,6 @@ function TestStage(props) {
 
             speedNumberElem.textContent(parseValue(speedRate));
             _App2.default.event("updateGauge", { speedRate: speedRate });
-            //}
-
             progressBarElem.style({ width: (time - intervalStartedTime) / runTime * 100 + "%" });
 
             testConsole.state("instant: " + (instant.speed / 125000).toFixed(2) + "mbps, average: " + speedRate + "mbps, transf: " + loadedData(transfer.transferred) + ", loaded: " + loadedData(loaded) + ", time: " + loadTime / 1000 + "s");
@@ -1429,16 +1388,12 @@ function TestStage(props) {
             progressCount = 1,
             prev = { loaded: 0, progressTime: 0 },
             transfer = { transferred: 0, time: 0 },
-            buffer = [],
-            bufferIndex = 0,
-            bufferEnabled = _TestConfig2.default.bufferEnabled,
             time;
 
         req.loaded = 0;
         req.id = connections.requests.length + 1;
         req.maxTransferTime = 0;
         req.firstProgressTime = 0;
-        req.lastProgressTime = 0;
         req.lastProgressTime = 0;
         req.progressCount = 1;
 
@@ -1453,33 +1408,56 @@ function TestStage(props) {
             req.progressCount = progressCount;
 
             if (!intervalStarted && progressCount == 4) startInterval();
-
-            if (progressCount > 1) {
-                if (time - buffer[bufferIndex].startTime < 300 && bufferIndex > 0) {
-                    buffer[bufferIndex].loaded = e.loaded;
-                    buffer[bufferIndex].time = time;
-                } else {
-                    buffer.push({ loaded: e.loaded, time: time, startTime: time });
-                    if (bufferEnabled && intervalTime < 5000 && buffer[buffer.length - 1].time - buffer[1].time >= 1500) {
-                        buffer.splice(0, 1);
-                    }
-                    bufferIndex = buffer.length - 1;
-                }
-                req.buffer = buffer;
-                if (upload) {
-                    testConsole.state("xhr " + req.id + " transfer " + progressCount + ": " + loadedData(transfer.transferred) + ", time: " + transfer.time + "ms, " + (time - globalLoadStartTime) / 1000 + "s");
-                }
-            } else {
+            if (progressCount == 1) {
                 testConsole.state("xhr " + req.id + " first transfer: " + loadedData(e.loaded));
                 req.firstProgressTime = time;
-
-                buffer.push({ loaded: e.loaded, time: time, startTime: time });
+            } else if (upload) {
+                testConsole.state("xhr " + req.id + " transfer " + progressCount + ": " + loadedData(transfer.transferred) + ", time: " + transfer.time + "ms, " + (time - globalLoadStartTime) / 1000 + "s");
             }
 
             prev.loaded = e.loaded;
             prev.progressTime = time;
             progressCount++;
         });
+        /*
+        target.addEventListener("progress", function(e){
+            time = app.time();
+            if(!globalLoadStartTime) globalLoadStartTime = time;
+            transfer.transferred = e.loaded - prev.loaded;
+            transfer.time = time - (prev.progressTime || time);
+            if(transfer.time > req.maxTransferTime) req.maxTransferTime = transfer.time;
+            if(progressCount > 1) req.loaded += transfer.transferred, connections.loaded += transfer.transferred;
+            req.lastProgressTime = time;
+            req.progressCount = progressCount;
+            
+            if(!intervalStarted && progressCount == 4) startInterval();
+            
+            if(progressCount > 1){
+                if(time - buffer[bufferIndex].startTime < 300 && bufferIndex > 0){
+                    buffer[bufferIndex].loaded = e.loaded;
+                    buffer[bufferIndex].time = time;
+                }else{
+                    buffer.push({loaded: e.loaded, time: time, startTime: time});
+                    if(bufferEnabled && intervalTime < 5000 && buffer[buffer.length - 1].time - buffer[1].time >= 1500){
+                        buffer.splice(0, 1);
+                    }
+                    bufferIndex = buffer.length - 1;
+                }
+                req.buffer = buffer;
+                if(upload){
+                    testConsole.state("xhr " + req.id + " transfer " + progressCount + ": " + loadedData(transfer.transferred) + ", time: " + transfer.time + "ms, " + ((time - globalLoadStartTime) / 1000) + "s");
+                }
+            }else{
+                testConsole.state("xhr " + req.id + " first transfer: " + loadedData(e.loaded));
+                req.firstProgressTime = time;
+                
+                buffer.push({loaded: e.loaded, time: time, startTime: time});
+            }
+            
+            prev.loaded = e.loaded;
+            prev.progressTime = time;
+            progressCount++;
+        });*/
     }
     function parseNumber(num, min, max) {
         num = parseInt(num);
