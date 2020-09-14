@@ -1259,7 +1259,7 @@ function TestStage(props) {
             buffer = {
             enabled: _TestConfig2.default.bufferEnabled && _TestConfig2.default.runType.download,
             size: 0,
-            time: 0,
+            loadStartTime: globalLoadStartTime,
             speed: 0,
             loaded: 0,
             lastLoaded: 0,
@@ -1315,8 +1315,10 @@ function TestStage(props) {
                 if (buffer.loaded > buffer.maxLoaded) {
                     buffer.maxLoaded = buffer.loaded;
                     if (buffer.lastLoaded) {
-                        buffer.speed = buffer.loaded / (time - buffer.lastTime);
-                        buffer.size = buffer.speed * loadTime;
+                        //buffer.speed = buffer.loaded / (time - buffer.lastTime);
+                        //buffer.size = buffer.speed * loadTime;
+                        buffer.size = buffer.loaded;
+                        buffer.loadStartTime = buffer.lastTime;
                         testConsole.state("buffer updated");
                     }
                 }
@@ -1325,7 +1327,7 @@ function TestStage(props) {
                 buffer.lastTime = time;
             }
 
-            instant.speed = buffer.size / (loadTime / 1000);
+            instant.speed = buffer.size / ((time - buffer.loadStartTime) / 1000);
 
             //instant.results.push(!transfer.transferred && prev.instantSpeed ? (instant.speed + prev.instantSpeed) / 2 : instant.speed);
             instant.results.push(instant.speed);
