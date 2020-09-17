@@ -1031,7 +1031,7 @@ var test = window.test = {
     }
 };
 
-test.selectedServer = isLocal ? 0 : 4;
+test.selectedServer = isLocal ? 0 : 3;
 test.increments = [0, 1, 5, 10, 20, 30, 50, 75, 100];
 
 test.gaugeCircleOffsetRef = test.gaugeCircleStrokeMax - test.gaugeCircleStrokeMin;
