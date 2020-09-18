@@ -1260,7 +1260,8 @@ function TestStage(props) {
             enabled: _TestConfig2.default.bufferEnabled && _TestConfig2.default.runType.download,
             loadStartTime: 0,
             size: 0,
-            speed: 0
+            speed: 0,
+            percent: 0
         },
             instant = {
             speed: 0,
@@ -1292,20 +1293,25 @@ function TestStage(props) {
             transfer.time = time - transfer.lastTime;
             if (transfer.time > transfer.maxTime) transfer.maxTime = transfer.time;
 
-            if (transfer.transferred > 0 && prev.transferTime > 0) {
+            if (transfer.transferred > 0) {
                 transfer.average.count += prev.transferTime;
                 transfer.average.len += 1;
-                transfer.average.time = transfer.average.count / transfer.average.len;
+                transfer.average.time = transfer.average.count / (transfer.average.len - 1 || 1);
 
                 //console.log(test.runType.download ? "[download]" : "[upload]", "average time:", Math.round(transfer.average.time), "max time:", transfer.maxTime)
             }
             if (buffer.enabled) {
-                if (intervalTime > 2000) {
-                    if (!buffer.loadStartTime) buffer.loadStartTime = time;
-                    buffer.size += transfer.transferred;
+                if (intervalTime > 3000) {
+                    if (!buffer.loadStartTime) {
+                        buffer.loadStartTime = time;
+                    } else {
+                        buffer.size += transfer.transferred;
+                    }
                 }
                 if (intervalTime > 4000) {
                     buffer.speed = buffer.size / ((time - buffer.loadStartTime) / 1000);
+                    buffer.percent = (intervalTime - 4000) / 2000 * 100;
+                    if (buffer.percent < 100) buffer.speed = buffer.speed * buffer.percent / 100;
                 }
             }
 
@@ -1327,7 +1333,7 @@ function TestStage(props) {
 
             speedNumberElem.textContent(parseValue(speedRate));
             _App2.default.event("updateGauge", { speedRate: speedRate });
-            progressBarElem.style({ width: (time - intervalStartedTime) / runTime * 100 + "%" });
+            progressBarElem.style({ width: intervalTime / runTime * 100 + "%" });
 
             testConsole.state("instant: " + (instant.speed / 125000).toFixed(2) + "mbps, average: " + speedRate + "mbps, transf: " + loadedData(transfer.transferred) + ", loaded: " + loadedData(loaded) + ", time: " + loadTime / 1000 + "s");
 
