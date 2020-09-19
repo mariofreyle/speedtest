@@ -1310,7 +1310,8 @@ function TestStage(props) {
                 }
                 if (intervalTime > 4000) {
                     buffer.speed = buffer.size / ((time - buffer.loadStartTime) / 1000);
-                    buffer.percent = (intervalTime - 4000) / 2000 * 100;
+                    buffer.percent = (intervalTime - 3000) / 3000 * 100;
+                    //console.log("percent:", parseFloat(buffer.percent.toFixed(2)), "instantSpeed:", parseFloat(((loaded / (loadTime / 1000)) / 125000).toFixed(2)), "percentSpeed:", parseFloat((((buffer.speed * buffer.percent) / 100) / 125000).toFixed(2)), "bufferSpeed:", parseFloat((buffer.speed / 125000).toFixed(2)));
                     if (buffer.percent < 100) buffer.speed = buffer.speed * buffer.percent / 100;
                 }
             }
@@ -1320,11 +1321,11 @@ function TestStage(props) {
 
             //instant.results.push(!transfer.transferred && prev.instantSpeed ? (instant.speed + prev.instantSpeed) / 2 : instant.speed);
             instant.results.push(instant.speed);
-            instant.maxResults = (loadTime > 1000 ? 5 : 3) + Math.round(transfer.average.time / 80);
+            instant.maxResults = loadTime > 1000 ? 5 : 3;
+            instant.maxResults += Math.round(transfer.average.time / 80);
             instant.maxResults = instant.maxResults > 10 ? 10 : instant.maxResults;
             if (instant.results.length > instant.maxResults) {
                 instant.results.splice(0, instant.results.length - instant.maxResults);
-                //instant.results.splice(0, 1);
             }
 
             average.speed = countArrayItems(instant.results) / instant.results.length;
