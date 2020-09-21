@@ -1377,7 +1377,7 @@ function TestStage(props) {
     }
     function requestConfig(req) {
         var target = _TestConfig2.default.runType.download ? req : req.upload,
-            upload = _TestConfig2.default.runType.upload,
+            upload = _TestConfig2.default.runType.upload && 0,
             progressCount = 1,
             prev = { loaded: 0, progressTime: 0 },
             transfer = { transferred: 0, time: 0 },
