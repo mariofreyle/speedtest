@@ -565,7 +565,7 @@ var app = function (window, document) {
                 contentType = config.contentType || null,
                 headers = config.headers || {},
                 xhr = new XMLHttpRequest(),
-                send = config.preventSend ? 0 : 1,
+                send = config.send === void 0 ? 1 : config.send,
                 fail = function fail() {
                 console.log("Request Fail: " + url);
                 config.fail && config.fail();
@@ -1020,7 +1020,7 @@ var test = window.test = {
     },
     bufferEnabled: true,
     resultsPrecision: 1,
-    servers: [{ name: "Local", download: URL_BASE + "/download/download.file", upload: URL_BASE + "/upload/upload.file" }, { name: "vultr.com - Miami", preconnect: 1, download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "cachefly.net - Chicago", preconnect: 1, download: "https://open.cachefly.net/downloading", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "fireprobe.net - Washington", download: "https://s12-je1rw.fireinfra.net/?action=download&size=100", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "cfapps.io - Washington", download: "https://speed-test.cfapps.io/network?module=download&size=104857600", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "movispeed.es - Madrid", preconnect: 1, download: "https://m0006.movispeed.es/apolo/data/a100m.dat", upload: "https://m0006.movispeed.es/apolo/subida.php" }, { name: "fireprobe.net - Sydney", download: "https://s87-lggif.fireinfra.net/?action=download&size=100", upload: "https://s87-lggif.fireinfra.net/?action=xupload" }, { name: "fireprobe.net - Singapore", download: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100", upload: "https://s281-tnorz.fireinfra.net:9114/?action=xupload" }],
+    servers: [{ name: "Local", preconnect: 0, download: URL_BASE + "/download/download.file", upload: URL_BASE + "/upload/upload.file" }, { name: "vultr.com - Miami", preconnect: 1, download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "cachefly.net - Chicago", preconnect: 1, download: "https://open.cachefly.net/downloading", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "fireprobe.net - Washington", download: "https://s12-je1rw.fireinfra.net/?action=download&size=100", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "cfapps.io - Washington", download: "https://speed-test.cfapps.io/network?module=download&size=104857600", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "movispeed.es - Madrid", preconnect: 1, download: "https://m0006.movispeed.es/apolo/data/a100m.dat", upload: "https://m0006.movispeed.es/apolo/subida.php" }, { name: "fireprobe.net - Sydney", download: "https://s87-lggif.fireinfra.net/?action=download&size=100", upload: "https://s87-lggif.fireinfra.net/?action=xupload" }, { name: "fireprobe.net - Singapore", download: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100", upload: "https://s281-tnorz.fireinfra.net:9114/?action=xupload" }],
     gaugeCircleStrokeMin: 404,
     gaugeCircleStrokeMax: 194,
     gaugeNeedleRotateMin: 49, // in deg
@@ -1033,7 +1033,6 @@ var test = window.test = {
 
 test.selectedServer = isLocal ? 0 : 2;
 test.increments = [0, 1, 5, 10, 20, 30, 50, 75, 100];
-//test.increments = [0, 1, 2, 3, 4, 5, 6, 6, 7];
 
 test.gaugeCircleOffsetRef = test.gaugeCircleStrokeMax - test.gaugeCircleStrokeMin;
 test.gaugeNeedleRotateRef = test.gaugeNeedleRotateMax - test.gaugeNeedleRotateMin; // in deg
@@ -1377,7 +1376,7 @@ function TestStage(props) {
     }
     function requestConfig(req) {
         var target = _TestConfig2.default.runType.download ? req : req.upload,
-            upload = _TestConfig2.default.runType.upload && 0,
+            upload = _TestConfig2.default.runType.upload,
             progressCount = 1,
             prev = { loaded: 0, progressTime: 0 },
             transfer = { transferred: 0, time: 0 },
@@ -1492,45 +1491,49 @@ function TestStage(props) {
             intervalTime = 0;
             intervalStarted = false;
 
+            for (i = 0; i < connections.count; i++) {
+                connections.requests.push(_App2.default.fetch({
+                    xhr: requestConfig,
+                    url: _TestConfig2.default.runType.download ? connections.server.download : connections.server.upload,
+                    get: { v: _App2.default.random(6) + "_" + _App2.default.time() },
+                    post: uploadData,
+                    fail: breakTest,
+                    success: breakTest,
+                    send: false
+                }));
+            }
+
             function sendRequests() {
                 for (i = 0; i < connections.count; i++) {
-                    connections.requests.push(_App2.default.fetch({
-                        xhr: requestConfig,
-                        url: _TestConfig2.default.runType.download ? connections.server.download : connections.server.upload,
-                        get: { v: _App2.default.random(6) + "_" + _App2.default.time() },
-                        post: uploadData,
-                        fail: breakTest,
-                        success: breakTest
-                    }));
+                    connections.requests[i]._send();
                 }
             }
-            /*
-            function sendRequests1(){
+
+            /*function sendRequests1(){
                 connections.requests.forEach(function(req){
                     req.open("GET", req.configUrl);
                     requestConfig(req);
                     req.onload = breakTest;
                     req.send();
                 });
-            }
-            if(test.runType.download){
-                var xhr;
-                for(i = 0; i < connections.count; i++){
-                    xhr = app.fetch({
+            }*/
+
+            if (_TestConfig2.default.runType.download && connections.server.preconnect) {
+                for (i = 0; i < connections.count; i++) {
+                    connections.requests.push(_App2.default.fetch({
                         url: connections.server.download,
-                        get: {v: app.random(6) + "_" + app.time()},
+                        get: { v: _App2.default.random(6) + "_" + _App2.default.time() },
                         type: "HEAD",
                         fail: breakTest,
-                        success: function(res, xhr){
-                            connections.preconnectSuccess += 1;
-                            if(connections.preconnectSuccess == connections.count) sendRequests1();
+                        success: function success() {
+                            connections.preconnect.success += 1;
+                            if (connections.preconnect.success == connections.count) sendRequests();
                         }
-                    });
-                    connections.requests.push(xhr);
+                    }));
                 }
                 return;
             }
-            */
+
             sendRequests();
         },
         consoleToggle: function consoleToggle(e) {
