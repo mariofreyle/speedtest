@@ -1520,14 +1520,14 @@ function TestStage(props) {
 
             if (_TestConfig2.default.runType.download && connections.server.preconnect) {
                 for (i = 0; i < connections.count; i++) {
-                    connections.requests.push(_App2.default.fetch({
+                    connections.preconnect.requests.push(_App2.default.fetch({
                         url: connections.server.download,
                         get: { v: _App2.default.random(6) + "_" + _App2.default.time() },
                         type: "HEAD",
                         fail: breakTest,
                         success: function success() {
                             connections.preconnect.success += 1;
-                            if (connections.preconnect.success == connections.count) sendRequests();
+                            if (connections.preconnect.success == connections.count) setTimeout(sendRequests, 1);
                         }
                     }));
                 }
