@@ -1020,7 +1020,7 @@ var test = window.test = {
     },
     bufferEnabled: true,
     resultsPrecision: 1,
-    servers: [{ name: "Local", preconnect: 0, download: URL_BASE + "/download/download.file", upload: URL_BASE + "/upload/upload.file" }, { name: "vultr.com - Miami", preconnect: 1, download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "cachefly.net - Chicago", preconnect: 1, download: "https://open.cachefly.net/downloading", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "fireprobe.net - Washington", download: "https://s12-je1rw.fireinfra.net/?action=download&size=100", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "cfapps.io - Washington", download: "https://speed-test.cfapps.io/network?module=download&size=104857600", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "movispeed.es - Madrid", preconnect: 1, download: "https://m0006.movispeed.es/apolo/data/a100m.dat", upload: "https://m0006.movispeed.es/apolo/subida.php" }, { name: "fireprobe.net - Sydney", download: "https://s87-lggif.fireinfra.net/?action=download&size=100", upload: "https://s87-lggif.fireinfra.net/?action=xupload" }, { name: "fireprobe.net - Singapore", download: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100", upload: "https://s281-tnorz.fireinfra.net:9114/?action=xupload" }],
+    servers: [{ name: "Local", preconnect: 1, download: URL_BASE + "/download/download.file", upload: URL_BASE + "/upload/upload.file" }, { name: "vultr.com - Miami", preconnect: 1, download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "cachefly.net - Chicago", preconnect: 1, download: "https://open.cachefly.net/downloading", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "fireprobe.net - Washington", download: "https://s12-je1rw.fireinfra.net/?action=download&size=100", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "cfapps.io - Washington", download: "https://speed-test.cfapps.io/network?module=download&size=104857600", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "movispeed.es - Madrid", preconnect: 1, download: "https://m0006.movispeed.es/apolo/data/a100m.dat", upload: "https://m0006.movispeed.es/apolo/subida.php" }, { name: "fireprobe.net - Sydney", download: "https://s87-lggif.fireinfra.net/?action=download&size=100", upload: "https://s87-lggif.fireinfra.net/?action=xupload" }, { name: "fireprobe.net - Singapore", download: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100", upload: "https://s281-tnorz.fireinfra.net:9114/?action=xupload" }],
     gaugeCircleStrokeMin: 404,
     gaugeCircleStrokeMax: 194,
     gaugeNeedleRotateMin: 49, // in deg
@@ -1470,7 +1470,7 @@ function TestStage(props) {
             //return;
             _TestConfig2.default.runType.set(e.runType);
             _TestConfig2.default.runTime = parseNumber(testTimeInput.value(), 1, 1800) * 1000;
-            _TestConfig2.default.connections.multi.download = parseNumber(connectionsInput.value(), 2, 20);
+            _TestConfig2.default.connections.multi.download = parseNumber(connectionsInput.value(), 2, 6);
             _TestConfig2.default.selectedServer = parseInt(serverSelectElem.value());
             _TestConfig2.default.bufferEnabled = enableBuffer.node.checked;
 
@@ -1503,10 +1503,14 @@ function TestStage(props) {
                 }));
             }
 
-            function sendRequests() {
-                for (i = 0; i < connections.count; i++) {
-                    connections.requests[i]._send();
+            function sendRequests(requests) {
+                var len = requests.length;
+                for (i = 0; i < len; i++) {
+                    requests[i]._send();
                 }
+            }
+            function startConnections() {
+                sendRequests(connections.requests);
             }
 
             /*function sendRequests1(){
@@ -1527,14 +1531,15 @@ function TestStage(props) {
                         fail: breakTest,
                         success: function success() {
                             connections.preconnect.success += 1;
-                            if (connections.preconnect.success == connections.count) setTimeout(sendRequests, 1);
-                        }
+                            if (connections.preconnect.success == connections.count) setTimeout(startConnections, 1);
+                        },
+                        send: false
                     }));
                 }
-                return;
+                return sendRequests(connections.preconnect.requests);
             }
 
-            sendRequests();
+            startConnections();
         },
         consoleToggle: function consoleToggle(e) {
             consoleWrapper.toggleClass("hidden");
