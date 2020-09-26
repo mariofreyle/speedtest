@@ -1304,7 +1304,7 @@ function TestStage(props) {
             if (buffer.enabled) {
                 buffer.size += transfer.transferred;
 
-                if (transfer.transferred && intervalTime < 6000) {
+                if (transfer.transferred && intervalTime < 5000) {
                     if (time - buffer.items[buffer.last].startTime < 300) {
                         buffer.items[buffer.last].loaded = loaded;
                         buffer.items[buffer.last].loadTime = time;
@@ -1312,7 +1312,7 @@ function TestStage(props) {
                         buffer.items.push({ loaded: loaded, loadTime: time, startTime: time });
                         buffer.last++;
 
-                        if (buffer.items[buffer.last].loadTime - buffer.items[1].loadTime >= 2000) {
+                        if (buffer.items[buffer.last].loadTime - buffer.items[1].loadTime >= 1500) {
                             buffer.items.splice(0, 1);
                             buffer.last--;
 
