@@ -1328,8 +1328,7 @@ function TestStage(props) {
             instant.speed = loaded / (loadTime / 1000);
             instant.speed = buffer.speed > instant.speed ? buffer.speed : instant.speed;
 
-            //instant.results.push(!transfer.transferred && prev.instantSpeed ? (instant.speed + prev.instantSpeed) / 2 : instant.speed);
-            instant.results.push(instant.speed);
+            instant.results.push(!transfer.transferred && prev.instantSpeed && _TestConfig2.default.runType.download && loadTime > 1000 ? (instant.speed + prev.instantSpeed) / 2 : instant.speed);
             instant.maxResults = loadTime > 1000 ? 5 : 3;
             instant.maxResults += Math.round(transfer.average.time / 80);
             instant.maxResults = instant.maxResults > 10 ? 10 : instant.maxResults;
