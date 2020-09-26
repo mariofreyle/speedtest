@@ -1258,10 +1258,11 @@ function TestStage(props) {
         },
             buffer = {
             enabled: _TestConfig2.default.bufferEnabled && _TestConfig2.default.runType.download,
-            loadStartTime: 0,
+            items: [{ loaded: 0, loadTime: globalLoadStartTime, startTime: globalLoadStartTime }],
+            itemsSpeed: 0,
+            last: 0,
             size: 0,
-            speed: 0,
-            percent: 0
+            speed: 0
         },
             instant = {
             speed: 0,
@@ -1301,19 +1302,27 @@ function TestStage(props) {
                 //console.log(test.runType.download ? "[download]" : "[upload]", "average time:", Math.round(transfer.average.time), "max time:", transfer.maxTime)
             }
             if (buffer.enabled) {
-                if (intervalTime > 3000) {
-                    if (!buffer.loadStartTime) {
-                        buffer.loadStartTime = time;
+                buffer.size += transfer.transferred;
+
+                if (transfer.transferred && intervalTime < 6000) {
+                    if (time - buffer.items[buffer.last].startTime < 300) {
+                        buffer.items[buffer.last].loaded = loaded;
+                        buffer.items[buffer.last].loadTime = time;
                     } else {
-                        buffer.size += transfer.transferred;
+                        buffer.items.push({ loaded: loaded, loadTime: time, startTime: time });
+                        buffer.last++;
+
+                        if (buffer.items[buffer.last].loadTime - buffer.items[1].loadTime >= 2000) {
+                            buffer.items.splice(0, 1);
+                            buffer.last--;
+
+                            buffer.itemsSpeed = (buffer.items[buffer.last].loaded - buffer.items[0].loaded) / ((buffer.items[buffer.last].loadTime - buffer.items[0].loadTime) / 1000);
+                            buffer.size = buffer.itemsSpeed * (loadTime / 1000);
+                        }
                     }
                 }
-                if (intervalTime > 4000) {
-                    buffer.speed = buffer.size / ((time - buffer.loadStartTime) / 1000);
-                    buffer.percent = (intervalTime - 3000) / 3000 * 100;
-                    //console.log("percent:", parseFloat(buffer.percent.toFixed(2)), "instantSpeed:", parseFloat(((loaded / (loadTime / 1000)) / 125000).toFixed(2)), "percentSpeed:", parseFloat((((buffer.speed * buffer.percent) / 100) / 125000).toFixed(2)), "bufferSpeed:", parseFloat((buffer.speed / 125000).toFixed(2)));
-                    if (buffer.percent < 100) buffer.speed = buffer.speed * buffer.percent / 100;
-                }
+
+                buffer.speed = buffer.size / (loadTime / 1000);
             }
 
             instant.speed = loaded / (loadTime / 1000);
@@ -1376,7 +1385,7 @@ function TestStage(props) {
     }
     function requestConfig(req) {
         var target = _TestConfig2.default.runType.download ? req : req.upload,
-            upload = _TestConfig2.default.runType.upload,
+            upload = _TestConfig2.default.runType.upload && 0,
             progressCount = 1,
             prev = { loaded: 0, progressTime: 0 },
             transfer = { transferred: 0, time: 0 },
