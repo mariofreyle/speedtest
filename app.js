@@ -1395,7 +1395,7 @@ function TestStage(props) {
             speedNumberElem.textContent(parseValue(speedRate));
             _App2.default.event("updateGauge", { speedRate: speedRate });
             progressBarElem.style({ width: intervalTime / runTime * 100 + "%" });
-            runTime < 20000 && graph.draw(speedRateMbps(average.graph.get(instant.speed, 15)));
+            runTime < 20000 && graph.draw(speedRateMbps(average.graph.get(average.speed, 10)));
 
             testConsole.state("instant: " + (instant.speed / 125000).toFixed(2) + "mbps, average: " + speedRate + "mbps, transf: " + loadedData(transfer.transferred) + ", loaded: " + loadedData(loaded) + ", time: " + loadTime / 1000 + "s");
 
