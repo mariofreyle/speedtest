@@ -1259,15 +1259,11 @@ function TestStage(props) {
             for (var index = 0; index < len; index++) {
                 item = this.points[index];
 
-                pointX = this.pointWidth * (index + 1);
+                pointX = this.pointWidth * index;
                 pointY = height - item / this.maxPoint * height + 2;
 
                 pointX = pointX.toFixed(2);
                 pointY = pointY.toFixed(2);
-
-                if (index == 0) {
-                    chartPoints += " 0," + pointY;
-                }
 
                 chartPoints += " " + pointX + "," + pointY;
             }
@@ -1304,7 +1300,7 @@ function TestStage(props) {
         // Iterval vars
         time = _App2.default.time(),
             interval = {
-            stepLen: Math.round(runTime / _TestConfig2.default.hearbeatTime),
+            stepLen: Math.round(runTime / _TestConfig2.default.hearbeatTime) + 1,
             stepCount: 0
         },
             intervalStartedTime,
@@ -1436,7 +1432,7 @@ function TestStage(props) {
 
             speedNumberElem.textContent(parseValue(speedRate));
             _App2.default.event("updateGauge", { speedRate: speedRate });
-            runTime < 20000 && graph.draw(speedRateMbps(average.graph.get(instant.speed, 15)));
+            runTime < 20000 && graph.draw(speedRateMbps(average.graph.get(average.speed, 15)));
 
             testConsole.state("instant: " + (instant.speed / 125000).toFixed(2) + "mbps, average: " + speedRate + "mbps, transf: " + loadedData(transfer.transferred) + ", loaded: " + loadedData(loaded) + ", time: " + loadTime / 1000 + "s");
 
