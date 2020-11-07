@@ -604,6 +604,7 @@ var app = function (window, document) {
                     } else if (xhr.status == 404) {
                         fail();
                     }
+                    config.done && config.done();
                 }
             };
 
@@ -1026,7 +1027,7 @@ var test = window.test = {
     },
     bufferEnabled: true,
     resultsPrecision: 1,
-    servers: [{ name: "Local", preconnect: 0, download: URL_BASE + "/download/download.file", upload: URL_BASE + "/upload/upload.file" }, { name: "vultr.com - Miami", preconnect: 1, download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "cachefly.net - Chicago", preconnect: 1, download: "https://open.cachefly.net/downloading", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "fireprobe.net - Washington", download: "https://s12-je1rw.fireinfra.net/?action=download&size=100", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "cfapps.io - Washington", download: "https://speed-test.cfapps.io/network?module=download&size=104857600", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "movispeed.es - Madrid", preconnect: 1, download: "https://m0012.movispeed.es/apolo/data/a100m.dat", upload: "https://m0012.movispeed.es/apolo/subida.php" }, { name: "fireprobe.net - Sydney", download: "https://s87-lggif.fireinfra.net/?action=download&size=100", upload: "https://s87-lggif.fireinfra.net/?action=xupload" }, { name: "fireprobe.net - Singapore", download: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100", upload: "https://s281-tnorz.fireinfra.net:9114/?action=xupload" }],
+    servers: [{ name: "Local", preconnect: 0, download: URL_BASE + "/download/download.file", upload: URL_BASE + "/upload/upload.file" }, { name: "vultr.com - Miami", preconnect: 1, download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "cachefly.net - Chicago", preconnect: 1, download: "https://open.cachefly.net/downloading", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "fireprobe.net - Washington", preconnect: 1, preconnectURL: "https://s12-je1rw.fireinfra.net/?action=download&size=0", download: "https://s12-je1rw.fireinfra.net/?action=download&size=100", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "cfapps.io - Washington", download: "https://speed-test.cfapps.io/network?module=download&size=104857600", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "movispeed.es - Madrid", preconnect: 1, download: "https://m0012.movispeed.es/apolo/data/a100m.dat", upload: "https://m0012.movispeed.es/apolo/subida.php" }, { name: "fireprobe.net - Sydney", preconnect: 1, preconnectURL: "https://s87-lggif.fireinfra.net/?action=download&size=0", download: "https://s87-lggif.fireinfra.net/?action=download&size=100", upload: "https://s87-lggif.fireinfra.net/?action=xupload" }, { name: "fireprobe.net - Singapore", preconnect: 1, preconnectURL: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0", download: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100", upload: "https://s281-tnorz.fireinfra.net:9114/?action=xupload" }],
     gaugeCircleStrokeMin: 404,
     gaugeCircleStrokeMax: 194,
     gaugeNeedleRotateMin: 49, // in deg
@@ -1600,11 +1601,10 @@ function TestStage(props) {
             if (_TestConfig2.default.runType.download && connections.server.preconnect) {
                 for (i = 0; i < connections.count; i++) {
                     connections.preconnect.requests.push(_App2.default.fetch({
-                        url: connections.server.download,
+                        url: connections.server.preconnectURL ? connections.server.preconnectURL : connections.server.download,
                         get: { v: _App2.default.random(6) + "_" + _App2.default.time() },
-                        type: "HEAD",
-                        fail: breakTest,
-                        success: function success() {
+                        type: connections.server.preconnectURL ? "GET" : "HEAD",
+                        done: function success() {
                             connections.preconnect.success += 1;
                             if (connections.preconnect.success == connections.count) setTimeout(startConnections, 1);
                         },
