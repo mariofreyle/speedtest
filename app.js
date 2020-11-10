@@ -1378,7 +1378,7 @@ function TestStage(props) {
                         buffer.items.push({ loaded: loaded, loadTime: time, startTime: time });
                         buffer.last++;
 
-                        if (buffer.items[buffer.last].loadTime - buffer.items[1].loadTime >= 2000) {
+                        if (buffer.items[buffer.last].loadTime - buffer.items[1].loadTime >= 3500) {
                             buffer.items.splice(0, 1);
                             buffer.last--;
 
@@ -1396,7 +1396,7 @@ function TestStage(props) {
             instant.speed = buffer.speed > instant.speed ? buffer.speed : instant.speed;
 
             //instant.results.push(!transfer.transferred && prev.instantSpeed && test.runType.download && loadTime > 1000 ? (instant.speed + prev.instantSpeed) / 2 : instant.speed);
-            instant.maxResults = loadTime > 1000 ? 12 : 3;
+            instant.maxResults = loadTime > 1000 ? (1 || 12) : (1 || 3);
             instant.maxResults += Math.round(transfer.average.time / 80);
             instant.maxResults = instant.maxResults > 10 ? 10 : instant.maxResults;
 
