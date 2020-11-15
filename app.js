@@ -1080,16 +1080,9 @@ function TestStage(props) {
             instant = {
             speed: 0,
             items: [],
-            transfers: [],
-            buffer: [],
-            results: [],
             maxResults: 0
         },
             average = {
-            buffer: {
-                items: [{ loaded: 0, loadTime: globalLoadStartTime, startTime: globalLoadStartTime }],
-                size: 0
-            },
             speed: 0,
             items: [],
             instant: new averageSpeed(),
@@ -1139,32 +1132,29 @@ function TestStage(props) {
                         buffer.items.splice(0, 1);
                         buffer.last--;
 
-                        //buffer.itemsSpeed = (buffer.items[buffer.last].loaded - buffer.items[0].loaded) / ((buffer.items[buffer.last].loadTime - buffer.items[0].loadTime) / 1000);
-                        //buffer.size = buffer.itemsSpeed * (loadTime / 1000);
-                        buffer.size = buffer.items[buffer.last].loaded - buffer.items[0].loaded;
+                        buffer.itemsSpeed = (buffer.items[buffer.last].loaded - buffer.items[0].loaded) / ((buffer.items[buffer.last].loadTime - buffer.items[0].loadTime) / 1000);
+                        buffer.size = buffer.itemsSpeed * (loadTime / 1000);
+                        //buffer.size = buffer.items[buffer.last].loaded - buffer.items[0].loaded;
                     }
                 }
             }
 
-            buffer.speed = buffer.size / ((time - buffer.items[0].loadTime) / 1000);
+            //buffer.speed = buffer.size / ((time - buffer.items[0].loadTime) / 1000);
+            buffer.speed = buffer.size / (loadTime / 1000);
 
             instant.speed = loaded / (loadTime / 1000);
-            //if(buffer.enabled) instant.speed = buffer.speed > instant.speed ? buffer.speed : instant.speed;
+            if (buffer.enabled) instant.speed = buffer.speed > instant.speed ? buffer.speed : instant.speed;
 
-            //instant.results.push(!transfer.transferred && prev.instantSpeed && test.runType.download && loadTime > 1000 ? (instant.speed + prev.instantSpeed) / 2 : instant.speed);
             instant.maxResults = loadTime > 1000 ? 5 : 3;
             instant.maxResults += Math.round(transfer.average.time / 80);
             instant.maxResults = instant.maxResults > 12 ? 12 : instant.maxResults;
-            instant.maxResults = 10;
+            instant.maxResults = loadTime > 1000 ? 10 : 3;
 
             instant.items.push(instant.speed);
             if (instant.items.length > instant.maxResults) {
                 instant.items.splice(0, 1);
             }
 
-            //average.speed = average.instant.get(instant.speed, instant.maxResults);
-            //average.speed = average.buffer.size / ((time - buffer.items[0].loadTime) / 1000);
-            //average.speed = average.buffer.size / (loadTime / 1000);
             average.items.push(countArrayItems(instant.items) / instant.items.length);
             if (average.items.length > instant.maxResults) {
                 average.items.splice(0, 1);
