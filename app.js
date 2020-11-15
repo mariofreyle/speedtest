@@ -1049,7 +1049,6 @@ function TestStage(props) {
         time = _App2.default.time(),
             intervalStartedTime,
             loadTime,
-            iterationTime = 0,
             transfer = {
             items: [{ loaded: 0, time: globalLoadStartTime }],
             transferred: 0,
@@ -1080,6 +1079,7 @@ function TestStage(props) {
         },
             instant = {
             speed: 0,
+            items: [],
             transfers: [],
             buffer: [],
             results: [],
@@ -1091,6 +1091,7 @@ function TestStage(props) {
                 size: 0
             },
             speed: 0,
+            items: [],
             instant: new averageSpeed(),
             graph: new averageSpeed()
         },
@@ -1110,7 +1111,6 @@ function TestStage(props) {
             time = _App2.default.time();
             loadTime = time - globalLoadStartTime;
             intervalTime = time - intervalStartedTime;
-            iterationTime = time - (prev.iterationTime || time);
             loaded = connections.loaded;
             transfer.transferred = loaded - prev.loaded;
             transfer.lastTime = transfer.transferred > 0 ? time : transfer.lastTime;
@@ -1123,16 +1123,8 @@ function TestStage(props) {
                 transfer.average.time = transfer.average.count / (transfer.average.len - 1 || 1);
 
                 //console.log(test.runType.download ? "[download]" : "[upload]", "average time:", Math.round(transfer.average.time), "max time:", transfer.maxTime)
-
-                transfer.items.push({ loaded: loaded, time: time });
-                if (transfer.items[transfer.items.length - 1].time - transfer.items[1].time >= 2000) {
-                    transfer.items.splice(0, 1);
-                }
             }
-            transfer.averageTransfer = (transfer.items[transfer.items.length - 1].loaded - transfer.items[0].loaded) / (time - transfer.items[0].time) * iterationTime;
-            console.log(iterationTime, loadedData(transfer.transferred), loadedData(transfer.averageTransfer));
 
-            //if(buffer.enabled){
             buffer.size += transfer.transferred;
 
             if (transfer.transferred && intervalTime < 6000) {
@@ -1143,7 +1135,7 @@ function TestStage(props) {
                     buffer.items.push({ loaded: loaded, loadTime: time, startTime: time });
                     buffer.last++;
 
-                    if (buffer.items[buffer.last].loadTime - buffer.items[1].loadTime >= 1000) {
+                    if (buffer.items[buffer.last].loadTime - buffer.items[1].loadTime >= 3000) {
                         buffer.items.splice(0, 1);
                         buffer.last--;
 
@@ -1156,33 +1148,41 @@ function TestStage(props) {
 
             buffer.speed = buffer.size / ((time - buffer.items[0].loadTime) / 1000);
 
-            average.buffer.size += transfer.averageTransfer;
-            //}
-
             instant.speed = loaded / (loadTime / 1000);
-            //instant.speed = buffer.speed > instant.speed ? buffer.speed : instant.speed;
+            //if(buffer.enabled) instant.speed = buffer.speed > instant.speed ? buffer.speed : instant.speed;
 
             //instant.results.push(!transfer.transferred && prev.instantSpeed && test.runType.download && loadTime > 1000 ? (instant.speed + prev.instantSpeed) / 2 : instant.speed);
-            //            instant.maxResults = loadTime > 1000 ? 5 : 3;
-            //            instant.maxResults += Math.round(transfer.average.time / 80);
-            //            instant.maxResults = instant.maxResults > 10 ? 10 : instant.maxResults;
+            instant.maxResults = loadTime > 1000 ? 5 : 3;
+            instant.maxResults += Math.round(transfer.average.time / 80);
+            instant.maxResults = instant.maxResults > 12 ? 12 : instant.maxResults;
+            instant.maxResults = 10;
+
+            instant.items.push(instant.speed);
+            if (instant.items.length > instant.maxResults) {
+                instant.items.splice(0, 1);
+            }
 
             //average.speed = average.instant.get(instant.speed, instant.maxResults);
             //average.speed = average.buffer.size / ((time - buffer.items[0].loadTime) / 1000);
-            average.speed = average.buffer.size / (loadTime / 1000);
+            //average.speed = average.buffer.size / (loadTime / 1000);
+            average.items.push(countArrayItems(instant.items) / instant.items.length);
+            if (average.items.length > instant.maxResults) {
+                average.items.splice(0, 1);
+            }
+            average.speed = countArrayItems(average.items) / average.items.length;
 
             speedRate = speedRateMbps(average.speed);
 
             speedNumberElem.textContent(parseValue(speedRate));
             _App2.default.event("updateGauge", { speedRate: speedRate });
-            runTime < 20000 && graph.draw(speedRateMbps(average.graph.get(instant.speed, 15)), intervalTime);
+            //runTime < 20000 && graph.draw(speedRateMbps(average.graph.get(instant.speed, 15)), intervalTime);
+            runTime < 20000 && graph.draw(average.speed, intervalTime);
 
             testConsole.state("instant: " + (instant.speed / 125000).toFixed(2) + "mbps, average: " + speedRate + "mbps, transf: " + loadedData(transfer.transferred) + ", loaded: " + loadedData(loaded) + ", time: " + loadTime / 1000 + "s");
 
             prev.loaded = loaded;
             prev.transferTime = transfer.time;
             prev.instantSpeed = transfer.transferred ? instant.speed : prev.instantSpeed;
-            prev.iterationTime = time;
         }
         function stopInterval() {
             stopTest();
