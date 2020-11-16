@@ -594,7 +594,9 @@ app.svgIcon = function (window, document, app) {
             return createElement("svg", { viewBox: "0 0 120 801", class: "svgIcon gaugeNeedleIcon" }, createElement("defs", {}, createElement("linearGradient", { id: "needleGradient", x1: "0", x2: "0", y1: "0", y2: "1" }, createElement("stop", { class: "stop--1", "stop-opacity": "0", "stop-color": "transparent", offset: "40%" }), createElement("stop", { class: "stop--1", "stop-opacity": "0.95", "stop-color": "currentColor", offset: "100%" }))), createElement("path", { d: "M95 800.5l-34.25-.958H26.5L0 .5h120l-25 800z", fill: "url(#needleGradient)" }));
         },
         gaugeVector: function gaugeVector() {
-            return createElement("svg", { viewBox: "0 0 100 100", class: "svgIcon gaugeVectorIcon" }, createElement("circle", { class: "gaugeCircle gaugeCircleLoading gaugeCircleLoadingLeft strokeBackground", r: "46", cx: "50%", cy: "50%" }), createElement("circle", { class: "gaugeCircle gaugeCircleLoading gaugeCircleLoadingRight strokeBackground", r: "46", cx: "50%", cy: "50%" }), createElement("circle", { class: "gaugeCircle gaugeCircleBackground strokeBackground", r: "46", cx: "50%", cy: "50%" }), createElement("circle", { class: "gaugeCircle gaugeCircleCurrentSpeed strokePrimary", r: "46", cx: "50%", cy: "50%", "stroke-dashoffset": "404" }));
+            return createElement("svg", { viewBox: "0 0 100 100", class: "svgIcon gaugeVectorIcon" }, createElement("circle", { class: "gaugeCircle gaugeCircleLoading gaugeCircleLoadingLeft strokeBackground", r: "46", cx: "50%", cy: "50%" }), createElement("circle", { class: "gaugeCircle gaugeCircleLoading gaugeCircleLoadingRight strokeBackground", r: "46", cx: "50%", cy: "50%" }),
+            //createElement("circle", {class: "gaugeCircle gaugeCircleLoadingBackground strokeBackground", r: "46", cx: "50%", cy: "50%"}),
+            createElement("circle", { class: "gaugeCircle gaugeCircleBackground strokeBackground", r: "46", cx: "50%", cy: "50%" }), createElement("circle", { class: "gaugeCircle gaugeCircleCurrentSpeed strokePrimary", r: "46", cx: "50%", cy: "50%", "stroke-dashoffset": "404" }));
         },
         resultGraph: function resultGraph(type) {
             return createElement("svg", { viewBox: "0 0 300 100", class: "svgIcon graph " + (type ? "up" : "down") + "loadGraph" }, createElement("polyline", { points: "", class: "line" }), createElement("polygon", { points: "", class: "chart" }));
@@ -755,7 +757,7 @@ var test = window.test = {
     onprogress: false, // true = progress, false = waiting
     increments: [0, 2, 4, 6, 8, 10, 12, 14, 16],
     uploadFileDup: 24,
-    runTime: isLocal ? 1000 * 10 : 15000,
+    runTime: isLocal ? 1000 * 3 : 15000,
     hearbeatTime: 80,
     connections: {
         mode: "multi",
@@ -764,7 +766,7 @@ var test = window.test = {
     },
     bufferEnabled: true,
     resultsPrecision: 1,
-    servers: [{ name: "Local", preconnect: 0, download: URL_BASE + "/download/download.file", upload: URL_BASE + "/upload/upload.file" }, { name: "vultr.com - Miami", preconnect: 1, download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "cachefly.net - Chicago", preconnect: 1, download: "https://open.cachefly.net/downloading", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "fireprobe.net - Washington", preconnect: 1, preconnectURL: "https://s12-je1rw.fireinfra.net/?action=download&size=0", download: "https://s12-je1rw.fireinfra.net/?action=download&size=100", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "cfapps.io - Washington", download: "https://speed-test.cfapps.io/network?module=download&size=104857600", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "movispeed.es - Madrid", preconnect: 1, download: "https://m0006.movispeed.es/apolo/data/a100m.dat", upload: "https://m0006.movispeed.es/apolo/subida.php" }, { name: "fireprobe.net - Sydney", preconnect: 1, preconnectURL: "https://s87-lggif.fireinfra.net/?action=download&size=0", download: "https://s87-lggif.fireinfra.net/?action=download&size=100", upload: "https://s87-lggif.fireinfra.net/?action=xupload" }, { name: "fireprobe.net - Singapore", preconnect: 1, preconnectURL: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0", download: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100", upload: "https://s281-tnorz.fireinfra.net:9114/?action=xupload" }],
+    servers: [{ name: "Local", preconnect: 0, download: URL_BASE + "/download/download.file", upload: URL_BASE }, { name: "vultr.com - Miami", preconnect: 1, download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "cachefly.net - Chicago", preconnect: 1, download: "https://open.cachefly.net/downloading", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "fireprobe.net - Washington", preconnect: 1, preconnectURL: "https://s12-je1rw.fireinfra.net/?action=download&size=0", download: "https://s12-je1rw.fireinfra.net/?action=download&size=100", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "cfapps.io - Washington", download: "https://speed-test.cfapps.io/network?module=download&size=104857600", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "movispeed.es - Madrid", preconnect: 1, download: "https://m0006.movispeed.es/apolo/data/a100m.dat", upload: "https://m0006.movispeed.es/apolo/subida.php" }, { name: "fireprobe.net - Sydney", preconnect: 1, preconnectURL: "https://s87-lggif.fireinfra.net/?action=download&size=0", download: "https://s87-lggif.fireinfra.net/?action=download&size=100", upload: "https://s87-lggif.fireinfra.net/?action=xupload" }, { name: "fireprobe.net - Singapore", preconnect: 1, preconnectURL: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0", download: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100", upload: "https://s281-tnorz.fireinfra.net:9114/?action=xupload" }],
     gaugeCircleStrokeMin: 404,
     gaugeCircleStrokeMax: 194,
     gaugeNeedleRotateMin: 49, // in deg
@@ -850,10 +852,10 @@ function TestStage(props) {
         multiModeButton: (0, _App.createRef)("button"),
         singleModeButton: (0, _App.createRef)("button")
     },
+        graph,
         connections,
         intervalStarted,
         globalLoadStartTime,
-        firstTransferred,
         intervalTime,
         intervalHeartbeat,
         testConsole;
@@ -939,8 +941,8 @@ function TestStage(props) {
         _App2.default.event("testStatus", {});
     }
     function closeGauge() {
-        elem.stageMain.append((0, _App.createElement)(_StartButton2.default, { textContent: "DE NUEVO", action: 2, tryAgainAnim: true }));
         _App2.default.event("closeGauge");
+        elem.stageMain.append((0, _App.createElement)(_StartButton2.default, { textContent: "DE NUEVO", action: 2, tryAgainAnim: true }));
     }
     function clearResults() {
         elem.resultDownload.find("resultValue").textContent("- -");
@@ -958,6 +960,8 @@ function TestStage(props) {
             clearTimeout(id);
         }
         stopTest();
+        graph && connections.speedRate && graph.draw(connections.speedRate, _TestConfig2.default.runTime);
+        testConsole.state("measures error");
         setTimeout(function () {
             _App2.default.event("testStatus", { onprogress: false });
             _App2.default.event("clearGauge");
@@ -1023,19 +1027,6 @@ function TestStage(props) {
             this.line.setAttr("points", pointX + "," + pointY + " " + this.width + "," + pointY);
         };
     }
-    function averageSpeed() {
-        this.items = [];
-        this.count = 0;
-        this.get = function (add, limit) {
-            this.count += add;
-            this.items.push(add);
-            if (this.items.length > limit) {
-                this.count -= this.items[0];
-                this.items.splice(0, 1);
-            }
-            return this.count / this.items.length;
-        };
-    }
     function startInterval() {
         intervalStarted = true;
 
@@ -1050,7 +1041,6 @@ function TestStage(props) {
             intervalStartedTime,
             loadTime,
             transfer = {
-            items: [{ loaded: 0, time: globalLoadStartTime }],
             transferred: 0,
             lastTime: 0,
             time: 0,
@@ -1059,15 +1049,12 @@ function TestStage(props) {
                 count: 0,
                 len: 0,
                 time: 0
-            },
-            averageTransfer: 0
+            }
         },
             loaded,
             prev = {
             loaded: 0,
-            transferTime: 0,
-            instantSpeed: 0,
-            iterationTime: globalLoadStartTime
+            transferTime: 0
         },
             buffer = {
             enabled: _TestConfig2.default.bufferEnabled && _TestConfig2.default.runType.download,
@@ -1080,18 +1067,19 @@ function TestStage(props) {
             instant = {
             speed: 0,
             items: [],
-            maxResults: 0
+            len: 0,
+            maxItems: 10
         },
             average = {
             speed: 0,
             items: [],
-            instant: new averageSpeed(),
-            graph: new averageSpeed()
+            len: 0
         },
-            graph = new drawGraph(),
             speedRate;
 
         loadTime = time - globalLoadStartTime;
+
+        graph = new drawGraph();
         graph.open();
 
         function parseValue(val) {
@@ -1132,8 +1120,8 @@ function TestStage(props) {
                         buffer.items.splice(0, 1);
                         buffer.last--;
 
-                        buffer.itemsSpeed = (buffer.items[buffer.last].loaded - buffer.items[0].loaded) / ((buffer.items[buffer.last].loadTime - buffer.items[0].loadTime) / 1000);
-                        buffer.size = buffer.itemsSpeed * (loadTime / 1000);
+                        buffer.speed = (buffer.items[buffer.last].loaded - buffer.items[0].loaded) / ((buffer.items[buffer.last].loadTime - buffer.items[0].loadTime) / 1000);
+                        buffer.size = buffer.speed * (loadTime / 1000);
                         //buffer.size = buffer.items[buffer.last].loaded - buffer.items[0].loaded;
                     }
                 }
@@ -1145,18 +1133,17 @@ function TestStage(props) {
             instant.speed = loaded / (loadTime / 1000);
             if (buffer.enabled) instant.speed = buffer.speed > instant.speed ? buffer.speed : instant.speed;
 
-            instant.maxResults = loadTime > 1000 ? 5 : 3;
-            instant.maxResults += Math.round(transfer.average.time / 80);
-            instant.maxResults = instant.maxResults > 12 ? 12 : instant.maxResults;
-            instant.maxResults = loadTime > 1000 ? 10 : 3;
+            instant.maxItems = loadTime > 1000 ? 10 : 3;
+            //instant.maxItems += Math.round(transfer.average.time / 80);
+            //instant.maxItems = instant.maxItems > 12 ? 12 : instant.maxItems;
 
             instant.items.push(instant.speed);
-            if (instant.items.length > instant.maxResults) {
+            if (instant.items.length > instant.maxItems) {
                 instant.items.splice(0, 1);
             }
 
             average.items.push(countArrayItems(instant.items) / instant.items.length);
-            if (average.items.length > instant.maxResults) {
+            if (average.items.length > instant.maxItems) {
                 average.items.splice(0, 1);
             }
             average.speed = countArrayItems(average.items) / average.items.length;
@@ -1165,20 +1152,21 @@ function TestStage(props) {
 
             speedNumberElem.textContent(parseValue(speedRate));
             _App2.default.event("updateGauge", { speedRate: speedRate });
-            //runTime < 20000 && graph.draw(speedRateMbps(average.graph.get(instant.speed, 15)), intervalTime);
             runTime < 20000 && graph.draw(average.speed, intervalTime);
 
             testConsole.state("instant: " + (instant.speed / 125000).toFixed(2) + "mbps, average: " + speedRate + "mbps, transf: " + loadedData(transfer.transferred) + ", loaded: " + loadedData(loaded) + ", time: " + loadTime / 1000 + "s");
 
             prev.loaded = loaded;
             prev.transferTime = transfer.time;
-            prev.instantSpeed = transfer.transferred ? instant.speed : prev.instantSpeed;
+            connections.speedRate = speedRate;
         }
         function stopInterval() {
             stopTest();
 
-            connections.requests.forEach(function (req) {
-                testConsole.state("xhr " + req.id + " loaded: " + (req.loaded / 1000000).toFixed(3) + "MB, maxTime: " + req.maxTransferTime + "ms" + (req.firstProgressTime ? ", avgTime: " + Math.round((req.lastProgressTime - req.firstProgressTime) / (req.progressCount - 1 || 1)) + "ms" : ""));
+            connections.requests.forEach(function (req, index) {
+                if (req.id > 6) return;
+
+                testConsole.state("request " + req.id + " loaded: " + (req.loaded / 1000000).toFixed(3) + "MB, maxTime: " + req.maxTransferTime + "ms" + (req.firstProgressTime ? ", avgTime: " + Math.round((req.lastProgressTime - req.firstProgressTime) / (req.progressCount - 1 || 1)) + "ms" : "") + (req.id > connections.count ? " (added)" : ""));
             });
 
             testConsole.state("loaded: " + (connections.loaded / 1000000).toFixed(2) + "MB, finalSpeed: " + (connections.loaded / 125000 / ((_App2.default.time() - globalLoadStartTime) / 1000)).toFixed(2) + "mbps, maxTransferTime: " + transfer.maxTime + "ms, time: " + (_App2.default.time() - globalLoadStartTime) / 1000 + "s");
@@ -1237,15 +1225,18 @@ function TestStage(props) {
 
             if (!intervalStarted && progressCount == 4) startInterval();
             if (progressCount == 1) {
-                testConsole.state("xhr " + req.id + " first transfer: " + loadedData(e.loaded));
+                req.id <= connections.count && testConsole.state("request " + req.id + " first transfer: " + loadedData(e.loaded));
                 req.firstProgressTime = time;
             } else if (upload) {
-                testConsole.state("xhr " + req.id + " transfer " + progressCount + ": " + loadedData(transfer.transferred) + ", time: " + transfer.time + "ms, " + (time - globalLoadStartTime) / 1000 + "s");
+                testConsole.state("request " + req.id + " transfer " + progressCount + ": " + loadedData(transfer.transferred) + ", time: " + transfer.time + "ms, " + (time - globalLoadStartTime) / 1000 + "s");
             }
 
             prev.loaded = e.loaded;
             prev.progressTime = time;
             progressCount++;
+        });
+        target.addEventListener("load", function () {
+            connections.addRequest();
         });
     }
     function parseNumber(num, min, max) {
@@ -1258,18 +1249,18 @@ function TestStage(props) {
     this.events = {
         initializeTest: function initializeTest() {
             clearResults();
-
             setTimeout(function () {
                 elem.stageMain.append((0, _App.createElement)(_GaugeContainer2.default));
-            }, 450);
+            }, 810);
         },
         runTest: function runTest(e) {
-            //return;
             _TestConfig2.default.runType.set(e.runType);
             _TestConfig2.default.runTime = parseNumber(elem.testTimeInput.value(), 1, 1800) * 1000;
             _TestConfig2.default.connections.multi.download = parseNumber(elem.connectionsInput.value(), 2, 6);
             _TestConfig2.default.selectedServer = parseInt(elem.serverSelect.value());
             _TestConfig2.default.bufferEnabled = elem.enableBuffer.node.checked;
+
+            //return;
 
             var uploadData = _TestConfig2.default.runType.download ? null : fileData(),
                 i;
@@ -1281,23 +1272,25 @@ function TestStage(props) {
                 preconnect: { requests: [], success: 0 },
                 requests: [],
                 count: _TestConfig2.default.connections[_TestConfig2.default.connections.mode][_TestConfig2.default.runType.download ? "download" : "upload"],
-                loaded: 0
+                loaded: 0,
+                speedRate: 0,
+                addRequest: function addRequest(prevent) {
+                    connections.requests.push(_App2.default.fetch({
+                        xhr: requestConfig,
+                        url: _TestConfig2.default.runType.download ? connections.server.download : connections.server.upload,
+                        get: { v: _App2.default.random(6) + "_" + _App2.default.time() },
+                        post: uploadData,
+                        fail: breakTest,
+                        send: !prevent
+                    }));
+                }
             };
             globalLoadStartTime = 0;
-            firstTransferred = 0;
             intervalTime = 0;
             intervalStarted = false;
 
             for (i = 0; i < connections.count; i++) {
-                connections.requests.push(_App2.default.fetch({
-                    xhr: requestConfig,
-                    url: _TestConfig2.default.runType.download ? connections.server.download : connections.server.upload,
-                    get: { v: _App2.default.random(6) + "_" + _App2.default.time() },
-                    post: uploadData,
-                    fail: breakTest,
-                    success: breakTest,
-                    send: false
-                }));
+                connections.addRequest(true);
             }
 
             function sendRequests(requests) {
@@ -1402,7 +1395,7 @@ function StartButton(props) {
         setTimeout(function () {
             elem.startWrapper.remove();
             _App2.default.event("runTest", { runType: "download" });
-        }, 2300);
+        }, 1200);
     };
     this.onMount = function () {
         props.tryAgainAnim && setTimeout(function () {
@@ -1410,7 +1403,7 @@ function StartButton(props) {
         }, 1200);
     };
 
-    return (0, _App.createElement)(elem.startWrapper, { className: "startWrapper" + (props.action == 1 ? "" : " tryAgain") + (props.tryAgainAnim ? " tryAgainAnim" : ""), onMount: this.onMount }, (0, _App.createElement)("button", { className: "startButton", ariaLabel: props.textContent, onclick: this.handleClick }, (0, _App.createElement)(elem.buttonText, { className: "buttonText", textContent: props.textContent }), (0, _App.createElement)("div", { className: "buttonBackgroundPrimary" }), (0, _App.createElement)("div", { className: "buttonBackgroundSecondary" }), (0, _App.createElement)("div", { className: "buttonBorder" }), props.action == 1 ? (0, _App.createElement)("div", { className: "buttonAnimatedBorder" }) : null));
+    return (0, _App.createElement)(elem.startWrapper, { className: "startWrapper" + (props.action == 1 ? "" : " tryAgain") + (props.tryAgainAnim ? " tryAgainAnim" : ""), onMount: this.onMount }, (0, _App.createElement)("button", { className: "startButton", ariaLabel: props.textContent, onclick: this.handleClick }, (0, _App.createElement)(elem.buttonText, { className: "buttonText", textContent: props.textContent }), (0, _App.createElement)("div", { className: "buttonBorder" }), props.action == 1 ? (0, _App.createElement)("div", { className: "buttonAnimatedBorder" }) : null, (0, _App.createElement)("div", { className: "buttonBackgroundPrimary" }), (0, _App.createElement)("div", { className: "buttonBackgroundSecondary" })));
 }
 
 exports.default = StartButton;
@@ -1543,7 +1536,7 @@ function GaugeContainer() {
             elem.gaugeContainer.addClass("close");
             setTimeout(function () {
                 elem.gaugeContainer.remove();
-            }, 575);
+            }, 560);
         }
     };
     this.onMount = function () {
@@ -1555,7 +1548,7 @@ function GaugeContainer() {
 
     return (0, _App.createElement)(elem.gaugeContainer, { className: "gaugeContainer", events: this.events, onMount: this.onMount, onDismount: this.onDismount }, (0, _App.createElement)("div", { className: "gaugeInner" }, (0, _App.createElement)(elem.incrementsContainer, { className: "incrementsContainer" }, increments.map(function (num, i) {
         return (0, _App.createElement)("div", { className: "increment increment--" + i, textContent: num });
-    })), (0, _App.createElement)(elem.gaugeNeedle, { className: "gaugeNeedle" }, (0, _App.svgIcon)("gaugeNeedle")), (0, _App.createElement)(elem.gaugeState, { className: "gaugeState" }, (0, _App.createElement)(elem.speedDatils, { className: "speedDetailsContainer state unseen" }, (0, _App.createElement)(elem.speedDetailsNumber, { className: "speedDetailsNumber" }, (0, _App.createElement)("span", { textContent: "0.0" })), (0, _App.createElement)("div", { className: "" }, (0, _App.createElement)("span", { className: "speedDetailsIcon" }, (0, _App.svgIcon)("uplink")), (0, _App.createElement)("span", { className: "speedDetailsUnit textHolder", textContent: "Mbps" }))), (0, _App.createElement)(elem.connectingText, { className: "connectingServer state textHolder" }, (0, _App.createElement)("b", { textContent: "Conectando..." })))), (0, _App.createElement)(elem.gaugeIcon, { className: "gaugeAnim gaugeIcon" }, (0, _App.svgIcon)("gaugeVector")));
+    })), (0, _App.createElement)(elem.gaugeNeedle, { className: "gaugeNeedle" }, (0, _App.svgIcon)("gaugeNeedle")), (0, _App.createElement)(elem.gaugeState, { className: "gaugeState" }, (0, _App.createElement)(elem.speedDatils, { className: "speedDetailsContainer" }, (0, _App.createElement)(elem.speedDetailsNumber, { className: "speedDetailsNumber" }, (0, _App.createElement)("span", { textContent: "0.0" })), (0, _App.createElement)("div", { className: "" }, (0, _App.createElement)("span", { className: "speedDetailsIcon" }, (0, _App.svgIcon)("uplink")), (0, _App.createElement)("span", { className: "speedDetailsUnit textHolder", textContent: "Mbps" }))), (0, _App.createElement)(elem.connectingText, { className: "connectingServer state textHolder hidden" }, (0, _App.createElement)("b", { textContent: "Conectando..." })))), (0, _App.createElement)(elem.gaugeIcon, { className: "gaugeAnim gaugeIcon" }, (0, _App.svgIcon)("gaugeVector")));
 }
 
 exports.default = GaugeContainer;
