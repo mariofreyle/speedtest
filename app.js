@@ -1120,15 +1120,15 @@ function TestStage(props) {
                         buffer.items.splice(0, 1);
                         buffer.last--;
 
-                        buffer.speed = (buffer.items[buffer.last].loaded - buffer.items[0].loaded) / ((buffer.items[buffer.last].loadTime - buffer.items[0].loadTime) / 1000);
-                        buffer.size = buffer.speed * (loadTime / 1000);
-                        //buffer.size = buffer.items[buffer.last].loaded - buffer.items[0].loaded;
+                        //buffer.speed = (buffer.items[buffer.last].loaded - buffer.items[0].loaded) / ((buffer.items[buffer.last].loadTime - buffer.items[0].loadTime) / 1000);
+                        //buffer.size = buffer.speed * (loadTime / 1000);
+                        buffer.size = buffer.items[buffer.last].loaded - buffer.items[0].loaded;
                     }
                 }
             }
 
-            //buffer.speed = buffer.size / ((time - buffer.items[0].loadTime) / 1000);
-            buffer.speed = buffer.size / (loadTime / 1000);
+            buffer.speed = buffer.size / ((time - buffer.items[0].loadTime) / 1000);
+            //buffer.speed = buffer.size / (loadTime / 1000);
 
             instant.speed = loaded / (loadTime / 1000);
             if (buffer.enabled) instant.speed = buffer.speed > instant.speed ? buffer.speed : instant.speed;
