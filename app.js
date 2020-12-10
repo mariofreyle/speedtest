@@ -127,7 +127,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var app = function (window, document) {
+window.app = function (window, document) {
     // Initialize Variables
     var initialId = Math.floor(Math.random() * 1000),
         app,
@@ -541,8 +541,6 @@ var app = function (window, document) {
         );
     }(window, window.navigator);
 
-    window.App = app;
-
     return app;
 }(window, document);
 
@@ -662,8 +660,11 @@ function MainHeader() {
             }
         }
     };
+    this.reload = function () {
+        isLocal && location.reload();
+    };
 
-    return (0, _App.createElement)("header", { className: "mainHeader", events: this.events }, (0, _App.createElement)("div", { className: "container" }, (0, _App.createElement)("div", { className: "headerContents" }, (0, _App.createElement)("div", { className: "logoWrapper" }, (0, _App.createElement)("span", { className: "logoIcon" }, (0, _App.svgIcon)("testLogo")), (0, _App.createElement)("span", { className: "logoText", textContent: "SPEEDTEST" })), (0, _App.createElement)(toggleButton, { className: "consoleToggleButton", textContent: "Show console", onclick: toggleButton.handleClick }))));
+    return (0, _App.createElement)("header", { className: "mainHeader", events: this.events }, (0, _App.createElement)("div", { className: "container" }, (0, _App.createElement)("div", { className: "headerContents" }, (0, _App.createElement)("div", { className: "logoWrapper" }, (0, _App.createElement)("span", { className: "logoIcon" }, (0, _App.svgIcon)("testLogo")), (0, _App.createElement)("span", { className: "logoText", textContent: "SPEEDTEST", onclick: this.reload })), (0, _App.createElement)(toggleButton, { className: "consoleToggleButton", textContent: "Show console", onclick: toggleButton.handleClick }))));
 }
 
 exports.default = MainHeader;
@@ -757,7 +758,7 @@ var test = window.test = {
     onprogress: false, // true = progress, false = waiting
     increments: [0, 2, 4, 6, 8, 10, 12, 14, 16],
     uploadFileDup: 24,
-    runTime: isLocal ? 1000 * 3 : 15000,
+    runTime: isLocal ? 1000 * 10 : 15000,
     hearbeatTime: 80,
     connections: {
         mode: "multi",
@@ -847,6 +848,7 @@ function TestStage(props) {
         connectionsInput: (0, _App.createRef)("input"),
         enableBuffer: (0, _App.createRef)("input"),
         serverSelect: (0, _App.createRef)("select"),
+        outputSpeedSelect: (0, _App.createRef)("select"),
         ispName: (0, _App.createRef)("div"),
         publicIp: (0, _App.createRef)("div"),
         multiModeButton: (0, _App.createRef)("button"),
@@ -960,7 +962,7 @@ function TestStage(props) {
             clearTimeout(id);
         }
         stopTest();
-        graph && connections.speedRate && graph.draw(connections.speedRate, _TestConfig2.default.runTime);
+        graph && connections.outputSpeed && graph.draw(connections.outputSpeed, _TestConfig2.default.runTime, _App2.default.time(), true);
         testConsole.state("measures error");
         setTimeout(function () {
             _App2.default.event("testStatus", { onprogress: false });
@@ -975,6 +977,23 @@ function TestStage(props) {
             }, 500);
         }, 1300);
     }
+    function averageSpeed() {
+        this.items = [];
+        this.len = 0;
+        this.count = 0;
+
+        this.get = function (speed, maxItems) {
+            this.len = this.items.push(speed);
+            this.count += speed;
+
+            if (this.len > maxItems) {
+                this.count -= this.items[0];
+                this.items.splice(0, 1);
+                this.len--;
+            }
+            return this.count / this.len;
+        };
+    }
     function drawGraph() {
         this.elem = (_TestConfig2.default.runType.download ? elem.resultDownload : elem.resultUpload).find("graph");
         this.width = Math.round(this.elem.width());
@@ -982,9 +1001,12 @@ function TestStage(props) {
         this.chart = this.elem.find("chart");
         this.line = this.elem.find("line");
         this.points = [];
+        this.chartPoints = [];
         this.maxPoint = 0;
         this.maxTime = _TestConfig2.default.runTime;
         this.pointWidth = this.width / this.pointsLen;
+        this.updateTime = _TestConfig2.default.runTime / 190;
+        this.lastTime = 0;
 
         this.open = function () {
             this.chart.setAttr("points", "");
@@ -992,7 +1014,11 @@ function TestStage(props) {
             this.elem.setAttr("viewBox", "0 0 " + this.width + " " + this.height);
             this.elem.removeClass("unseen");
         };
-        this.draw = function (point, intervalTime) {
+        this.draw = function (point, intervalTime, time, close) {
+            if (time - this.lastTime < this.updateTime && !close) {
+                return;
+            }
+            this.lastTime = time;
             point = parseFloat(point);
             this.points.push(point);
             if (point > this.maxPoint) this.maxPoint = point;
@@ -1002,7 +1028,7 @@ function TestStage(props) {
                 viewWidth = intervalTime / this.maxTime * this.width,
                 viewHeight = this.height - 4,
                 len = this.points.length,
-                pointWidth = viewWidth / (len > 1 ? len - 1 : len),
+                pointWidth = viewWidth / len,
                 item,
                 pointX,
                 pointY;
@@ -1012,12 +1038,13 @@ function TestStage(props) {
             for (var index = 0; index < len; index++) {
                 item = this.points[index];
 
-                pointX = pointWidth * index;
+                pointX = pointWidth * (index + 1);
                 pointY = viewHeight - item / this.maxPoint * viewHeight + 2;
 
                 pointX = pointX.toFixed(2);
                 pointY = pointY.toFixed(2);
 
+                if (index == 0) chartPoints += " 0," + pointY;
                 chartPoints += " " + pointX + "," + pointY;
             }
 
@@ -1066,15 +1093,14 @@ function TestStage(props) {
         },
             instant = {
             speed: 0,
-            items: [],
-            len: 0,
-            maxItems: 10
+            average: 0,
+            calc: new averageSpeed()
         },
             average = {
             speed: 0,
-            items: [],
-            len: 0
+            calc: new averageSpeed()
         },
+            outputSpeed,
             speedRate;
 
         loadTime = time - globalLoadStartTime;
@@ -1088,7 +1114,7 @@ function TestStage(props) {
                 i = str.indexOf(".");
             return str.substr(0, val >= 1 ? i + 2 : i + 3);
         }
-        function intervalCallback() {
+        function intervalCallback(closeInterval) {
             time = _App2.default.time();
             loadTime = time - globalLoadStartTime;
             intervalTime = time - intervalStartedTime;
@@ -1108,8 +1134,8 @@ function TestStage(props) {
 
             buffer.size += transfer.transferred;
 
-            if (transfer.transferred && intervalTime < 6500) {
-                if (time - buffer.items[buffer.last].startTime < 300) {
+            if (transfer.transferred && intervalTime < 6000) {
+                if (time - buffer.items[buffer.last].startTime < 500) {
                     buffer.items[buffer.last].loaded = loaded;
                     buffer.items[buffer.last].loadTime = time;
                 } else {
@@ -1130,6 +1156,7 @@ function TestStage(props) {
             buffer.speed = buffer.size / ((time - buffer.items[0].loadTime) / 1000);
             //buffer.speed = buffer.size / (loadTime / 1000);
 
+
             instant.speed = loaded / (loadTime / 1000);
             if (buffer.enabled) instant.speed = buffer.speed > instant.speed ? buffer.speed : instant.speed;
 
@@ -1137,27 +1164,21 @@ function TestStage(props) {
             //instant.maxItems += Math.round(transfer.average.time / 80);
             //instant.maxItems = instant.maxItems > 12 ? 12 : instant.maxItems;
 
-            instant.items.push(instant.speed);
-            if (instant.items.length > instant.maxItems) {
-                instant.items.splice(0, 1);
-            }
+            instant.average = instant.calc.get(instant.speed, instant.maxItems);
+            average.speed = average.calc.get(instant.average, instant.maxItems);
 
-            average.items.push(countArrayItems(instant.items) / instant.items.length);
-            if (average.items.length > instant.maxItems) {
-                average.items.splice(0, 1);
-            }
-            average.speed = countArrayItems(average.items) / average.items.length;
-
-            speedRate = speedRateMbps(average.speed);
+            outputSpeed = _TestConfig2.default.outputSpeed == "average" ? average.speed : instant.speed;
+            speedRate = speedRateMbps(outputSpeed);
 
             speedNumberElem.textContent(parseValue(speedRate));
             _App2.default.event("updateGauge", { speedRate: speedRate });
-            runTime < 20000 && graph.draw(average.speed, intervalTime);
+            graph.draw(outputSpeed, intervalTime, time, closeInterval);
 
-            testConsole.state("instant: " + (instant.speed / 125000).toFixed(2) + "mbps, average: " + speedRate + "mbps, transf: " + loadedData(transfer.transferred) + ", loaded: " + loadedData(loaded) + ", time: " + loadTime / 1000 + "s");
+            testConsole.state("instant: " + (instant.speed / 125000).toFixed(2) + "mbps, average: " + (average.speed / 125000).toFixed(2) + "mbps, loaded: " + loadedData(loaded) + ", transf: " + loadedData(transfer.transferred) + ", time: " + loadTime / 1000 + "s");
 
             prev.loaded = loaded;
             prev.transferTime = transfer.time;
+            connections.outputSpeed = outputSpeed;
             connections.speedRate = speedRate;
         }
         function stopInterval() {
@@ -1191,7 +1212,7 @@ function TestStage(props) {
             intervalHeartbeat = setInterval(intervalCallback, _TestConfig2.default.hearbeatTime);
 
             setTimeout(function () {
-                intervalCallback();
+                intervalCallback(true);
                 stopInterval();
             }, runTime);
 
@@ -1259,6 +1280,7 @@ function TestStage(props) {
             _TestConfig2.default.connections.multi.download = parseNumber(elem.connectionsInput.value(), 2, 6);
             _TestConfig2.default.selectedServer = parseInt(elem.serverSelect.value());
             _TestConfig2.default.bufferEnabled = elem.enableBuffer.node.checked;
+            _TestConfig2.default.outputSpeed = elem.outputSpeedSelect.value();
 
             //return;
 
@@ -1273,6 +1295,7 @@ function TestStage(props) {
                 requests: [],
                 count: _TestConfig2.default.connections[_TestConfig2.default.connections.mode][_TestConfig2.default.runType.download ? "download" : "upload"],
                 loaded: 0,
+                outputSpeed: 0,
                 speedRate: 0,
                 addRequest: function addRequest(prevent) {
                     connections.requests.push(_App2.default.fetch({
@@ -1355,7 +1378,7 @@ function TestStage(props) {
 
     return (0, _App.createElement)(elem.testStage, { className: "testStage" + (props.fadeIn ? " fadeIn" : ""), events: this.events, onMount: this.onMount }, (0, _App.createElement)("section", { className: "resultsArea" }, (0, _App.createElement)(elem.resultsContainer, { className: "resultsData" }, (0, _App.createElement)("button", { className: "stageClose", title: "Cerrar Prueba", "aria-label": "Cerrar Prueba", onclick: this.closeStage }, (0, _App.svgIcon)("close")), (0, _App.createElement)(elem.resultDownload, { className: "resultItem resultDownload" }, (0, _App.createElement)("div", { className: "resultContainer" }, (0, _App.createElement)("div", { className: "resultHeader" }, (0, _App.createElement)("div", { className: "resultHeaderWrapper" }, (0, _App.createElement)("div", { className: "resultIcon" }, (0, _App.svgIcon)("downlink")), (0, _App.createElement)("div", { className: "resultTitle" }, (0, _App.createElement)("b", { textContent: "DESCARGAR" })), (0, _App.createElement)("div", { className: "resultUnit textHolder" }, (0, _App.createElement)("span", { textContent: "Mbps" })))), (0, _App.createElement)("div", { className: "resultBody" }, (0, _App.createElement)(elem.speedDownloadNumber, { className: "resultValue", textContent: "- -" }), (0, _App.createElement)("div", { className: "resultGraph" }, (0, _App.svgIcon)("resultGraph", 0))))), (0, _App.createElement)(elem.resultUpload, { className: "resultItem resultUpload" }, (0, _App.createElement)("div", { className: "resultContainer" }, (0, _App.createElement)("div", { className: "resultHeader" }, (0, _App.createElement)("div", { className: "resultHeaderWrapper" }, (0, _App.createElement)("div", { className: "resultIcon" }, (0, _App.svgIcon)("uplink")), (0, _App.createElement)("div", { className: "resultTitle" }, (0, _App.createElement)("b", { textContent: "SUBIR" })), (0, _App.createElement)("div", { className: "resultUnit textHolder" }, (0, _App.createElement)("span", { textContent: "Mbps" })))), (0, _App.createElement)("div", { className: "resultBody" }, (0, _App.createElement)(elem.speedUploadNumber, { className: "resultValue", textContent: "- -" }), (0, _App.createElement)("div", { className: "resultGraph" }, (0, _App.svgIcon)("resultGraph", 1))))))), (0, _App.createElement)(elem.stageMain, { className: "stageMain" }, (0, _App.createElement)(_StartButton2.default, { textContent: "COMENZAR", action: 1 })), (0, _App.createElement)(elem.consoleWrapper, { className: "testConsoleWrapper hidden" }, (0, _App.createElement)(elem.console, { readonly: "", spellcheck: "false", value: "waiting to start the test..." }), (0, _App.createElement)("div", { className: "testSettings" }, (0, _App.createElement)("div", { className: "testSettings-item setTime" }, (0, _App.createElement)("label", { className: "testSettings-label textHolder", for: "testSettings-setTime" }, (0, _App.createElement)("b", { textContent: "Test time: " })), (0, _App.createElement)("div", { className: "testSettings-input" }, (0, _App.createElement)(elem.testTimeInput, { className: "testSettings-inputElem", id: "testSettings-setTime", type: "number", min: "1", value: _TestConfig2.default.runTime / 1000 }), (0, _App.createElement)("div", { className: "testSettings-inputBorder" }))), (0, _App.createElement)("div", { className: "testSettings-item setConnections" }, (0, _App.createElement)("label", { className: "testSettings-label textHolder", for: "testSettings-setConnections" }, (0, _App.createElement)("b", { textContent: "Connections: " })), (0, _App.createElement)("div", { className: "testSettings-input" }, (0, _App.createElement)(elem.connectionsInput, { className: "testSettings-inputElem", id: "testSettings-setConnections", type: "number", min: "1", value: _TestConfig2.default.connections.multi.download }), (0, _App.createElement)("div", { className: "testSettings-inputBorder" }))), (0, _App.createElement)("div", { className: "testSettings-item setServer" }, (0, _App.createElement)("label", { className: "testSettings-label textHolder", for: "testSettings-setServer" }, (0, _App.createElement)("b", { textContent: "Server: " })), (0, _App.createElement)("div", { className: "testSettings-input" }, (0, _App.createElement)(elem.serverSelect, { className: "testSettings-selectElem", id: "testSettings-setServer" }, _TestConfig2.default.servers.map(function (item, index) {
         return index > 0 || isLocal ? index != _TestConfig2.default.selectedServer ? (0, _App.createElement)("option", { value: index, textContent: item.name }) : (0, _App.createElement)("option", { value: index, selected: "", textContent: item.name }) : null;
-    })))), (0, _App.createElement)("div", { className: "testSettings-item enableBuffer" }, (0, _App.createElement)("label", { className: "testSettings-label textHolder", for: "testSettings-enableBuffer" }, (0, _App.createElement)("b", { textContent: "Enable buffer: " })), (0, _App.createElement)("div", { className: "testSettings-input checkbox" }, _TestConfig2.default.bufferEnabled ? (0, _App.createElement)(elem.enableBuffer, { className: "testSettings-inputCheckbox", id: "testSettings-enableBuffer", type: "checkbox", checked: "" }) : (0, _App.createElement)(elem.enableBuffer, { className: "testSettings-inputCheckbox", id: "testSettings-enableBuffer", type: "checkbox" }))))), (0, _App.createElement)("footer", { className: "stage-footer" }, (0, _App.createElement)("div", { className: "footerItem" }, (0, _App.createElement)("div", { className: "footerItem-details" }, (0, _App.createElement)("div", { className: "footerItem-icon" }, (0, _App.svgIcon)("user")), (0, _App.createElement)("div", { className: "footerItem-content" }, (0, _App.createElement)(elem.ispName, { className: "footerItem-title ispName", textContent: _TestConfig2.default.user.isp || "- -" }), (0, _App.createElement)(elem.publicIp, { className: "footerItem-description textHolder" + (_TestConfig2.default.user.ip && _TestConfig2.default.user.ip.split("").indexOf(":") > -1 ? " hidden" : ""), textContent: _TestConfig2.default.user.ip || "- -" })))), (0, _App.createElement)("div", { className: "footerItem" }, (0, _App.createElement)("div", { className: "footerItem-details" }, (0, _App.createElement)("div", { className: "footerItem-icon" }, (0, _App.svgIcon)("connections")), (0, _App.createElement)("div", { className: "footerItem-content" }, (0, _App.createElement)("div", { className: "footerItem-title", textContent: "Conexiones" }), (0, _App.createElement)("div", { className: "footerItem-description" }, (0, _App.createElement)("div", { className: "testModeToggle-wrapper" }, (0, _App.createElement)(elem.multiModeButton, { className: "testModeToggle-button" + (_TestConfig2.default.connections.mode == "multi" ? " active" : ""), textContent: "Multi", onclick: function onclick() {
+    })))), (0, _App.createElement)("div", { className: "testSettings-item enableBuffer" }, (0, _App.createElement)("label", { className: "testSettings-label textHolder", for: "testSettings-enableBuffer" }, (0, _App.createElement)("b", { textContent: "Enable buffer: " })), (0, _App.createElement)("div", { className: "testSettings-input checkbox" }, _TestConfig2.default.bufferEnabled ? (0, _App.createElement)(elem.enableBuffer, { className: "testSettings-inputCheckbox", id: "testSettings-enableBuffer", type: "checkbox", checked: "" }) : (0, _App.createElement)(elem.enableBuffer, { className: "testSettings-inputCheckbox", id: "testSettings-enableBuffer", type: "checkbox" }))), (0, _App.createElement)("div", { className: "testSettings-item outputSpeed" }, (0, _App.createElement)("label", { className: "testSettings-label textHolder", for: "testSettings-outputSpeed" }, (0, _App.createElement)("b", { textContent: "Output speed: " })), (0, _App.createElement)("div", { className: "testSettings-input" }, (0, _App.createElement)(elem.outputSpeedSelect, { className: "testSettings-selectElem", id: "testSettings-outputSpeed" }, (0, _App.createElement)("option", { value: "instant", textContent: "Instant speed" }), (0, _App.createElement)("option", { value: "average", selected: "", textContent: "Average speed" })))))), (0, _App.createElement)("footer", { className: "stage-footer" }, (0, _App.createElement)("div", { className: "footerItem" }, (0, _App.createElement)("div", { className: "footerItem-details" }, (0, _App.createElement)("div", { className: "footerItem-icon" }, (0, _App.svgIcon)("user")), (0, _App.createElement)("div", { className: "footerItem-content" }, (0, _App.createElement)(elem.ispName, { className: "footerItem-title ispName", textContent: _TestConfig2.default.user.isp || "- -" }), (0, _App.createElement)(elem.publicIp, { className: "footerItem-description textHolder" + (_TestConfig2.default.user.ip && _TestConfig2.default.user.ip.split("").indexOf(":") > -1 ? " hidden" : ""), textContent: _TestConfig2.default.user.ip || "- -" })))), (0, _App.createElement)("div", { className: "footerItem" }, (0, _App.createElement)("div", { className: "footerItem-details" }, (0, _App.createElement)("div", { className: "footerItem-icon" }, (0, _App.svgIcon)("connections")), (0, _App.createElement)("div", { className: "footerItem-content" }, (0, _App.createElement)("div", { className: "footerItem-title", textContent: "Conexiones" }), (0, _App.createElement)("div", { className: "footerItem-description" }, (0, _App.createElement)("div", { className: "testModeToggle-wrapper" }, (0, _App.createElement)(elem.multiModeButton, { className: "testModeToggle-button" + (_TestConfig2.default.connections.mode == "multi" ? " active" : ""), textContent: "Multi", onclick: function onclick() {
             toggleConnectionsMode("multi");
         } }), (0, _App.createElement)("span", { className: "testModeToggle-divider textHolder", textContent: "•" }), (0, _App.createElement)(elem.singleModeButton, { className: "testModeToggle-button" + (_TestConfig2.default.connections.mode == "single" ? " active" : ""), textContent: "Unica", onclick: function onclick() {
             toggleConnectionsMode("single");
