@@ -134,7 +134,8 @@ window.app = function (window, document) {
         element = {},
         elementPrefix = "__App_",
         elementProps = ["events", "onMount", "onDismount"],
-        nodePrototype = ["className", "id", "textContent", "value", "onclick", "onkeyup", "onkeydown", "onchange", "onsubmit", "action", "ariaLabel"];
+        nodePrototype = ["className", "id", "textContent", "value", "onclick", "onmousemove", "onmouseover", "onmouseout", "onkeyup", "onkeydown", "onchange", "onsubmit", "action", "ariaLabel"],
+        nsTags = ["svg", "path", "circle", "polyline", "polygon", "linearGradient", "defs", "stop", "g"];
 
     // Useful Functions
     function guid() {
@@ -301,6 +302,17 @@ window.app = function (window, document) {
         parent: function parent() {
             return new element.init(this.node.parentNode);
         },
+        prepend: function prepend(elem) {
+            if (this.node.firstChild) {
+                this.node.insertBefore(elem, this.node.firstChild);
+            } else {
+                this.node.appendChild(elem);
+            }
+
+            element.mountAll(elem);
+
+            return this;
+        },
         append: function append(elem) {
             this.node.appendChild(elem);
 
@@ -348,6 +360,9 @@ window.app = function (window, document) {
         },
         height: function height() {
             return this.node.clientHeight;
+        },
+        data: function data(_data) {
+            if (typeof _data === "string") {}
         }
     };
 
@@ -424,7 +439,7 @@ window.app = function (window, document) {
                 key;
 
             if (typeof _name == "string") {
-                elem = document.createElement(_name);
+                elem = nsTags.indexOf(_name) > -1 ? document.createElementNS("http://www.w3.org/2000/svg", _name) : document.createElement(_name);
             } else if (typeof _name == "function") {
                 return elem = new _name(props);
             } else {
@@ -461,7 +476,7 @@ window.app = function (window, document) {
             return elem;
         },
         createRef: function createRef(elem) {
-            return new element.init(document.createElement(elem));
+            return new element.init(nsTags.indexOf(elem) > -1 ? document.createElementNS("http://www.w3.org/2000/svg", elem) : document.createElement(elem));
         },
         event: function event(eventName, props) {
             var events = app.events[eventName],
@@ -642,21 +657,28 @@ var _App2 = _interopRequireDefault(_App);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function MainHeader() {
-    var toggleButton = (0, _App.createRef)("button"),
+    var elem = {
+        switchButton: (0, _App.createRef)("button"),
+        toggleButton: (0, _App.createRef)("button")
+    },
         consoleOpened = 0;
 
-    toggleButton.handleClick = function () {
+    elem.toggleButton.handleClick = function () {
         consoleOpened = !consoleOpened;
-        toggleButton.textContent(consoleOpened ? "Hide console" : "Show console");
+        elem.toggleButton.textContent(consoleOpened ? "Hide console" : "Show console");
 
         _App2.default.event("consoleToggle", { toggle: consoleOpened });
+    };
+    elem.switchButton.handleClick = function () {
+        elem.switchButton.toggleClass("active");
+        _App2.default.event("switchStage", { switch: elem.switchButton.hasClass("active") });
     };
 
     this.events = {
         renderStage: function renderStage() {
             if (consoleOpened) {
                 consoleOpened = 0;
-                toggleButton.textContent("Show console");
+                elem.toggleButton.textContent("Show console");
             }
         }
     };
@@ -664,7 +686,9 @@ function MainHeader() {
         isLocal && location.reload();
     };
 
-    return (0, _App.createElement)("header", { className: "mainHeader", events: this.events }, (0, _App.createElement)("div", { className: "container" }, (0, _App.createElement)("div", { className: "headerContents" }, (0, _App.createElement)("div", { className: "logoWrapper" }, (0, _App.createElement)("span", { className: "logoIcon" }, (0, _App.svgIcon)("testLogo")), (0, _App.createElement)("span", { className: "logoText", textContent: "SPEEDTEST", onclick: this.reload })), (0, _App.createElement)(toggleButton, { className: "consoleToggleButton", textContent: "Show console", onclick: toggleButton.handleClick }))));
+    return (0, _App.createElement)("header", { className: "mainHeader", events: this.events }, (0, _App.createElement)("div", { className: "container" }, (0, _App.createElement)("div", { className: "headerContents" }, (0, _App.createElement)("div", { className: "logoWrapper" }, (0, _App.createElement)("span", { className: "logoIcon" }, (0, _App.svgIcon)("testLogo")), (0, _App.createElement)("span", { className: "logoText", textContent: "SPEEDTEST", onclick: this.reload })),
+    //createElement(elem.toggleButton, {className: "consoleelem.ToggleButton", textContent: "Show console", onclick: elem.toggleButton.handleClick}),
+    (0, _App.createElement)(elem.switchButton, { className: "button-r8eYj", textContent: "Ping Test", onclick: elem.switchButton.handleClick }))));
 }
 
 exports.default = MainHeader;
@@ -692,10 +716,15 @@ var _TestStage = __webpack_require__(5);
 
 var _TestStage2 = _interopRequireDefault(_TestStage);
 
+var _PingStage = __webpack_require__(8);
+
+var _PingStage2 = _interopRequireDefault(_PingStage);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function MainContent() {
-    var testWrapper = (0, _App.createRef)("div");
+    var container = (0, _App.createRef)("div"),
+        testWrapper = (0, _App.createRef)("div");
 
     function className() {
         var runType = " test--" + _TestConfig2.default.runType.current + (_TestConfig2.default.onprogress ? " onprogress" : "");
@@ -726,10 +755,13 @@ function MainContent() {
         },
         closeTest: function closeTest() {
             updateStatus({ started: false, finished: true, onprogress: false });
+        },
+        switchStage: function switchStage(e) {
+            container.className("container " + (e.switch ? "pingTest" : "mainTest"));
         }
     };
 
-    return (0, _App.createElement)("div", { className: "pageContent", events: this.events }, (0, _App.createElement)("div", { className: "container" }, (0, _App.createElement)(testWrapper, { className: className() }, (0, _App.createElement)(_TestStage2.default)), (0, _App.createElement)("div", { className: "log", textContent: "0.0" })));
+    return (0, _App.createElement)("div", { className: "pageContent", events: this.events }, (0, _App.createElement)(container, { className: "container _pingTest" }, (0, _App.createElement)(testWrapper, { className: className() }, (0, _App.createElement)(_TestStage2.default), (0, _App.createElement)(_PingStage2.default)), (0, _App.createElement)("div", { className: "log", textContent: "0.0" })));
 };
 
 exports.default = MainContent;
@@ -801,6 +833,22 @@ test.runType = {
         test.runType.upload = "upload" == _set;
     }
 };
+
+test.ping = {
+    servers: [{ name: "Local", url: URL_BASE + "/download/download.file", connectType: 1 }, { name: "Cachefly.net", url: "https://open.cachefly.net/downloading", connectType: 1 }, { name: "Facebook Static", url: "https://z-m-static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg", connectType: 1 }, { name: "Vultr.com - Miami", url: "https://fl-us-ping.vultr.com/assets/flags/flagsm_kr.png", connectType: 1 }],
+    runTime: 10000
+};
+
+test.ping.server = test.ping.servers[1];
+
+test.ping.graphItems = function () {
+    var arr = [];
+    for (var index = 0; index < 100; index++) {
+        arr.push(index);
+    }
+    return arr;
+}(test.ping);
+test.ping.graphVisibleItems = [0, 2, 4, 6, 8, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49, 52, 55, 58, 61, 64, 67, 70, 73, 76, 79, 82, 85, 88, 91, 94, 97];
 
 exports.default = test;
 
@@ -1575,6 +1623,223 @@ function GaugeContainer() {
 }
 
 exports.default = GaugeContainer;
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _App = __webpack_require__(1);
+
+var _App2 = _interopRequireDefault(_App);
+
+var _TestConfig = __webpack_require__(4);
+
+var _TestConfig2 = _interopRequireDefault(_TestConfig);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function PingItem() {
+    var elem = {
+        minValue: (0, _App.createRef)("b"),
+        avgValue: (0, _App.createRef)("b"),
+        maxValue: (0, _App.createRef)("b"),
+        jitterValue: (0, _App.createRef)("b"),
+        graphInner: (0, _App.createRef)("div"),
+        graphTooltip: (0, _App.createRef)("div"),
+        graphTooltipItem: (0, _App.createRef)("div"),
+        graphTooltipValue: (0, _App.createRef)("div"),
+        lineWrapper: (0, _App.createRef)("svg"),
+        graphLine: (0, _App.createRef)("polyline")
+    },
+        graphItems = _TestConfig2.default.ping.graphItems.map(function (item, index) {
+        return (0, _App.createElement)("div", { className: "graphItem-o1wfv" + (_TestConfig2.default.ping.graphVisibleItems.indexOf(index) > -1 ? " a" : ""), index: index }, (0, _App.createElement)("span", { textContent: index }));
+    }),
+        startedTime = _App2.default.time(),
+        measures = {
+        sendCount: 0,
+        sendTime: 0,
+        pingTime: 0,
+        prevPingTime: 0,
+        min: {
+            value: Infinity
+        },
+        avg: {
+            value: 0,
+            count: 0,
+            items: []
+        },
+        max: {
+            value: 0
+        },
+        jitter: {
+            value: 0,
+            count: 0,
+            items: []
+        },
+        results: [],
+        connection: null
+    },
+        graph = {
+        values: [],
+        maxValue: 0
+    };
+
+    function finishTest() {
+        _App2.default.event("pingTestFinished");
+    }
+    function drawGraph(value) {
+        graph.values.push(value);
+        if (value > graph.maxValue) graph.maxValue = value;
+
+        var chartPoints = "",
+            portWidth = elem.graphInner.width(),
+            portHeight = elem.graphInner.height() - 10,
+            pointWidth = portWidth / _TestConfig2.default.ping.graphItems.length,
+            index,
+            len = graph.values.length,
+            item,
+            pointX,
+            pointY;
+
+        for (index = 0; index < len; index++) {
+            item = graph.values[index];
+
+            pointX = (pointWidth * index).toFixed(2);
+            pointY = (portHeight - item / graph.maxValue * portHeight + 1).toFixed(2);
+
+            chartPoints += " " + pointX + "," + pointY;
+        }
+
+        elem.graphLine.setAttr("points", chartPoints);
+    }
+    function ping() {
+        measures.sendCount += 1;
+        measures.sendTime = _App2.default.time();
+        _App2.default.fetch({
+            url: _TestConfig2.default.ping.server.url,
+            get: { v: _App2.default.random(6) + "_" + _App2.default.time() },
+            type: "HEAD",
+            fail: finishTest,
+            success: function success() {
+                if (_App2.default.time() - startedTime > 10000 || measures.sendCount > 101) {
+                    return finishTest();
+                }
+
+                if (measures.sendCount > 1) {
+                    measures.pingTime = _App2.default.time() - measures.sendTime;
+
+                    if (measures.pingTime < measures.min.value) {
+                        measures.min.value = measures.pingTime;
+                    }
+                    if (measures.pingTime > measures.max.value) {
+                        measures.max.value = measures.pingTime;
+                    }
+                    measures.avg.count += measures.pingTime;
+                    measures.avg.items.push(measures.pingTime);
+                    measures.avg.value = measures.avg.count / measures.avg.items.length;
+
+                    if (measures.prevPingTime) {
+                        measures.jitter.count += measures.pingTime > measures.prevPingTime ? measures.pingTime - measures.prevPingTime : measures.prevPingTime - measures.pingTime;
+                        measures.jitter.items.push(measures.pingTime);
+                        measures.jitter.value = measures.jitter.count / measures.jitter.items.length;
+                    }
+
+                    elem.minValue.textContent(measures.min.value + " ms");
+                    elem.avgValue.textContent(measures.avg.value.toFixed(1) + " ms");
+                    elem.maxValue.textContent(measures.max.value + " ms");
+                    elem.jitterValue.textContent(measures.jitter.value.toFixed(1) + " ms");
+
+                    measures.results.push(measures.pingTime);
+
+                    drawGraph(measures.pingTime);
+
+                    measures.prevPingTime = measures.pingTime;
+                }
+
+                ping();
+            }
+        });
+    }
+    function graphMouseMove(e) {
+        elem.graphTooltip.removeClass("hide-adEut");
+
+        var parentPos = elem.graphInner.node.getBoundingClientRect(),
+            mousePosX = e.clientX,
+            tooltipWidth = elem.graphTooltip.width(),
+            posX = mousePosX - parentPos.left + 20,
+            index = e.target.getAttribute("index");
+
+        if (mousePosX > parentPos.right - (tooltipWidth + 30)) {
+            posX = mousePosX - parentPos.left - tooltipWidth - 20;
+        }
+
+        if (index) {
+            elem.graphTooltipItem.textContent(index);
+            elem.graphTooltipValue.textContent("ping: " + measures.results[index] + " ms");
+        }
+
+        elem.graphTooltip.style({ left: posX + "px" });
+    }
+    function graphMouseOut() {
+        elem.graphTooltip.addClass("hide-adEut");
+    }
+
+    this.onMount = function () {
+        ping();
+        elem.lineWrapper.setAttr("viewBox", "0 0 " + elem.graphInner.width() + " " + elem.graphInner.height());
+    };
+
+    return (0, _App.createElement)("div", { className: "pingItem-e3Lhk", onMount: this.onMount }, (0, _App.createElement)("div", { className: "results-viKtf" }, (0, _App.createElement)("div", { className: "serverDetails-twBep", textContent: _TestConfig2.default.ping.server.name }), (0, _App.createElement)("div", { className: "results-hn8Gk" }, (0, _App.createElement)("div", { className: "result-x3Ayv" }, (0, _App.createElement)("span", { textContent: "min: " }), (0, _App.createElement)(elem.minValue, { textContent: "- ms" })), (0, _App.createElement)("div", { className: "result-x3Ayv" }, (0, _App.createElement)("span", { textContent: "avg: " }), (0, _App.createElement)(elem.avgValue, { textContent: "- ms" })), (0, _App.createElement)("div", { className: "result-x3Ayv" }, (0, _App.createElement)("span", { textContent: "max: " }), (0, _App.createElement)(elem.maxValue, { textContent: "- ms" })), (0, _App.createElement)("div", { className: "result-x3Ayv" }, (0, _App.createElement)("span", { textContent: "jitter: " }), (0, _App.createElement)(elem.jitterValue, { textContent: "- ms" })))), (0, _App.createElement)("div", { className: "graphWrapper-viKtf" }, (0, _App.createElement)("div", { className: "graph-o1wfv" }, (0, _App.createElement)(elem.graphInner, { className: "graphInner-o1wfv", onmousemove: graphMouseMove, onmouseout: graphMouseOut }, (0, _App.createElement)("div", { className: "graphItems-o1wfv" }, graphItems), (0, _App.createElement)(elem.lineWrapper, { class: "lineWrapper-dnXzj" }, (0, _App.createElement)(elem.graphLine, { points: "" })), (0, _App.createElement)(elem.graphTooltip, { className: "graphTooltip-o1wfv hide-adEut" }, (0, _App.createElement)(elem.graphTooltipItem, { className: "tooltipItem-o1wfv", textContent: "0" }), (0, _App.createElement)(elem.graphTooltipValue, { className: "tooltipValue-o1wfv", textContent: "ping: undefined ms" }))))));
+}
+
+function PingStage() {
+    var elem = {
+        start: (0, _App.createRef)("div"),
+        startButton: (0, _App.createRef)("button"),
+        serverDetails: (0, _App.createRef)("div"),
+        selectServer: (0, _App.createRef)("select"),
+        pingItems: (0, _App.createRef)("div")
+    },
+        testStarted = false;
+
+    function testFinished() {
+        elem.start.removeClass("disabled");
+        testStarted = false;
+    }
+    function startTest() {
+        if (testStarted) return;
+
+        testStarted = true;
+
+        elem.start.addClass("disabled");
+        elem.pingItems.prepend((0, _App.createElement)(PingItem));
+    }
+    function changeServer() {
+        if (_TestConfig2.default.ping.servers[elem.selectServer.value()]) {
+            _TestConfig2.default.ping.server = _TestConfig2.default.ping.servers[elem.selectServer.value()];
+            elem.serverDetails.textContent(_TestConfig2.default.ping.server.name);
+        }
+    }
+
+    this.events = {
+        pingTestFinished: testFinished
+    };
+    this.onMount = function () {};
+
+    return (0, _App.createElement)("div", { className: "pingStage", events: this.events, onMount: this.onMount }, (0, _App.createElement)(elem.start, { className: "start-inBnq" }, (0, _App.createElement)("div", { className: "contents-vr4n" }, (0, _App.createElement)(elem.startButton, { className: "startButton-twMcg", textContent: "start", onclick: startTest }), (0, _App.createElement)("div", { className: "selectedServer-xncHv" }, (0, _App.createElement)(elem.serverDetails, { className: "serverDetails-xncHv", textContent: _TestConfig2.default.ping.server.name }), (0, _App.createElement)("div", { className: "changeServer-xncHv" }, (0, _App.createElement)("button", { className: "changeButton-xncHv", textContent: "Change server" }), (0, _App.createElement)(elem.selectServer, { className: "", onchange: changeServer }, _TestConfig2.default.ping.servers.map(function (item, index) {
+        if (!isLocal && index == 0) return null;
+        return item.name == _TestConfig2.default.ping.server.name ? (0, _App.createElement)("option", { value: index, textContent: item.name, selected: "selected" }) : (0, _App.createElement)("option", { value: index, textContent: item.name });
+    })))))), (0, _App.createElement)(elem.pingItems, { className: "pingItems-id3Lk" }));
+};
+
+exports.default = PingStage;
 
 /***/ })
 /******/ ]);
