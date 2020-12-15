@@ -930,13 +930,20 @@ function TestStage(props) {
         testConsole;
 
     testConsole = function () {
-        var consoleInner = "",
+        var consoleLines = [],
+            consoleInner = "",
             scrollTop,
             scrollHeight,
             elemHeight;
 
         function _log(data) {
-            consoleInner += (consoleInner != "" ? "\n" : "") + data;
+            consoleLines.push(data);
+            if (consoleLines.length > 520) {
+                consoleLines.splice(0, 1);
+                consoleInner = consoleLines.join("\n");
+            } else {
+                consoleInner += (consoleInner == "" ? "" : "\n") + data;
+            }
 
             scrollHeight = elem.console.scrollHeight(), scrollTop = elem.console.scrollTop(), elemHeight = elem.console.offsetHeight();
 
@@ -957,6 +964,7 @@ function TestStage(props) {
             },
             clear: function clear() {
                 consoleInner = "";
+                consoleLines = [];
                 elem.console.value(consoleInner);
             }
         };
