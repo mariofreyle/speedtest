@@ -1684,8 +1684,9 @@ var _TestConfig2 = _interopRequireDefault(_TestConfig);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function PingItem() {
+function PingItem(props) {
     var elem = {
+        pingItem: (0, _App.createRef)("div"),
         minValue: (0, _App.createRef)("b"),
         avgValue: (0, _App.createRef)("b"),
         maxValue: (0, _App.createRef)("b"),
@@ -1729,9 +1730,11 @@ function PingItem() {
         values: [],
         maxValue: 0
     },
-        tooltipIndex;
+        tooltipIndex,
+        mousePosX;
 
     function finishTest() {
+        measures.connection && measures.connection.abort();
         _App2.default.event("pingTestFinished");
     }
     function updateGraphTooltip() {
@@ -1739,6 +1742,16 @@ function PingItem() {
             elem.graphTooltipItem.textContent(tooltipIndex);
             elem.graphTooltipValue.textContent("ping: " + measures.results[tooltipIndex] + " ms");
         }
+
+        var parentPos = elem.graphInner.node.getBoundingClientRect(),
+            tooltipWidth = elem.graphTooltip.width(),
+            posX = mousePosX - parentPos.left + 20;
+
+        if (mousePosX > parentPos.right - (tooltipWidth + 30)) {
+            posX = mousePosX - parentPos.left - tooltipWidth - 20;
+        }
+
+        elem.graphTooltip.style({ left: posX + "px" });
     }
     function drawGraph(value) {
         graph.values = measures.results;
@@ -1768,7 +1781,7 @@ function PingItem() {
     function ping() {
         measures.sendCount += 1;
         measures.sendTime = _App2.default.time();
-        _App2.default.fetch({
+        measures.connection = _App2.default.fetch({
             url: _TestConfig2.default.ping.server.url,
             get: { v: _App2.default.random(6) + "_" + _App2.default.time() },
             type: "HEAD",
@@ -1821,23 +1834,20 @@ function PingItem() {
     function graphMouseMove(e) {
         elem.graphTooltip.removeClass("unseen-u");
 
-        var parentPos = elem.graphInner.node.getBoundingClientRect(),
-            mousePosX = e.clientX,
-            tooltipWidth = elem.graphTooltip.width(),
-            posX = mousePosX - parentPos.left + 20;
-
         tooltipIndex = e.target.getAttribute("index");
-
-        if (mousePosX > parentPos.right - (tooltipWidth + 30)) {
-            posX = mousePosX - parentPos.left - tooltipWidth - 20;
-        }
+        mousePosX = e.clientX;
 
         updateGraphTooltip();
-
-        elem.graphTooltip.style({ left: posX + "px" });
     }
     function graphMouseOut() {
         elem.graphTooltip.addClass("unseen-u");
+    }
+    function deleteResult() {
+        elem.pingItem.addClass("close");
+        setTimeout(function () {
+            finishTest();
+            _App2.default.event("deletePingResult", { id: props.id });
+        }, 300);
     }
 
     this.onMount = function () {
@@ -1845,7 +1855,7 @@ function PingItem() {
         elem.lineWrapper.setAttr("viewBox", "0 0 " + elem.graphInner.width() + " " + elem.graphInner.height());
     };
 
-    return (0, _App.createElement)("div", { className: "pingItem-e3Lhk", onMount: this.onMount }, (0, _App.createElement)("div", { className: "results-viKtf" }, (0, _App.createElement)("div", { className: "serverDetails-twBep", textContent: _TestConfig2.default.ping.server.name }), (0, _App.createElement)("div", { className: "results-hn8Gk" }, (0, _App.createElement)("div", { className: "result-x3Ayv" }, (0, _App.createElement)("span", { textContent: "min: " }), (0, _App.createElement)(elem.minValue, { textContent: "-- ms" })), (0, _App.createElement)("div", { className: "result-x3Ayv" }, (0, _App.createElement)("span", { textContent: "avg: " }), (0, _App.createElement)(elem.avgValue, { textContent: "-- ms" })), (0, _App.createElement)("div", { className: "result-x3Ayv" }, (0, _App.createElement)("span", { textContent: "max: " }), (0, _App.createElement)(elem.maxValue, { textContent: "-- ms" })), (0, _App.createElement)("div", { className: "result-x3Ayv" }, (0, _App.createElement)("span", { textContent: "jitter: " }), (0, _App.createElement)(elem.jitterValue, { textContent: "-- ms" })))), (0, _App.createElement)("div", { className: "graphWrapper-viKtf" }, (0, _App.createElement)("div", { className: "graph-o1wfv" }, (0, _App.createElement)(elem.graphInner, { className: "graphInner-o1wfv", onmousemove: graphMouseMove, onmouseout: graphMouseOut }, (0, _App.createElement)("div", { className: "graphItems-o1wfv" }, graphItems), (0, _App.createElement)(elem.lineWrapper, { class: "lineWrapper-dnXzj" }, (0, _App.createElement)(elem.graphLine, { points: "" })), (0, _App.createElement)(elem.graphTooltip, { className: "graphTooltip-o1wfv unseen-u" }, (0, _App.createElement)(elem.graphTooltipItem, { className: "tooltipItem-o1wfv", textContent: "0" }), (0, _App.createElement)(elem.graphTooltipValue, { className: "tooltipValue-o1wfv", textContent: "ping: undefined ms" }))))));
+    return (0, _App.createElement)(elem.pingItem, { className: "pingItem-e3Lhk", onMount: this.onMount }, (0, _App.createElement)("div", { className: "results-viKtf" }, (0, _App.createElement)("div", { className: "serverDetails-twBep" }, (0, _App.createElement)("button", { className: "closeButton-twBep", title: "Delete result", onclick: deleteResult }, (0, _App.svgIcon)("close")), (0, _App.createElement)("div", { className: "serverName-twBep", textContent: _TestConfig2.default.ping.server.name })), (0, _App.createElement)("div", { className: "results-hn8Gk" }, (0, _App.createElement)("div", { className: "result-x3Ayv" }, (0, _App.createElement)("span", { textContent: "min: " }), (0, _App.createElement)(elem.minValue, { textContent: "-- ms" })), (0, _App.createElement)("div", { className: "result-x3Ayv" }, (0, _App.createElement)("span", { textContent: "avg: " }), (0, _App.createElement)(elem.avgValue, { textContent: "-- ms" })), (0, _App.createElement)("div", { className: "result-x3Ayv" }, (0, _App.createElement)("span", { textContent: "max: " }), (0, _App.createElement)(elem.maxValue, { textContent: "-- ms" })), (0, _App.createElement)("div", { className: "result-x3Ayv" }, (0, _App.createElement)("span", { textContent: "jitter: " }), (0, _App.createElement)(elem.jitterValue, { textContent: "-- ms" })))), (0, _App.createElement)("div", { className: "graphWrapper-viKtf" }, (0, _App.createElement)("div", { className: "graph-o1wfv" }, (0, _App.createElement)(elem.graphInner, { className: "graphInner-o1wfv", onmousemove: graphMouseMove, onmouseout: graphMouseOut }, (0, _App.createElement)("div", { className: "graphItems-o1wfv" }, graphItems), (0, _App.createElement)(elem.lineWrapper, { class: "lineWrapper-dnXzj" }, (0, _App.createElement)(elem.graphLine, { points: "" })), (0, _App.createElement)(elem.graphTooltip, { className: "graphTooltip-o1wfv unseen-u" }, (0, _App.createElement)(elem.graphTooltipItem, { className: "tooltipItem-o1wfv", textContent: "0" }), (0, _App.createElement)(elem.graphTooltipValue, { className: "tooltipValue-o1wfv", textContent: "ping: undefined ms" }))))));
 }
 
 function PingStage() {
@@ -1861,7 +1871,8 @@ function PingStage() {
         pingItems: (0, _App.createRef)("div")
     },
         testStarted = false,
-        pingItems = [];
+        pingItems = [],
+        itemId = 0;
 
     function testFinished() {
         elem.start.removeClass("disabled");
@@ -1876,15 +1887,20 @@ function PingStage() {
     function startTest() {
         if (testStarted) return;
 
+        elem.start.addClass("disabled");
+
         testStarted = true;
         _TestConfig2.default.ping.completeAll = elem.completeAllCheckbox.node.checked;
         if (elem.resultsCount.value() != "") _TestConfig2.default.ping.results = parseNumber(elem.resultsCount.value(), 50, 1000);
 
-        var item = (0, _App.createElement)(PingItem);
+        itemId += 1;
 
-        elem.start.addClass("disabled");
+        var item = (0, _App.createElement)(PingItem, { id: itemId }),
+            el = (0, _App.element)(item);
 
-        pingItems.push((0, _App.element)(item));
+        el.id = itemId;
+
+        pingItems.push(el);
         if (pingItems.length > 6) {
             pingItems[0].remove();
             pingItems.splice(0, 1);
@@ -1900,9 +1916,18 @@ function PingStage() {
     function toggleSettingsMenu() {
         elem.settingsMenu.style({ display: elem.settingsMenu.style("display") == "none" ? "block" : "none" });
     }
+    function deletePingResult(e) {
+        pingItems.forEach(function (item, index) {
+            if (e.id == item.id) {
+                item.remove();
+                pingItems.splice(index, 1);
+            }
+        });
+    }
 
     this.events = {
-        pingTestFinished: testFinished
+        pingTestFinished: testFinished,
+        deletePingResult: deletePingResult
     };
     this.onMount = function () {};
 
