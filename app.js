@@ -286,6 +286,11 @@ window.app = function (window, document) {
         },
         style: function style(props) {
             var elem = this.node;
+
+            if (typeof props == "string") {
+                return elem.style[props];
+            }
+
             for (var i in props) {
                 elem.style[i] = props[i];
             }
@@ -633,6 +638,9 @@ app.svgIcon = function (window, document, app) {
         },
         menu: function menu() {
             return createElement("svg", { viewBox: "0 0 512 512", class: "svgIcon" }, createElement("path", { d: "M492,236H20c-11.046,0-20,8.954-20,20c0,11.046,8.954,20,20,20h472c11.046,0,20-8.954,20-20S503.046,236,492,236z" }), createElement("path", { d: "M492,76H20C8.954,76,0,84.954,0,96s8.954,20,20,20h472c11.046,0,20-8.954,20-20S503.046,76,492,76z" }), createElement("path", { d: "M492,396H20c-11.046,0-20,8.954-20,20c0,11.046,8.954,20,20,20h472c11.046,0,20-8.954,20-20 C512,404.954,503.046,396,492,396z" }));
+        },
+        settings: function settings() {
+            return createElement("svg", { viewBox: "0 0 512 512", class: "svgIcon" }, createElement("path", { d: "M500.6,212.6l-59.9-14.7c-3.3-10.5-7.5-20.7-12.6-30.6l30.6-51c3.6-6,2.7-13.5-2.1-18.3L414,55.4 c-4.8-4.8-12.3-5.7-18.3-2.1l-51,30.6c-9.9-5.1-20.1-9.3-30.6-12.6l-14.4-59.9C297.9,4.8,291.9,0,285,0h-60 c-6.9,0-12.9,4.8-14.7,11.4l-14.4,59.9c-10.5,3.3-20.7,7.5-30.6,12.6l-51-30.6c-6-3.6-13.5-2.7-18.3,2.1L53.4,98 c-4.8,4.8-5.7,12.3-2.1,18.3l30.6,51c-5.1,9.9-9.3,20.1-12.6,30.6l-57.9,14.7C4.8,214.1,0,220.1,0,227v60 c0,6.9,4.8,12.9,11.4,14.4l57.9,14.7c3.3,10.5,7.5,20.7,12.6,30.6l-30.6,51c-3.6,6-2.7,13.5,2.1,18.3L96,458.6 c4.8,4.8,12.3,5.7,18.3,2.1l51-30.6c9.9,5.1,20.1,9.3,30.6,12.6l14.4,57.9c1.8,6.6,7.8,11.4,14.7,11.4h60 c6.9,0,12.9-4.8,14.7-11.4l14.4-57.9c10.5-3.3,20.7-7.5,30.6-12.6l51,30.6c6,3.6,13.5,2.7,18.3-2.1l42.6-42.6 c4.8-4.8,5.7-12.3,2.1-18.3l-30.6-51c5.1-9.9,9.3-20.1,12.6-30.6l59.9-14.7c6.6-1.5,11.4-7.5,11.4-14.4v-60 C512,220.1,507.2,214.1,500.6,212.6z M255,332c-41.4,0-75-33.6-75-75c0-41.4,33.6-75,75-75c41.4,0,75,33.6,75,75 C330,298.4,296.4,332,255,332z" }));
         }
     };
 
@@ -854,15 +862,19 @@ test.runType = {
 };
 
 test.ping = {
+    results: 100,
+    completeAll: false,
     servers: [{ name: "Local", url: URL_BASE + "/download/download.file", connectType: 1 }, { name: "Cachefly.net", url: "https://open.cachefly.net/downloading", connectType: 1 }, { name: "Miami - Vultr.com", url: "https://fl-us-ping.vultr.com/assets/flags/flagsm_kr.png", connectType: 1 }, { name: "Facebook Static", url: "https://z-m-static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg", connectType: 1 }],
-    runTime: 10000
+    runTime: 10000,
+    graphItemsLen: 100
 };
 
 test.ping.server = test.ping.servers[1];
 
 test.ping.graphItems = function () {
-    var arr = [];
-    for (var index = 0; index < 100; index++) {
+    var arr = [],
+        len = test.ping.graphItemsLen;
+    for (var index = 0; index < len; index++) {
         arr.push(index);
     }
     return arr;
@@ -1723,6 +1735,9 @@ function PingItem() {
     }
     function drawGraph(value) {
         graph.values.push(value);
+        if (graph.values.length > _TestConfig2.default.ping.graphItemsLen) {
+            graph.values.splice(0, 1);
+        }
         if (value > graph.maxValue) graph.maxValue = value;
 
         var chartPoints = "",
@@ -1738,7 +1753,7 @@ function PingItem() {
         for (index = 0; index < len; index++) {
             item = graph.values[index];
 
-            pointX = (pointWidth * index).toFixed(2);
+            pointX = (pointWidth * index + 0.5).toFixed(2);
             pointY = (portHeight - item / graph.maxValue * portHeight).toFixed(2);
 
             chartPoints += " " + pointX + "," + pointY;
@@ -1755,7 +1770,7 @@ function PingItem() {
             type: "HEAD",
             fail: finishTest,
             success: function success() {
-                if (_App2.default.time() - startedTime > 10000 || measures.sendCount > 101) {
+                if (_App2.default.time() - startedTime > 10000 + measures.max.value && !_TestConfig2.default.ping.completeAll || measures.sendCount > _TestConfig2.default.ping.results + 1) {
                     return finishTest();
                 }
 
@@ -1832,6 +1847,10 @@ function PingStage() {
         startButton: (0, _App.createRef)("button"),
         serverDetails: (0, _App.createRef)("div"),
         selectServer: (0, _App.createRef)("select"),
+        settingsButton: (0, _App.createRef)("button"),
+        settingsMenu: (0, _App.createRef)("div"),
+        completeAllCheckbox: (0, _App.createRef)("input"),
+        resultsCount: (0, _App.createRef)("input"),
         pingItems: (0, _App.createRef)("div")
     },
         testStarted = false,
@@ -1841,10 +1860,18 @@ function PingStage() {
         elem.start.removeClass("disabled");
         testStarted = false;
     }
+    function parseNumber(num, min, max) {
+        num = parseInt(num);
+        num = isNaN(num) || num < min ? min : num;
+        num = num > max ? max : num;
+        return num;
+    }
     function startTest() {
         if (testStarted) return;
 
         testStarted = true;
+        _TestConfig2.default.ping.completeAll = elem.completeAllCheckbox.node.checked;
+        if (elem.resultsCount.value() != "") _TestConfig2.default.ping.results = parseNumber(elem.resultsCount.value(), 50, 1000);
 
         var item = (0, _App.createElement)(PingItem);
 
@@ -1863,16 +1890,19 @@ function PingStage() {
             elem.serverDetails.textContent(_TestConfig2.default.ping.server.name);
         }
     }
+    function toggleSettingsMenu() {
+        elem.settingsMenu.style({ display: elem.settingsMenu.style("display") == "none" ? "block" : "none" });
+    }
 
     this.events = {
         pingTestFinished: testFinished
     };
     this.onMount = function () {};
 
-    return (0, _App.createElement)("div", { className: "pingStage", events: this.events, onMount: this.onMount }, (0, _App.createElement)(elem.start, { className: "start-inBnq" }, (0, _App.createElement)("div", { className: "contents-vr4n" }, (0, _App.createElement)(elem.startButton, { className: "startButton-twMcg", textContent: "start", onclick: startTest }), (0, _App.createElement)("div", { className: "selectedServer-xncHv" }, (0, _App.createElement)(elem.serverDetails, { className: "serverDetails-xncHv", textContent: _TestConfig2.default.ping.server.name }), (0, _App.createElement)("div", { className: "changeServer-xncHv" }, (0, _App.createElement)(elem.selectServer, { className: "select-fquMx", onchange: changeServer }, _TestConfig2.default.ping.servers.map(function (item, index) {
+    return (0, _App.createElement)("div", { className: "pingStage", events: this.events, onMount: this.onMount }, (0, _App.createElement)(elem.start, { className: "start-inBnq" }, (0, _App.createElement)("div", { className: "contents-vr4n" }, (0, _App.createElement)(elem.startButton, { className: "startButton-twMcg", textContent: "start", onclick: startTest }), (0, _App.createElement)("div", { className: "selectedServer-xncHv" }, (0, _App.createElement)(elem.serverDetails, { className: "serverDetails-xncHv", textContent: _TestConfig2.default.ping.server.name }), (0, _App.createElement)("div", { className: "testSettings-qRnpi" }, (0, _App.createElement)("div", { className: "changeServer-xncHv" }, (0, _App.createElement)(elem.selectServer, { className: "select-fquMx", onchange: changeServer }, _TestConfig2.default.ping.servers.map(function (item, index) {
         if (!isLocal && index == 0) return null;
         return item.name == _TestConfig2.default.ping.server.name ? (0, _App.createElement)("option", { value: index, textContent: item.name, selected: "selected" }) : (0, _App.createElement)("option", { value: index, textContent: item.name });
-    })), (0, _App.createElement)("button", { className: "changeButton-xncHv", textContent: "Change server" }))))), (0, _App.createElement)(elem.pingItems, { className: "pingItems-id3Lk" }));
+    })), (0, _App.createElement)("button", { className: "changeButton-xncHv", textContent: "Change server" })), (0, _App.createElement)("div", { className: "buttonWrapper-xvYef" }, (0, _App.createElement)(elem.settingsButton, { className: "button-xvYef", title: "Test settings", onclick: toggleSettingsMenu }, (0, _App.svgIcon)("settings")), (0, _App.createElement)(elem.settingsMenu, { className: "menu-Jrb2E", style: "display: none;" }, (0, _App.createElement)("div", { className: "menuInner-Jrb2E" }, (0, _App.createElement)("div", { className: "menuItem-Jrb2E", textContent: "Complete all: " }, (0, _App.createElement)(elem.completeAllCheckbox, { type: "checkbox" })), (0, _App.createElement)("div", { className: "menuItem-Jrb2E", textContent: "Results: " }, (0, _App.createElement)(elem.resultsCount, { type: "number", min: 50, max: 1000, placeholder: _TestConfig2.default.ping.results }))), (0, _App.createElement)("div", { className: "menuOverlay-Jrb2E", onclick: toggleSettingsMenu }))))))), (0, _App.createElement)(elem.pingItems, { className: "pingItems-id3Lk" }));
 };
 
 exports.default = PingStage;
