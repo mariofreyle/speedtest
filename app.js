@@ -1728,17 +1728,21 @@ function PingItem() {
         graph = {
         values: [],
         maxValue: 0
-    };
+    },
+        tooltipIndex;
 
     function finishTest() {
         _App2.default.event("pingTestFinished");
     }
-    function drawGraph(value) {
-        graph.values.push(value);
-        if (graph.values.length > _TestConfig2.default.ping.graphItemsLen) {
-            graph.values.splice(0, 1);
+    function updateGraphTooltip() {
+        if (tooltipIndex) {
+            elem.graphTooltipItem.textContent(tooltipIndex);
+            elem.graphTooltipValue.textContent("ping: " + measures.results[tooltipIndex] + " ms");
         }
-        if (value > graph.maxValue) graph.maxValue = value;
+    }
+    function drawGraph(value) {
+        graph.values = measures.results;
+        if (value && value > graph.maxValue) graph.maxValue = value;
 
         var chartPoints = "",
             portWidth = elem.graphInner.width(),
@@ -1800,7 +1804,12 @@ function PingItem() {
 
                     measures.results.push(measures.pingTime);
 
+                    if (measures.results.length > _TestConfig2.default.ping.graphItemsLen) {
+                        measures.results.splice(0, 1);
+                    }
+
                     drawGraph(measures.pingTime);
+                    updateGraphTooltip();
 
                     measures.prevPingTime = measures.pingTime;
                 }
@@ -1815,17 +1824,15 @@ function PingItem() {
         var parentPos = elem.graphInner.node.getBoundingClientRect(),
             mousePosX = e.clientX,
             tooltipWidth = elem.graphTooltip.width(),
-            posX = mousePosX - parentPos.left + 20,
-            index = e.target.getAttribute("index");
+            posX = mousePosX - parentPos.left + 20;
+
+        tooltipIndex = e.target.getAttribute("index");
 
         if (mousePosX > parentPos.right - (tooltipWidth + 30)) {
             posX = mousePosX - parentPos.left - tooltipWidth - 20;
         }
 
-        if (index) {
-            elem.graphTooltipItem.textContent(index);
-            elem.graphTooltipValue.textContent("ping: " + measures.results[index] + " ms");
-        }
+        updateGraphTooltip();
 
         elem.graphTooltip.style({ left: posX + "px" });
     }
