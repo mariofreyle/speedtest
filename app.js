@@ -1111,7 +1111,7 @@ function TestStage(props) {
             this.elem.removeClass("unseen");
         };
         this.draw = function (point, intervalTime, time, close) {
-            if (time - this.lastTime < this.updateTime && !close) {
+            if (_TestConfig2.default.runTime > 16000 && time - this.lastTime < this.updateTime && !close) {
                 return;
             }
             this.lastTime = time;
