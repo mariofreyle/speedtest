@@ -1788,6 +1788,9 @@ function PingItem(props) {
         elem.graphLine.setAttr("points", chartPoints);
     }
     function ping() {
+        if (measures.sendCount <= 1) {
+            startedTime = _App2.default.time();
+        }
         measures.sendTime = _App2.default.time();
         measures.connection = _App2.default.fetch({
             url: _TestConfig2.default.ping.server.url,
