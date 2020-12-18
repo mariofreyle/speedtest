@@ -1824,7 +1824,7 @@ function PingItem(props) {
                     measures.prevPingTime = measures.pingTime;
                 }
 
-                if (_App2.default.time() - startedTime > 10000 + measures.max.value && !_TestConfig2.default.ping.completeAll || measures.sendCount > _TestConfig2.default.ping.results + 1) {
+                if (_App2.default.time() - startedTime > 10000 + measures.max.value && !_TestConfig2.default.ping.completeAll || measures.sendCount > _TestConfig2.default.ping.results) {
                     return finishTest();
                 }
 
