@@ -1834,7 +1834,7 @@ function PingItem(props) {
                 }
 
                 if (_App2.default.time() - startedTime > 10000 + measures.max.value && !_TestConfig2.default.ping.completeAll || measures.sendCount > _TestConfig2.default.ping.results) {
-                    return finishTest();
+                    return setTimeout(finishTest, 100);
                 }
 
                 ping();
