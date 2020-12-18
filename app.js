@@ -872,7 +872,7 @@ test.runType = {
 test.ping = {
     results: 100,
     completeAll: false,
-    servers: [{ name: "Local", url: URL_BASE + "/download/download.file", connectType: 1 }, { name: "Cachefly.net", url: "https://open.cachefly.net/downloading", connectType: 1 }, { name: "Miami - Vultr.com", url: "https://fl-us-ping.vultr.com/assets/flags/flagsm_kr.png", connectType: 1 }, { name: "Facebook Static", url: "https://z-m-static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg", connectType: 1 }],
+    servers: [{ name: "Local", url: URL_BASE + "/download/download.file", connectType: 1 }, { name: "Cachefly.net", url: "https://open.cachefly.net/downloading", connectType: 1 }, { name: "Miami - Vultr.com", url: "https://fl-us-ping.vultr.com/assets/flags/flagsm_kr.png", connectType: 1 }, { name: "Facebook Static", url: "https://z-m-static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg", connectType: 1 }, { name: "Washington - fireprobe.net", url: "https://s12-je1rw.fireinfra.net/?action=download&size=0", connectType: 1 }, { name: "Sydney - fireprobe.net", url: "https://s87-lggif.fireinfra.net/?action=download&size=0", connectType: 1 }, { name: "Madrid - movispeed.es", url: "https://m0011.movispeed.es/apolo/data/a1b.dat", connectType: 1 }, { name: "Singapore - fireprobe.net", url: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0", connectType: 1 }],
     runTime: 10000,
     graphItemsLen: 100
 };
@@ -1708,7 +1708,7 @@ function PingItem(props) {
         graphLine: (0, _App.createRef)("polyline")
     },
         graphItems = _TestConfig2.default.ping.graphItems.map(function (item, index) {
-        return (0, _App.createElement)("div", { className: "graphItem-o1wfv" + (_TestConfig2.default.ping.graphVisibleItems.indexOf(index) > -1 ? " a" : ""), index: index }, (0, _App.createElement)("span", { textContent: index }));
+        return _TestConfig2.default.ping.graphVisibleItems.indexOf(index) > -1 ? (0, _App.createElement)("div", { index: index, a: "" }) : (0, _App.createElement)("div", { index: index });
     }),
         startedTime = _App2.default.time(),
         measures = {
