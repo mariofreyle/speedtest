@@ -1768,7 +1768,7 @@ function PingItem(props) {
 
         var chartPoints = "",
             portWidth = elem.graphInner.width(),
-            portHeight = elem.graphInner.height() - 10,
+            portHeight = elem.graphInner.height() - 20,
             pointWidth = portWidth / _TestConfig2.default.ping.graphItems.length,
             index,
             len = graph.values.length,
