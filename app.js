@@ -1779,7 +1779,6 @@ function PingItem(props) {
         elem.graphLine.setAttr("points", chartPoints);
     }
     function ping() {
-        measures.sendCount += 1;
         measures.sendTime = _App2.default.time();
         measures.connection = _App2.default.fetch({
             url: _TestConfig2.default.ping.server.url,
@@ -1787,9 +1786,7 @@ function PingItem(props) {
             type: "HEAD",
             fail: finishTest,
             success: function success() {
-                if (_App2.default.time() - startedTime > 10000 + measures.max.value && !_TestConfig2.default.ping.completeAll || measures.sendCount > _TestConfig2.default.ping.results + 1) {
-                    return finishTest();
-                }
+                measures.sendCount += 1;
 
                 if (measures.sendCount > 1) {
                     measures.pingTime = _App2.default.time() - measures.sendTime;
@@ -1825,6 +1822,10 @@ function PingItem(props) {
                     updateGraphTooltip();
 
                     measures.prevPingTime = measures.pingTime;
+                }
+
+                if (_App2.default.time() - startedTime > 10000 + measures.max.value && !_TestConfig2.default.ping.completeAll || measures.sendCount > _TestConfig2.default.ping.results + 1) {
+                    return finishTest();
                 }
 
                 ping();
