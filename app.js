@@ -581,6 +581,10 @@ window.app = function (window, document) {
         );
     }(window, window.navigator);
 
+    window.addEventListener("resize", function () {
+        app.event("appResize");
+    });
+
     return app;
 }(window, document);
 
@@ -832,6 +836,7 @@ var test = window.test = {
         multi: { download: 3, upload: 3 },
         single: { download: 1, upload: 1 }
     },
+    mode: "1",
     bufferEnabled: true,
     resultsPrecision: 1,
     servers: [{ name: "Local", preconnect: 0, download: URL_BASE + "/download/download.file", upload: URL_BASE }, { name: "Miami - vultr.com", preconnect: 1, download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "Chicago - cachefly.net", preconnect: 1, download: "https://open.cachefly.net/downloading", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "Washington - fireprobe.net", preconnect: 1, preconnectURL: "https://s12-je1rw.fireinfra.net/?action=download&size=0", download: "https://s12-je1rw.fireinfra.net/?action=download&size=100", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "Washington - cfapps.io", download: "https://speed-test.cfapps.io/network?module=download&size=104857600", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "Madrid - movispeed.es", preconnect: 1, download: "https://m0012.movispeed.es/apolo/data/a100m.dat", upload: "https://m0012.movispeed.es/apolo/subida.php" }, { name: "Sydney - fireprobe.net", preconnect: 1, preconnectURL: "https://s87-lggif.fireinfra.net/?action=download&size=0", download: "https://s87-lggif.fireinfra.net/?action=download&size=100", upload: "https://s87-lggif.fireinfra.net/?action=xupload" }, { name: "Singapore - fireprobe.net", preconnect: 1, preconnectURL: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0", download: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100", upload: "https://s281-tnorz.fireinfra.net:9114/?action=xupload" }],
@@ -872,7 +877,7 @@ test.runType = {
 test.ping = {
     results: 100,
     completeAll: false,
-    servers: [{ name: "Local", url: URL_BASE + "/download/download.file", connectType: 1 }, { name: "Cachefly.net", url: "https://open.cachefly.net/downloading", connectType: 1 }, { name: "Miami - Vultr.com", url: "https://fl-us-ping.vultr.com/assets/flags/flagsm_kr.png", connectType: 1 }, { name: "Facebook Static", url: "https://z-m-static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg", connectType: 1 }, { name: "Washington - fireprobe.net", url: "https://s12-je1rw.fireinfra.net/?action=download&size=0", connectType: 1 }, { name: "Sydney - fireprobe.net", url: "https://s87-lggif.fireinfra.net/?action=download&size=0", connectType: 1 }, { name: "Madrid - movispeed.es", url: "https://m0011.movispeed.es/apolo/data/a1b.dat", connectType: 1 }, { name: "Singapore - fireprobe.net", url: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0", connectType: 1 }],
+    servers: [{ name: "Local", url: URL_BASE + "/download/download.file", connectType: 1 }, { name: "Cachefly.net", url: "https://open.cachefly.net/downloading", connectType: 1 }, { name: "Miami - Vultr.com", url: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", connectType: 1 }, { name: "Tigo", url: "https://tigo.5886662453.com", connectType: 1 }, { name: "Facebook Static", url: "https://z-m-static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg", connectType: 1 }, { name: "Washington - fireprobe.net", url: "https://s12-je1rw.fireinfra.net/?action=download&size=0", connectType: 1 }, { name: "Sydney - fireprobe.net", url: "https://s87-lggif.fireinfra.net/?action=download&size=0", connectType: 1 }, { name: "Madrid - movispeed.es", url: "https://m0011.movispeed.es/apolo/data/a1b.dat", connectType: 1 }, { name: "Singapore - fireprobe.net", url: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0", connectType: 1 }],
     runTime: 10000,
     graphItemsLen: 100
 };
@@ -987,6 +992,9 @@ function TestStage(props) {
                 consoleInner = "";
                 consoleLines = [];
                 elem.console.value(consoleInner);
+            },
+            scroll: function scroll() {
+                elem.console.scrollTop(elem.console.scrollHeight());
             }
         };
     }();
@@ -1293,7 +1301,7 @@ function TestStage(props) {
                 _App2.default.event("clearGauge");
 
                 setTimeout(function () {
-                    if (_TestConfig2.default.runType.download) {
+                    if (_TestConfig2.default.runType.download && _TestConfig2.default.mode == "1") {
                         _App2.default.event("runTest", { runType: "upload" });
                     } else {
                         _App2.default.event("closeTest"), closeGauge();
@@ -1377,6 +1385,7 @@ function TestStage(props) {
             _TestConfig2.default.selectedServer = parseInt(elem.serverSelect.value());
             _TestConfig2.default.bufferEnabled = elem.enableBuffer.node.checked;
             _TestConfig2.default.outputSpeed = elem.outputSpeedSelect.value();
+            _TestConfig2.default.mode = elem.startTestWith.value();
 
             //return;
 
@@ -1470,11 +1479,12 @@ function TestStage(props) {
                 }
             });
         }
+        elem.startTestWith.node.childNodes[_TestConfig2.default.mode - 1].setAttribute("selected", "");
     };
 
-    return (0, _App.createElement)(elem.testStage, { className: "testStage" + (props.fadeIn ? " fadeIn" : ""), events: this.events, onMount: this.onMount }, (0, _App.createElement)("section", { className: "resultsArea" }, (0, _App.createElement)(elem.resultsContainer, { className: "resultsData" }, (0, _App.createElement)("button", { className: "stageClose", title: "Cerrar Prueba", "aria-label": "Cerrar Prueba", onclick: this.closeStage }, (0, _App.svgIcon)("close")), (0, _App.createElement)(elem.resultDownload, { className: "resultItem resultDownload" }, (0, _App.createElement)("div", { className: "resultContainer" }, (0, _App.createElement)("div", { className: "resultHeader" }, (0, _App.createElement)("div", { className: "resultHeaderWrapper" }, (0, _App.createElement)("div", { className: "resultIcon" }, (0, _App.svgIcon)("downlink")), (0, _App.createElement)("div", { className: "resultTitle" }, (0, _App.createElement)("b", { textContent: "DESCARGAR" })), (0, _App.createElement)("div", { className: "resultUnit textHolder" }, (0, _App.createElement)("span", { textContent: "Mbps" })))), (0, _App.createElement)("div", { className: "resultBody" }, (0, _App.createElement)(elem.speedDownloadNumber, { className: "resultValue", textContent: "- -" }), (0, _App.createElement)("div", { className: "resultGraph" }, (0, _App.svgIcon)("resultGraph", 0))))), (0, _App.createElement)(elem.resultUpload, { className: "resultItem resultUpload" }, (0, _App.createElement)("div", { className: "resultContainer" }, (0, _App.createElement)("div", { className: "resultHeader" }, (0, _App.createElement)("div", { className: "resultHeaderWrapper" }, (0, _App.createElement)("div", { className: "resultIcon" }, (0, _App.svgIcon)("uplink")), (0, _App.createElement)("div", { className: "resultTitle" }, (0, _App.createElement)("b", { textContent: "SUBIR" })), (0, _App.createElement)("div", { className: "resultUnit textHolder" }, (0, _App.createElement)("span", { textContent: "Mbps" })))), (0, _App.createElement)("div", { className: "resultBody" }, (0, _App.createElement)(elem.speedUploadNumber, { className: "resultValue", textContent: "- -" }), (0, _App.createElement)("div", { className: "resultGraph" }, (0, _App.svgIcon)("resultGraph", 1))))))), (0, _App.createElement)(elem.stageMain, { className: "stageMain" }, (0, _App.createElement)(_StartButton2.default, { textContent: "COMENZAR", action: 1 })), (0, _App.createElement)(elem.consoleWrapper, { className: "testConsoleWrapper hidden" }, (0, _App.createElement)(elem.console, { readonly: "", spellcheck: "false", value: "waiting to start the test..." }), (0, _App.createElement)("div", { className: "testSettings" }, (0, _App.createElement)("div", { className: "testSettings-item setTime" }, (0, _App.createElement)("label", { className: "testSettings-label textHolder", for: "testSettings-setTime" }, (0, _App.createElement)("b", { textContent: "Test time: " })), (0, _App.createElement)("div", { className: "testSettings-input" }, (0, _App.createElement)(elem.testTimeInput, { className: "testSettings-inputElem", id: "testSettings-setTime", type: "number", min: "1", value: _TestConfig2.default.runTime / 1000 }), (0, _App.createElement)("div", { className: "testSettings-inputBorder" }))), (0, _App.createElement)("div", { className: "testSettings-item setConnections" }, (0, _App.createElement)("label", { className: "testSettings-label textHolder", for: "testSettings-setConnections" }, (0, _App.createElement)("b", { textContent: "Connections: " })), (0, _App.createElement)("div", { className: "testSettings-input" }, (0, _App.createElement)(elem.connectionsInput, { className: "testSettings-inputElem", id: "testSettings-setConnections", type: "number", min: "1", value: _TestConfig2.default.connections.multi.download }), (0, _App.createElement)("div", { className: "testSettings-inputBorder" }))), (0, _App.createElement)("div", { className: "testSettings-item setServer" }, (0, _App.createElement)("label", { className: "testSettings-label textHolder", for: "testSettings-setServer" }, (0, _App.createElement)("b", { textContent: "Server: " })), (0, _App.createElement)("div", { className: "testSettings-input" }, (0, _App.createElement)(elem.serverSelect, { className: "testSettings-selectElem", id: "testSettings-setServer" }, _TestConfig2.default.servers.map(function (item, index) {
+    return (0, _App.createElement)(elem.testStage, { className: "testStage" + (props.fadeIn ? " fadeIn" : ""), events: this.events, onMount: this.onMount }, (0, _App.createElement)("section", { className: "resultsArea" }, (0, _App.createElement)(elem.resultsContainer, { className: "resultsData" }, (0, _App.createElement)("button", { className: "stageClose", title: "Cerrar Prueba", "aria-label": "Cerrar Prueba", onclick: this.closeStage }, (0, _App.svgIcon)("close")), (0, _App.createElement)(elem.resultDownload, { className: "resultItem resultDownload" }, (0, _App.createElement)("div", { className: "resultContainer" }, (0, _App.createElement)("div", { className: "resultHeader" }, (0, _App.createElement)("div", { className: "resultHeaderWrapper" }, (0, _App.createElement)("div", { className: "resultIcon" }, (0, _App.svgIcon)("downlink")), (0, _App.createElement)("div", { className: "resultTitle" }, (0, _App.createElement)("b", { textContent: "DESCARGAR" })), (0, _App.createElement)("div", { className: "resultUnit textHolder" }, (0, _App.createElement)("span", { textContent: "Mbps" })))), (0, _App.createElement)("div", { className: "resultBody" }, (0, _App.createElement)(elem.speedDownloadNumber, { className: "resultValue", textContent: "- -" }), (0, _App.createElement)("div", { className: "resultGraph" }, (0, _App.svgIcon)("resultGraph", 0))))), (0, _App.createElement)(elem.resultUpload, { className: "resultItem resultUpload" }, (0, _App.createElement)("div", { className: "resultContainer" }, (0, _App.createElement)("div", { className: "resultHeader" }, (0, _App.createElement)("div", { className: "resultHeaderWrapper" }, (0, _App.createElement)("div", { className: "resultIcon" }, (0, _App.svgIcon)("uplink")), (0, _App.createElement)("div", { className: "resultTitle" }, (0, _App.createElement)("b", { textContent: "SUBIR" })), (0, _App.createElement)("div", { className: "resultUnit textHolder" }, (0, _App.createElement)("span", { textContent: "Mbps" })))), (0, _App.createElement)("div", { className: "resultBody" }, (0, _App.createElement)(elem.speedUploadNumber, { className: "resultValue", textContent: "- -" }), (0, _App.createElement)("div", { className: "resultGraph" }, (0, _App.svgIcon)("resultGraph", 1))))))), (0, _App.createElement)(elem.stageMain, { className: "stageMain" }, (0, _App.createElement)(_StartButton2.default, { textContent: "COMENZAR", action: 1 })), (0, _App.createElement)(elem.consoleWrapper, { className: "testConsoleWrapper hidden" }, (0, _App.createElement)("div", { className: "console-e2Lfg" }, (0, _App.createElement)("button", { onclick: testConsole.scroll }), (0, _App.createElement)(elem.console, { readonly: "", spellcheck: "false", value: "waiting to start the test..." })), (0, _App.createElement)("div", { className: "testSettings" }, (0, _App.createElement)("div", { className: "testSettings-item setTime" }, (0, _App.createElement)("label", { className: "testSettings-label textHolder", for: "testSettings-setTime" }, (0, _App.createElement)("b", { textContent: "Test time: " })), (0, _App.createElement)("div", { className: "testSettings-input" }, (0, _App.createElement)(elem.testTimeInput, { className: "testSettings-inputElem", id: "testSettings-setTime", type: "number", min: "1", value: _TestConfig2.default.runTime / 1000 }), (0, _App.createElement)("div", { className: "testSettings-inputBorder" }))), (0, _App.createElement)("div", { className: "testSettings-item setConnections" }, (0, _App.createElement)("label", { className: "testSettings-label textHolder", for: "testSettings-setConnections" }, (0, _App.createElement)("b", { textContent: "Connections: " })), (0, _App.createElement)("div", { className: "testSettings-input" }, (0, _App.createElement)(elem.connectionsInput, { className: "testSettings-inputElem", id: "testSettings-setConnections", type: "number", min: "1", value: _TestConfig2.default.connections.multi.download }), (0, _App.createElement)("div", { className: "testSettings-inputBorder" }))), (0, _App.createElement)("div", { className: "testSettings-item setServer" }, (0, _App.createElement)("label", { className: "testSettings-label textHolder", for: "testSettings-setServer" }, (0, _App.createElement)("b", { textContent: "Server: " })), (0, _App.createElement)("div", { className: "testSettings-input" }, (0, _App.createElement)(elem.serverSelect, { className: "testSettings-selectElem", id: "testSettings-setServer" }, _TestConfig2.default.servers.map(function (item, index) {
         return index > 0 || isLocal ? index != _TestConfig2.default.selectedServer ? (0, _App.createElement)("option", { value: index, textContent: item.name }) : (0, _App.createElement)("option", { value: index, selected: "", textContent: item.name }) : null;
-    })))), (0, _App.createElement)("div", { className: "testSettings-item enableBuffer" }, (0, _App.createElement)("label", { className: "testSettings-label textHolder", for: "testSettings-enableBuffer" }, (0, _App.createElement)("b", { textContent: "Enable buffer: " })), (0, _App.createElement)("div", { className: "testSettings-input checkbox" }, _TestConfig2.default.bufferEnabled ? (0, _App.createElement)(elem.enableBuffer, { className: "testSettings-inputCheckbox", id: "testSettings-enableBuffer", type: "checkbox", checked: "" }) : (0, _App.createElement)(elem.enableBuffer, { className: "testSettings-inputCheckbox", id: "testSettings-enableBuffer", type: "checkbox" }))), (0, _App.createElement)("div", { className: "testSettings-item outputSpeed" }, (0, _App.createElement)("label", { className: "testSettings-label textHolder", for: "testSettings-outputSpeed" }, (0, _App.createElement)("b", { textContent: "Output speed: " })), (0, _App.createElement)("div", { className: "testSettings-input" }, (0, _App.createElement)(elem.outputSpeedSelect, { className: "testSettings-selectElem", id: "testSettings-outputSpeed" }, (0, _App.createElement)("option", { value: "instant", textContent: "Instant speed" }), (0, _App.createElement)("option", { value: "average", selected: "", textContent: "Average speed" })))), (0, _App.createElement)("div", { className: "testSettings-item outputSpeed" }, (0, _App.createElement)("label", { className: "testSettings-label textHolder", for: "testSettings-startTestWith" }, (0, _App.createElement)("b", { textContent: "Start test with: " })), (0, _App.createElement)("div", { className: "testSettings-input" }, (0, _App.createElement)(elem.startTestWith, { className: "testSettings-selectElem", id: "testSettings-startTestWith" }, (0, _App.createElement)("option", { value: "download", selected: "", textContent: "Download speed" }), (0, _App.createElement)("option", { value: "upload", textContent: "Upload speed" })))))), (0, _App.createElement)("footer", { className: "stage-footer" }, (0, _App.createElement)("div", { className: "footerItem" }, (0, _App.createElement)("div", { className: "footerItem-details" }, (0, _App.createElement)("div", { className: "footerItem-icon" }, (0, _App.svgIcon)("user")), (0, _App.createElement)("div", { className: "footerItem-content" }, (0, _App.createElement)(elem.ispName, { className: "footerItem-title ispName", textContent: _TestConfig2.default.user.isp || "- -" }), (0, _App.createElement)(elem.publicIp, { className: "footerItem-description textHolder" + (_TestConfig2.default.user.ip && _TestConfig2.default.user.ip.split("").indexOf(":") > -1 ? " hidden" : ""), textContent: _TestConfig2.default.user.ip || "- -" })))), (0, _App.createElement)("div", { className: "footerItem" }, (0, _App.createElement)("div", { className: "footerItem-details" }, (0, _App.createElement)("div", { className: "footerItem-icon" }, (0, _App.svgIcon)("connections")), (0, _App.createElement)("div", { className: "footerItem-content" }, (0, _App.createElement)("div", { className: "footerItem-title", textContent: "Conexiones" }), (0, _App.createElement)("div", { className: "footerItem-description" }, (0, _App.createElement)("div", { className: "testModeToggle-wrapper" }, (0, _App.createElement)(elem.multiModeButton, { className: "testModeToggle-button" + (_TestConfig2.default.connections.mode == "multi" ? " active" : ""), textContent: "Multi", onclick: function onclick() {
+    })))), (0, _App.createElement)("div", { className: "testSettings-item enableBuffer" }, (0, _App.createElement)("label", { className: "testSettings-label textHolder", for: "testSettings-enableBuffer" }, (0, _App.createElement)("b", { textContent: "Enable buffer: " })), (0, _App.createElement)("div", { className: "testSettings-input checkbox" }, _TestConfig2.default.bufferEnabled ? (0, _App.createElement)(elem.enableBuffer, { className: "testSettings-inputCheckbox", id: "testSettings-enableBuffer", type: "checkbox", checked: "" }) : (0, _App.createElement)(elem.enableBuffer, { className: "testSettings-inputCheckbox", id: "testSettings-enableBuffer", type: "checkbox" }))), (0, _App.createElement)("div", { className: "testSettings-item outputSpeed" }, (0, _App.createElement)("label", { className: "testSettings-label textHolder", for: "testSettings-outputSpeed" }, (0, _App.createElement)("b", { textContent: "Output speed: " })), (0, _App.createElement)("div", { className: "testSettings-input" }, (0, _App.createElement)(elem.outputSpeedSelect, { className: "testSettings-selectElem", id: "testSettings-outputSpeed" }, (0, _App.createElement)("option", { value: "instant", textContent: "Instant speed" }), (0, _App.createElement)("option", { value: "average", selected: "", textContent: "Average speed" })))), (0, _App.createElement)("div", { className: "testSettings-item outputSpeed" }, (0, _App.createElement)("label", { className: "testSettings-label textHolder", for: "testSettings-startTestWith" }, (0, _App.createElement)("b", { textContent: "Test mode: " })), (0, _App.createElement)("div", { className: "testSettings-input" }, (0, _App.createElement)(elem.startTestWith, { className: "testSettings-selectElem", id: "testSettings-startTestWith" }, (0, _App.createElement)("option", { value: "1", textContent: "Download - Upload" }), (0, _App.createElement)("option", { value: "2", textContent: "Only Download" }), (0, _App.createElement)("option", { value: "3", textContent: "Only Upload" })))))), (0, _App.createElement)("footer", { className: "stage-footer" }, (0, _App.createElement)("div", { className: "footerItem" }, (0, _App.createElement)("div", { className: "footerItem-details" }, (0, _App.createElement)("div", { className: "footerItem-icon" }, (0, _App.svgIcon)("user")), (0, _App.createElement)("div", { className: "footerItem-content" }, (0, _App.createElement)(elem.ispName, { className: "footerItem-title ispName", textContent: _TestConfig2.default.user.isp || "- -" }), (0, _App.createElement)(elem.publicIp, { className: "footerItem-description textHolder" + (_TestConfig2.default.user.ip && _TestConfig2.default.user.ip.split("").indexOf(":") > -1 ? " hidden" : ""), textContent: _TestConfig2.default.user.ip || "- -" })))), (0, _App.createElement)("div", { className: "footerItem" }, (0, _App.createElement)("div", { className: "footerItem-details" }, (0, _App.createElement)("div", { className: "footerItem-icon" }, (0, _App.svgIcon)("connections")), (0, _App.createElement)("div", { className: "footerItem-content" }, (0, _App.createElement)("div", { className: "footerItem-title", textContent: "Conexiones" }), (0, _App.createElement)("div", { className: "footerItem-description" }, (0, _App.createElement)("div", { className: "testModeToggle-wrapper" }, (0, _App.createElement)(elem.multiModeButton, { className: "testModeToggle-button" + (_TestConfig2.default.connections.mode == "multi" ? " active" : ""), textContent: "Multi", onclick: function onclick() {
             toggleConnectionsMode("multi");
         } }), (0, _App.createElement)("span", { className: "testModeToggle-divider textHolder", textContent: "•" }), (0, _App.createElement)(elem.singleModeButton, { className: "testModeToggle-button" + (_TestConfig2.default.connections.mode == "single" ? " active" : ""), textContent: "Unica", onclick: function onclick() {
             toggleConnectionsMode("single");
@@ -1507,13 +1517,14 @@ function StartButton(props) {
     };
 
     this.handleClick = function () {
+        var mode = (0, _App.$)("#testSettings-startTestWith").value();
         elem.startWrapper.addClass("anim");
 
         _App2.default.event("initializeTest");
 
         setTimeout(function () {
             elem.startWrapper.remove();
-            _App2.default.event("runTest", { runType: (0, _App.$)("#testSettings-startTestWith").value() });
+            _App2.default.event("runTest", { runType: mode == "1" || mode == "2" ? "download" : "upload" });
         }, 1200);
     };
     this.onMount = function () {
@@ -1787,62 +1798,71 @@ function PingItem(props) {
 
         elem.graphLine.setAttr("points", chartPoints);
     }
+    function adjustGraph() {
+        elem.lineWrapper.setAttr("viewBox", "0 0 " + elem.graphInner.width() + " " + elem.graphInner.height());
+    }
+    function success() {
+        measures.sendCount += 1;
+
+        if (measures.sendCount > 1) {
+            measures.pingTime = _App2.default.time() - measures.sendTime;
+
+            if (measures.pingTime < measures.min.value) {
+                measures.min.value = measures.pingTime;
+            }
+            if (measures.pingTime > measures.max.value) {
+                measures.max.value = measures.pingTime;
+            }
+            measures.avg.count += measures.pingTime;
+            measures.avg.items.push(measures.pingTime);
+            measures.avg.value = measures.avg.count / measures.avg.items.length;
+
+            if (measures.prevPingTime) {
+                measures.jitter.count += measures.pingTime > measures.prevPingTime ? measures.pingTime - measures.prevPingTime : measures.prevPingTime - measures.pingTime;
+                measures.jitter.items.push(measures.pingTime);
+                measures.jitter.value = measures.jitter.count / measures.jitter.items.length;
+            }
+
+            elem.minValue.textContent(measures.min.value + " ms");
+            elem.avgValue.textContent(measures.avg.value.toFixed(1) + " ms");
+            elem.maxValue.textContent(measures.max.value + " ms");
+            elem.jitterValue.textContent(measures.jitter.value.toFixed(1) + " ms");
+
+            measures.results.push(measures.pingTime);
+
+            if (measures.results.length > _TestConfig2.default.ping.graphItemsLen) {
+                measures.results.splice(0, 1);
+            }
+
+            drawGraph(measures.pingTime);
+            updateGraphTooltip();
+
+            measures.prevPingTime = measures.pingTime;
+        }
+
+        if (_App2.default.time() - startedTime > 10000 + measures.max.value && !_TestConfig2.default.ping.completeAll || measures.sendCount > _TestConfig2.default.ping.results) {
+            return setTimeout(finishTest, 100);
+        }
+
+        ping();
+    }
     function ping() {
+        measures.connection = _App2.default.fetch({
+            url: _TestConfig2.default.ping.server.url,
+            get: { v: _App2.default.random(6) },
+            type: "HEAD",
+            fail: function fail() {
+                if (measures.connection.status == 404) {
+                    return success();
+                }
+                finishTest();
+            },
+            success: success
+        });
         if (measures.sendCount <= 1) {
             startedTime = _App2.default.time();
         }
         measures.sendTime = _App2.default.time();
-        measures.connection = _App2.default.fetch({
-            url: _TestConfig2.default.ping.server.url,
-            get: { v: _App2.default.random(6) + "_" + _App2.default.time() },
-            type: "HEAD",
-            fail: finishTest,
-            success: function success() {
-                measures.sendCount += 1;
-
-                if (measures.sendCount > 1) {
-                    measures.pingTime = _App2.default.time() - measures.sendTime;
-
-                    if (measures.pingTime < measures.min.value) {
-                        measures.min.value = measures.pingTime;
-                    }
-                    if (measures.pingTime > measures.max.value) {
-                        measures.max.value = measures.pingTime;
-                    }
-                    measures.avg.count += measures.pingTime;
-                    measures.avg.items.push(measures.pingTime);
-                    measures.avg.value = measures.avg.count / measures.avg.items.length;
-
-                    if (measures.prevPingTime) {
-                        measures.jitter.count += measures.pingTime > measures.prevPingTime ? measures.pingTime - measures.prevPingTime : measures.prevPingTime - measures.pingTime;
-                        measures.jitter.items.push(measures.pingTime);
-                        measures.jitter.value = measures.jitter.count / measures.jitter.items.length;
-                    }
-
-                    elem.minValue.textContent(measures.min.value + " ms");
-                    elem.avgValue.textContent(measures.avg.value.toFixed(1) + " ms");
-                    elem.maxValue.textContent(measures.max.value + " ms");
-                    elem.jitterValue.textContent(measures.jitter.value.toFixed(1) + " ms");
-
-                    measures.results.push(measures.pingTime);
-
-                    if (measures.results.length > _TestConfig2.default.ping.graphItemsLen) {
-                        measures.results.splice(0, 1);
-                    }
-
-                    drawGraph(measures.pingTime);
-                    updateGraphTooltip();
-
-                    measures.prevPingTime = measures.pingTime;
-                }
-
-                if (_App2.default.time() - startedTime > 10000 + measures.max.value && !_TestConfig2.default.ping.completeAll || measures.sendCount > _TestConfig2.default.ping.results) {
-                    return setTimeout(finishTest, 100);
-                }
-
-                ping();
-            }
-        });
     }
     function graphMouseMove(e) {
         elem.graphTooltip.removeClass("unseen-u");
@@ -1865,10 +1885,16 @@ function PingItem(props) {
 
     this.onMount = function () {
         ping();
-        elem.lineWrapper.setAttr("viewBox", "0 0 " + elem.graphInner.width() + " " + elem.graphInner.height());
+        adjustGraph();
+    };
+    this.events = {
+        appResize: function appResize() {
+            adjustGraph();
+            drawGraph();
+        }
     };
 
-    return (0, _App.createElement)(elem.pingItem, { className: "pingItem-e3Lhk", onMount: this.onMount }, (0, _App.createElement)("div", { className: "results-viKtf" }, (0, _App.createElement)("div", { className: "serverDetails-twBep" }, (0, _App.createElement)("button", { className: "closeButton-twBep", title: "Delete result", onclick: deleteResult }, (0, _App.svgIcon)("close")), (0, _App.createElement)("div", { className: "serverName-twBep", textContent: _TestConfig2.default.ping.server.name })), (0, _App.createElement)("div", { className: "results-hn8Gk" }, (0, _App.createElement)("div", { className: "result-x3Ayv" }, (0, _App.createElement)("span", { textContent: "min: " }), (0, _App.createElement)(elem.minValue, { textContent: "-- ms" })), (0, _App.createElement)("div", { className: "result-x3Ayv" }, (0, _App.createElement)("span", { textContent: "avg: " }), (0, _App.createElement)(elem.avgValue, { textContent: "-- ms" })), (0, _App.createElement)("div", { className: "result-x3Ayv" }, (0, _App.createElement)("span", { textContent: "max: " }), (0, _App.createElement)(elem.maxValue, { textContent: "-- ms" })), (0, _App.createElement)("div", { className: "result-x3Ayv" }, (0, _App.createElement)("span", { textContent: "jitter: " }), (0, _App.createElement)(elem.jitterValue, { textContent: "-- ms" })))), (0, _App.createElement)("div", { className: "graphWrapper-viKtf" }, (0, _App.createElement)("div", { className: "graph-o1wfv" }, (0, _App.createElement)(elem.graphInner, { className: "graphInner-o1wfv", onmousemove: graphMouseMove, onmouseout: graphMouseOut }, (0, _App.createElement)("div", { className: "graphItems-o1wfv" }, graphItems), (0, _App.createElement)(elem.lineWrapper, { class: "lineWrapper-dnXzj" }, (0, _App.createElement)(elem.graphLine, { points: "" })), (0, _App.createElement)(elem.graphTooltip, { className: "graphTooltip-o1wfv unseen-u" }, (0, _App.createElement)(elem.graphTooltipItem, { className: "tooltipItem-o1wfv", textContent: "0" }), (0, _App.createElement)(elem.graphTooltipValue, { className: "tooltipValue-o1wfv", textContent: "ping: undefined ms" }))))));
+    return (0, _App.createElement)(elem.pingItem, { className: "pingItem-e3Lhk", onMount: this.onMount, events: this.events }, (0, _App.createElement)("div", { className: "results-viKtf" }, (0, _App.createElement)("div", { className: "serverDetails-twBep" }, (0, _App.createElement)("button", { className: "closeButton-twBep", title: "Delete result", onclick: deleteResult }, (0, _App.svgIcon)("close")), (0, _App.createElement)("div", { className: "serverName-twBep", textContent: _TestConfig2.default.ping.server.name })), (0, _App.createElement)("div", { className: "results-hn8Gk" }, (0, _App.createElement)("div", { className: "result-x3Ayv" }, (0, _App.createElement)("span", { textContent: "min: " }), (0, _App.createElement)(elem.minValue, { textContent: "-- ms" })), (0, _App.createElement)("div", { className: "result-x3Ayv" }, (0, _App.createElement)("span", { textContent: "avg: " }), (0, _App.createElement)(elem.avgValue, { textContent: "-- ms" })), (0, _App.createElement)("div", { className: "result-x3Ayv" }, (0, _App.createElement)("span", { textContent: "max: " }), (0, _App.createElement)(elem.maxValue, { textContent: "-- ms" })), (0, _App.createElement)("div", { className: "result-x3Ayv" }, (0, _App.createElement)("span", { textContent: "jitter: " }), (0, _App.createElement)(elem.jitterValue, { textContent: "-- ms" })))), (0, _App.createElement)("div", { className: "graphWrapper-viKtf" }, (0, _App.createElement)("div", { className: "graph-o1wfv" }, (0, _App.createElement)(elem.graphInner, { className: "graphInner-o1wfv", onmousemove: graphMouseMove, onmouseout: graphMouseOut }, (0, _App.createElement)("div", { className: "graphItems-o1wfv" }, graphItems), (0, _App.createElement)(elem.lineWrapper, { class: "lineWrapper-dnXzj" }, (0, _App.createElement)(elem.graphLine, { points: "" })), (0, _App.createElement)(elem.graphTooltip, { className: "graphTooltip-o1wfv unseen-u" }, (0, _App.createElement)(elem.graphTooltipItem, { className: "tooltipItem-o1wfv", textContent: "0" }), (0, _App.createElement)(elem.graphTooltipValue, { className: "tooltipValue-o1wfv", textContent: "ping: undefined ms" }))))));
 }
 
 function PingStage() {
