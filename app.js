@@ -275,6 +275,9 @@ window.app = function (window, document) {
         textContent: function textContent(value) {
             this.node.textContent = value;
         },
+        attr: function attr(_attr) {
+            return this.node.getAttribute(_attr);
+        },
         setAttr: function setAttr(name, value) {
             this.node.setAttribute(name, value);
         },
@@ -2103,11 +2106,13 @@ function NetworkStage(props) {
             measures.started = false;
             measures.preconnectRequests.forEach(function (req) {
                 req.onloadend = null;
+                req._aborted = true;
                 req.abort();
             });
             for (prop in currentRequests) {
                 req = currentRequests[prop];
                 req.onloadend = null;
+                req._aborted = true;
                 req.abort();
             }
             measures.activeRequests = 0;
@@ -2193,10 +2198,12 @@ function NetworkStage(props) {
                 requestPersistent(props).send();
             } else {
                 setTimeout(function () {
-                    delete currentRequests["_" + xhr._id];
-                    currentRequestsCount -= 1;
+                    if (measures.started) {
+                        delete currentRequests["_" + xhr._id];
+                        currentRequestsCount -= 1;
 
-                    requestPersistent(props).send();
+                        requestPersistent(props).send();
+                    }
                 }, 3000);
             }
 
@@ -2255,7 +2262,8 @@ function NetworkStage(props) {
             replacedUrl,
             requestsCount,
             reqLen,
-            _request;
+            _request,
+            inputValue = elem.urlInput.value().trim();
 
         if (measures.started) {
             return stopMeasures();
@@ -2266,8 +2274,8 @@ function NetworkStage(props) {
         elem.doneRequests.textContent("0");
         elem.currentRequests.textContent("0");
 
-        urlMaster = elem.urlInput.value();
-        urlSign = ["fbog11-1", "fbog10-1", "fclo7-1", "fctg2-1", "fbaq1-1"];
+        urlMaster = inputValue == "" ? elem.urlInput.attr("placeholder") : inputValue;
+        urlSign = ["fbog11-1", "fbog10-1", "fclo7-1", "fctg2-1", "fbaq1-1", "feoh3-1"];
         requestsCount = parseNumber(elem.requestsCount.value(), 5, 1200, 20);
         currentRequests = {};
         currentRequestsCount = 0;
@@ -2314,7 +2322,7 @@ function NetworkStage(props) {
         });
     }
 
-    return (0, _App.createElement)(elem.networkStage, { className: "stage-Kbsc8 networkStage" }, (0, _App.createElement)("div", { className: "start-BgYmU" }, (0, _App.createElement)("div", { className: "buttonWrapper-jM8zj" }, (0, _App.createElement)("button", { className: "startButton-x4Jsv", onclick: startMeasures }, (0, _App.createElement)("span", { textContent: "start" }), (0, _App.createElement)("span", { textContent: "stop" }))), (0, _App.createElement)("div", { className: "configOptions-cs8qH" }, (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("div", { className: "url-RD6hW" }, (0, _App.createElement)(elem.urlInput, { type: "text", value: "https://scontent.fbaq7-1.fna.fbcdn.net/v/t1.15752-9/fr/cp0/e15/q65/102287467_3288491428041790_6268238201366773760_n.jpg?_nc_cat=102&ccb=2&_nc_sid=58c789&efg=eyJpIjoiYiJ9&_nc_eui2=AeGCLA5cwp4lbS1Wtfgzj7z7RY53zbivr7BFjnfNuK-vsMnTF1mNItxCCeC5RH4BQEZmoZnrKR1MEONxof6GTvuG&_nc_ohc=PPK9xhBXgMkAX8VnkbZ&_nc_oc=AQl6z859XA1J6RYroErQabLpssJzY_5M0xb2aXlZZc0qRFNGI9T7sbmd23Yr5RFcTXg&_nc_ht=scontent.fbaq7-1.fna&tp=14&oh=eaf5252885f75cda392c9a49abae1935&oe=60198D21&v=1" }))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)(elem.requestsCount, { className: "inputNumber-neXQ6", type: "number", value: "20" })), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.persistentMode, { className: "input-dU4km", type: "checkbox" }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Persistent measures" }))))), (0, _App.createElement)("div", { className: "content-LJepA" }, (0, _App.createElement)("div", { className: "measuresDetails-Cs7YH" }, (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Done requests: " }, (0, _App.createElement)(elem.doneRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Current requests: " }, (0, _App.createElement)(elem.currentRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Active requests: " }, (0, _App.createElement)(elem.activeRequests, { textContent: 0 }))), (0, _App.createElement)("div", { className: "consoleWrapper-rWFEZ" }, (0, _App.createElement)(elem.console, { className: "console-r4XGp console-Sq3NP", readonly: "" }))));
+    return (0, _App.createElement)(elem.networkStage, { className: "stage-Kbsc8 networkStage" }, (0, _App.createElement)("div", { className: "start-BgYmU" }, (0, _App.createElement)("div", { className: "buttonWrapper-jM8zj" }, (0, _App.createElement)("button", { className: "startButton-x4Jsv", onclick: startMeasures }, (0, _App.createElement)("span", { textContent: "start" }), (0, _App.createElement)("span", { textContent: "stop" }))), (0, _App.createElement)("div", { className: "configOptions-cs8qH" }, (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("div", { className: "url-RD6hW" }, (0, _App.createElement)(elem.urlInput, { type: "text", value: "", placeholder: "https://z-m-scontent.feoh3-1.fna.fbcdn.net/v/t1.15752-9/fr/cp0/e15/q65/102287467_3288491428041790_6268238201366773760_n.jpg?_nc_cat=102&ccb=2&_nc_sid=58c789&efg=eyJpIjoibyJ9&_nc_eui2=AeGCLA5cwp4lbS1Wtfgzj7z7RY53zbivr7BFjnfNuK-vsMnTF1mNItxCCeC5RH4BQEZmoZnrKR1MEONxof6GTvuG&_nc_ohc=MxrSC95as3IAX_R5Dqx&_nc_oc=AQkRJQ886rm5Unva4yb7tp7fZZM99CGHxXfRMevqCoUuz57W-iRAJbBeDqxh8YzJ17Q&_nc_ad=z-m&_nc_cid=1180&_nc_eh=15205758407eb067bfe2cae3a52838b7&_nc_ht=z-m-scontent.feoh3-1.fna&tp=14&oh=c162d614a28e60053333a3ef91a4a182&oe=60198D21" }))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)(elem.requestsCount, { className: "inputNumber-neXQ6", type: "number", value: "20" })), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.persistentMode, { className: "input-dU4km", type: "checkbox" }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Persistent measures" }))))), (0, _App.createElement)("div", { className: "content-LJepA" }, (0, _App.createElement)("div", { className: "measuresDetails-Cs7YH" }, (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Done requests: " }, (0, _App.createElement)(elem.doneRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Current requests: " }, (0, _App.createElement)(elem.currentRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Active requests: " }, (0, _App.createElement)(elem.activeRequests, { textContent: 0 }))), (0, _App.createElement)("div", { className: "consoleWrapper-rWFEZ" }, (0, _App.createElement)(elem.console, { className: "console-r4XGp console-Sq3NP", readonly: "" }))));
 }
 
 exports.default = NetworkStage;
