@@ -2187,8 +2187,7 @@ function NetworkStage(props) {
         var xhr = new XMLHttpRequest(),
             prevLoaded = 0,
             first = true,
-            progress = false,
-            newRequest;
+            progress = 0;
 
         xhr._id = reqId += 1;
 
@@ -2198,11 +2197,11 @@ function NetworkStage(props) {
             measures.loaded += e.loaded - prevLoaded;
             prevLoaded = e.loaded;
 
-            if (first) measures.activeRequests += 1, first = false, progress = true;
+            if (first) measures.activeRequests += 1, first = false, progress = 1;
         };
         xhr.onloadend = function () {
             measures.doneRequests += 1;
-            if (progress) measures.activeRequests -= 1;
+            measures.activeRequests -= progress;
 
             delete currentRequests["_" + xhr._id];
             currentRequestsCount -= 1;
@@ -2225,7 +2224,8 @@ function NetworkStage(props) {
     function request(props) {
         var xhr = new XMLHttpRequest(),
             prevLoaded = 0,
-            first = true;
+            first = true,
+            progress = 0;
 
         xhr._id = reqId += 1;
 
@@ -2235,14 +2235,19 @@ function NetworkStage(props) {
             measures.loaded += e.loaded - prevLoaded;
             prevLoaded = e.loaded;
 
-            if (first) measures.activeRequests += 1, first = false;
+            if (first) measures.activeRequests += 1, first = false, progress = 1;
         };
         xhr.onloadend = function () {
             measures.doneRequests += 1;
-            measures.activeRequests -= 1;
-            if (measures.doneRequests == currentRequestsCount) {
+            measures.activeRequests -= progress;
+
+            delete currentRequests["_" + xhr._id];
+            currentRequestsCount -= 1;
+
+            if (measures.doneRequests == measures.requestsCount) {
                 stopMeasures();
             }
+
             elem.doneRequests.textContent(measures.doneRequests);
         };
 
@@ -2287,6 +2292,7 @@ function NetworkStage(props) {
         measures = {
             started: true,
             loaded: 0,
+            requestsCount: requestsCount,
             doneRequests: 0,
             preconnectRequests: [],
             activeRequests: 0,
