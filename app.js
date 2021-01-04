@@ -695,6 +695,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function MainHeader() {
     var elem = {
+        logoIcon: (0, _App.createRef)("span"),
         switchButton: (0, _App.createRef)("button"),
         toggleButton: (0, _App.createRef)("button")
     },
@@ -710,17 +711,30 @@ function MainHeader() {
         }
     }
 
+    elem.logoIcon.handleClick = function () {
+        elem.switchButton.toggle(false);
+
+        switchStage(2);
+    };
+    elem.switchButton.toggle = function (toggle) {
+        if (void 0 === toggle) {
+            elem.switchButton.toggleClass("active");
+        } else {
+            elem.switchButton[toggle ? "addClass" : "removeClass"]("active");
+        }
+
+        elem.switchButton.textContent(elem.switchButton.hasClass("active") ? "< Back" : "Ping Test");
+    };
+    elem.switchButton.handleClick = function () {
+        elem.switchButton.toggle();
+
+        switchStage(elem.switchButton.hasClass("active") ? 1 : 0);
+    };
     elem.toggleButton.handleClick = function () {
         consoleOpened = !consoleOpened;
         elem.toggleButton.textContent(consoleOpened ? "Hide console" : "Show console");
 
         _App2.default.event("consoleToggle", { toggle: consoleOpened });
-    };
-    elem.switchButton.handleClick = function () {
-        elem.switchButton.toggleClass("active");
-        elem.switchButton.textContent(elem.switchButton.hasClass("active") ? "< Back" : "Ping Test");
-
-        switchStage(elem.switchButton.hasClass("active") ? 1 : 0);
     };
 
     this.events = {
@@ -735,9 +749,7 @@ function MainHeader() {
         isLocal && location.reload();
     };
 
-    return (0, _App.createElement)("header", { className: "mainHeader", events: this.events }, (0, _App.createElement)("div", { className: "container" }, (0, _App.createElement)("div", { className: "headerContents" }, (0, _App.createElement)("div", { className: "logoWrapper" }, (0, _App.createElement)("span", { className: "logoIcon", onclick: function onclick() {
-            switchStage(2);
-        } }, (0, _App.createElement)("button", {}, (0, _App.svgIcon)("testLogo"))), (0, _App.createElement)("span", { className: "logoText", textContent: "SPEEDTEST", onclick: this.reload }), (0, _App.createElement)("span", { className: "divider-fGntc", textContent: "•" })), (0, _App.createElement)("div", { className: "nav-gAfej" }, (0, _App.createElement)(elem.switchButton, { className: "button-r8eYj", textContent: "Ping Test", onclick: elem.switchButton.handleClick }), (0, _App.createElement)(elem.toggleButton, { className: "consoleToggleButton", textContent: "Show console", onclick: elem.toggleButton.handleClick })))));
+    return (0, _App.createElement)("header", { className: "mainHeader", events: this.events }, (0, _App.createElement)("div", { className: "container" }, (0, _App.createElement)("div", { className: "headerContents" }, (0, _App.createElement)("div", { className: "logoWrapper" }, (0, _App.createElement)(elem.logoIcon, { className: "logoIcon", onclick: elem.logoIcon.handleClick }, (0, _App.createElement)("button", {}, (0, _App.svgIcon)("testLogo"))), (0, _App.createElement)("span", { className: "logoText", textContent: "SPEEDTEST", onclick: this.reload }), (0, _App.createElement)("span", { className: "divider-fGntc", textContent: "•" })), (0, _App.createElement)("div", { className: "nav-gAfej" }, (0, _App.createElement)(elem.switchButton, { className: "button-r8eYj", textContent: "Ping Test", onclick: elem.switchButton.handleClick }), (0, _App.createElement)(elem.toggleButton, { className: "consoleToggleButton", textContent: "Show console", onclick: elem.toggleButton.handleClick })))));
 }
 
 exports.default = MainHeader;
@@ -2116,6 +2128,7 @@ function NetworkStage(props) {
                 req.abort();
             }
             measures.activeRequests = 0;
+            currentRequestsCount = 0;
             interval.stop();
             elem.networkStage.removeClass("started-P5Hym");
             mconsole.log("Finished measures.");
@@ -2172,9 +2185,10 @@ function NetworkStage(props) {
     }
     function requestPersistent(props) {
         var xhr = new XMLHttpRequest(),
-            reqTime,
             prevLoaded = 0,
-            first = true;
+            first = true,
+            progress = false,
+            newRequest;
 
         xhr._id = reqId += 1;
 
@@ -2184,33 +2198,24 @@ function NetworkStage(props) {
             measures.loaded += e.loaded - prevLoaded;
             prevLoaded = e.loaded;
 
-            if (first) measures.activeRequests += 1, first = false;
+            if (first) measures.activeRequests += 1, first = false, progress = true;
         };
         xhr.onloadend = function () {
-            reqTime = time() - xhr.startTime;
             measures.doneRequests += 1;
-            measures.activeRequests -= 1;
+            if (progress) measures.activeRequests -= 1;
 
-            if (reqTime > 3000) {
-                delete currentRequests["_" + xhr._id];
-                currentRequestsCount -= 1;
-
-                requestPersistent(props).send();
-            } else {
-                setTimeout(function () {
-                    if (measures.started) {
-                        delete currentRequests["_" + xhr._id];
-                        currentRequestsCount -= 1;
-
-                        requestPersistent(props).send();
-                    }
-                }, 3000);
-            }
+            delete currentRequests["_" + xhr._id];
+            currentRequestsCount -= 1;
 
             elem.doneRequests.textContent(measures.doneRequests);
-        };
 
-        xhr.startTime = time();
+            if (xhr.response.length > 10000) {
+                // 10KB
+                requestPersistent(props).send();
+            }
+
+            if (currentRequestsCount == 0) stopMeasures();
+        };
 
         currentRequests["_" + xhr._id] = xhr;
         currentRequestsCount += 1;
@@ -2301,7 +2306,7 @@ function NetworkStage(props) {
             urls.push({ url: urlMaster, prefix: urlMaster.indexOf("?") > -1 ? "&" : "?" });
         }
 
-        reqLen = Math.round(requestsCount / (urls.length || 1));
+        reqLen = Math.ceil(requestsCount / (urls.length || 1));
         _request = measures.persistentMode ? requestPersistent : request;
 
         preconnectRequest(urls, function () {
