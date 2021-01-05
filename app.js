@@ -1421,7 +1421,7 @@ function TestStage(props) {
         runTest: function runTest(e) {
             _TestConfig2.default.runType.set(e.runType);
             _TestConfig2.default.runTime = parseNumber(elem.testTimeInput.value(), 1, 1800) * 1000;
-            _TestConfig2.default.connections.multi.download = parseNumber(elem.connectionsInput.value(), 2, 6);
+            _TestConfig2.default.connections.multi.download = parseNumber(elem.connectionsInput.value(), 2, 20);
             _TestConfig2.default.selectedServer = parseInt(elem.serverSelect.value());
             _TestConfig2.default.bufferEnabled = elem.enableBuffer.node.checked;
             _TestConfig2.default.outputSpeed = elem.outputSpeedSelect.value();
