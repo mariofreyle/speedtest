@@ -2046,6 +2046,7 @@ function NetworkStage(props) {
         urlInput: (0, _App.createRef)("input"),
         requestsCount: (0, _App.createRef)("input"),
         persistentMode: (0, _App.createRef)("input"),
+        recordButton: (0, _App.createRef)("a"),
         console: (0, _App.createRef)("textarea"),
         doneRequests: (0, _App.createRef)("span"),
         currentRequests: (0, _App.createRef)("span"),
@@ -2053,7 +2054,8 @@ function NetworkStage(props) {
     },
         currentRequestsCount,
         measures = {
-        loaded: 0
+        loaded: 0,
+        recordConsole: true
     },
         mconsole,
         time = Date.now,
@@ -2144,7 +2146,7 @@ function NetworkStage(props) {
         function callback(nolog) {
             transferred = measures.loaded - prevLoaded;
 
-            if (!nolog) mconsole.state("loaded: " + loadedData(measures.loaded) + ", transferred: " + transferredData(transferred));
+            if (!nolog && measures.recordConsole) mconsole.state("loaded: " + loadedData(measures.loaded) + ", transferred: " + transferredData(transferred));
             elem.activeRequests.textContent(measures.activeRequests);
             elem.currentRequests.textContent(currentRequestsCount);
 
@@ -2338,8 +2340,12 @@ function NetworkStage(props) {
             interval.start();
         });
     }
+    elem.recordButton.handleClick = function () {
+        elem.recordButton.toggleClass("off-t2qKV");
+        measures.recordConsole = !elem.recordButton.hasClass("off-t2qKV");
+    };
 
-    return (0, _App.createElement)(elem.networkStage, { className: "stage-Kbsc8 networkStage" }, (0, _App.createElement)("div", { className: "start-BgYmU" }, (0, _App.createElement)("div", { className: "buttonWrapper-jM8zj" }, (0, _App.createElement)(elem.startButton, { className: "startButton-x4Jsv", onclick: startMeasures }, (0, _App.createElement)("span", { textContent: "start" }), (0, _App.createElement)("span", { textContent: "stop" }))), (0, _App.createElement)("div", { className: "configOptions-cs8qH" }, (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("div", { className: "url-RD6hW" }, (0, _App.createElement)("form", {}, (0, _App.createElement)(elem.urlInput, { type: "text", name: "__url", value: "", placeholder: "https://z-m-scontent.fctg2-1.fna.fbcdn.net/v/t1.15752-9/fr/cp0/e15/q65/135856944_1366451607033113_1598808278752931662_n.jpg?_nc_cat=108&ccb=2&_nc_sid=58c789&efg=eyJpIjoibyJ9&_nc_eui2=AeHt6CAq5yTPwLYNQBa1yNudTvXFk30_ZfVO9cWTfT9l9Vq9sBMVOuHnd3u6jr2TKi-wHeCtj_mcDCDsK8l62o-o&_nc_ohc=DokmcjNMKNUAX_2Gt0W&_nc_ad=z-m&_nc_cid=1180&_nc_eh=15205758407eb067bfe2cae3a52838b7&_nc_ht=z-m-scontent.fctg2-1.fna&tp=14&oh=3bc3a38eba33475b702e155fe05f3013&oe=6018BB8C" })))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)(elem.requestsCount, { className: "inputNumber-neXQ6", type: "number", value: "24" })), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.persistentMode, { className: "input-dU4km", type: "checkbox" }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Persistent measures" }))))), (0, _App.createElement)("div", { className: "content-LJepA" }, (0, _App.createElement)("div", { className: "measuresDetails-Cs7YH" }, (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Done requests: " }, (0, _App.createElement)(elem.doneRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Current requests: " }, (0, _App.createElement)(elem.currentRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Active requests: " }, (0, _App.createElement)(elem.activeRequests, { textContent: 0 }))), (0, _App.createElement)("div", { className: "consoleWrapper-rWFEZ" }, (0, _App.createElement)(elem.console, { className: "console-r4XGp console-Sq3NP", readonly: "" }))));
+    return (0, _App.createElement)(elem.networkStage, { className: "stage-Kbsc8 networkStage" }, (0, _App.createElement)("div", { className: "start-BgYmU" }, (0, _App.createElement)("div", { className: "buttonWrapper-jM8zj" }, (0, _App.createElement)(elem.startButton, { className: "startButton-x4Jsv", onclick: startMeasures }, (0, _App.createElement)("span", { textContent: "start" }), (0, _App.createElement)("span", { textContent: "stop" }))), (0, _App.createElement)("div", { className: "configOptions-cs8qH" }, (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("div", { className: "url-RD6hW" }, (0, _App.createElement)("form", {}, (0, _App.createElement)(elem.urlInput, { type: "text", name: "__url", value: "", placeholder: "https://z-m-scontent.fctg2-1.fna.fbcdn.net/v/t1.15752-9/fr/cp0/e15/q65/135856944_1366451607033113_1598808278752931662_n.jpg?_nc_cat=108&ccb=2&_nc_sid=58c789&efg=eyJpIjoibyJ9&_nc_eui2=AeHt6CAq5yTPwLYNQBa1yNudTvXFk30_ZfVO9cWTfT9l9Vq9sBMVOuHnd3u6jr2TKi-wHeCtj_mcDCDsK8l62o-o&_nc_ohc=DokmcjNMKNUAX_2Gt0W&_nc_ad=z-m&_nc_cid=1180&_nc_eh=15205758407eb067bfe2cae3a52838b7&_nc_ht=z-m-scontent.fctg2-1.fna&tp=14&oh=3bc3a38eba33475b702e155fe05f3013&oe=6018BB8C" })))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)(elem.requestsCount, { className: "inputNumber-neXQ6", type: "number", value: "24" })), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.persistentMode, { className: "input-dU4km", type: "checkbox" }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Persistent measures" }))))), (0, _App.createElement)("div", { className: "content-LJepA" }, (0, _App.createElement)("div", { className: "header-cSqe2" }, (0, _App.createElement)("div", { className: "measuresDetails-Cs7YH" }, (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Done requests: " }, (0, _App.createElement)(elem.doneRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Current requests: " }, (0, _App.createElement)(elem.currentRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Active requests: " }, (0, _App.createElement)(elem.activeRequests, { textContent: 0 }))), (0, _App.createElement)("div", { className: "options-jRr7U" }, (0, _App.createElement)(elem.recordButton, { className: "item-nEaZk button-t2qKV", onclick: elem.recordButton.handleClick }))), (0, _App.createElement)("div", { className: "consoleWrapper-rWFEZ" }, (0, _App.createElement)(elem.console, { className: "console-r4XGp console-Sq3NP", readonly: "" }))));
 }
 
 exports.default = NetworkStage;
