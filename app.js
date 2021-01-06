@@ -865,13 +865,13 @@ var test = window.test = {
     hearbeatTime: 80,
     connections: {
         mode: "multi",
-        multi: { download: 3, upload: 3 },
+        multi: { download: 4, upload: 4 },
         single: { download: 1, upload: 1 }
     },
     mode: "1",
     bufferEnabled: true,
     resultsPrecision: 1,
-    servers: [{ name: "Local", preconnect: 0, download: URL_BASE + "/download/download.file", upload: URL_BASE }, { name: "Miami - vultr.com", preconnect: 1, download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "Chicago - cachefly.net", preconnect: 1, download: "https://open.cachefly.net/downloading", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "Washington - fireprobe.net", preconnect: 1, preconnectURL: "https://s12-je1rw.fireinfra.net/?action=download&size=0", download: "https://s12-je1rw.fireinfra.net/?action=download&size=100", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "Washington - cfapps.io", download: "https://speed-test.cfapps.io/network?module=download&size=104857600", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "Madrid - movispeed.es", preconnect: 1, download: "https://m0012.movispeed.es/apolo/data/a100m.dat", upload: "https://m0012.movispeed.es/apolo/subida.php" }, { name: "Sydney - fireprobe.net", preconnect: 1, preconnectURL: "https://s87-lggif.fireinfra.net/?action=download&size=0", download: "https://s87-lggif.fireinfra.net/?action=download&size=100", upload: "https://s87-lggif.fireinfra.net/?action=xupload" }, { name: "Singapore - fireprobe.net", preconnect: 1, preconnectURL: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0", download: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100", upload: "https://s281-tnorz.fireinfra.net:9114/?action=xupload" }],
+    servers: [{ name: "Local", preconnect: 0, download: URL_BASE + "/download/download.file", upload: URL_BASE }, { name: "Cachefly.net", preconnect: 1, download: "https://open.cachefly.net/downloading", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "New York - Librespeed.org", preconnect: 1, download: "https://nyc.speedtest.clouvider.net/backend/garbage.php?cors=true&ckSize=100", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "Miami - Vultr.com", preconnect: 1, download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "Washington - Fireprobe.net", preconnect: 1, preconnectURL: "https://s12-je1rw.fireinfra.net/?action=download&size=0", download: "https://s12-je1rw.fireinfra.net/?action=download&size=100", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "Washington - Cfapps.io", download: "https://speed-test.cfapps.io/network?module=download&size=104857600", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "Madrid - Movispeed.es", preconnect: 1, download: "https://m0012.movispeed.es/apolo/data/a100m.dat", upload: "https://m0012.movispeed.es/apolo/subida.php" }, { name: "Sydney - Fireprobe.net", preconnect: 1, preconnectURL: "https://s87-lggif.fireinfra.net/?action=download&size=0", download: "https://s87-lggif.fireinfra.net/?action=download&size=100", upload: "https://s87-lggif.fireinfra.net/?action=xupload" }, { name: "Singapore - Fireprobe.net", preconnect: 1, preconnectURL: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0", download: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100", upload: "https://s281-tnorz.fireinfra.net:9114/?action=xupload" }],
     gaugeCircleStrokeMin: 404,
     gaugeCircleStrokeMax: 194,
     gaugeNeedleRotateMin: 49, // in deg
@@ -909,7 +909,7 @@ test.runType = {
 test.ping = {
     results: 100,
     completeAll: false,
-    servers: [{ name: "Local", url: URL_BASE + "/download/download.file", connectType: 1 }, { name: "Cachefly.net", url: "https://open.cachefly.net/downloading", connectType: 1 }, { name: "Miami - Vultr.com", url: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", connectType: 1 }, { name: "Tigo", url: "https://tigo.5886662453.com", connectType: 1 }, { name: "Facebook Static", url: "https://z-m-static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg", connectType: 1 }, { name: "Washington - fireprobe.net", url: "https://s12-je1rw.fireinfra.net/?action=download&size=0", connectType: 1 }, { name: "Sydney - fireprobe.net", url: "https://s87-lggif.fireinfra.net/?action=download&size=0", connectType: 1 }, { name: "Madrid - movispeed.es", url: "https://m0011.movispeed.es/apolo/data/a1b.dat", connectType: 1 }, { name: "Singapore - fireprobe.net", url: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0", connectType: 1 }],
+    servers: [{ name: "Local", url: URL_BASE + "/download/download.file", connectType: 1 }, { name: "Cachefly.net", url: "https://open.cachefly.net/downloading", connectType: 1 }, { name: "Tigo", url: "https://tigo.5886662453.com", connectType: 1 }, { name: "New York - Librespeed.org", url: "https://ny2.us.backend.librespeed.org/garbage.php?cors=true&ckSize=0", connectType: 1 }, { name: "Miami - Vultr.com", url: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", connectType: 1 }, { name: "Facebook Static", url: "https://z-m-static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg", connectType: 1 }, { name: "Washington - Fireprobe.net", url: "https://s12-je1rw.fireinfra.net/?action=download&size=0", connectType: 1 }, { name: "Sydney - Fireprobe.net", url: "https://s87-lggif.fireinfra.net/?action=download&size=0", connectType: 1 }, { name: "Madrid - Movispeed.es", url: "https://m0011.movispeed.es/apolo/data/a1b.dat", connectType: 1 }, { name: "Singapore - Fireprobe.net", url: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0", connectType: 1 }],
     runTime: 10000,
     graphItemsLen: 100
 };
@@ -979,6 +979,7 @@ function TestStage(props) {
         multiModeButton: (0, _App.createRef)("button"),
         singleModeButton: (0, _App.createRef)("button")
     },
+        timeout = {},
         graph,
         connections,
         intervalStarted,
@@ -1002,7 +1003,7 @@ function TestStage(props) {
 
             scrollBottom = scrollTop > scrollHeight - elemHeight - 10;
 
-            if (!scrollBottom && consoleLen >= 520) return;
+            if (!scrollBottom && consoleLen >= 520 && scrollHeight > elemHeight) return;
 
             consoleLines.push(data);
             consoleLen++;
@@ -1278,7 +1279,7 @@ function TestStage(props) {
 
             buffer.size += transfer.transferred;
 
-            if (transfer.transferred && intervalTime < 6000) {
+            if (transfer.transferred && (intervalTime < 6000 || intervalTime > 12000)) {
                 if (time - buffer.items[buffer.last].startTime < 500) {
                     buffer.items[buffer.last].loaded = loaded;
                     buffer.items[buffer.last].loadTime = time;
@@ -1362,6 +1363,11 @@ function TestStage(props) {
 
             _App2.default.event("listenSpeed");
         }, loadTime > 420 ? 1 : 420 - loadTime);
+
+        clearTimeout(timeout.runInterval);
+    }
+    function runInterval() {
+        timeout.runInterval = setTimeout(startInterval, 2500);
     }
     function requestConfig(req) {
         var target = _TestConfig2.default.runType.download ? req : req.upload,
@@ -1380,7 +1386,7 @@ function TestStage(props) {
 
         target.addEventListener("progress", function (e) {
             time = _App2.default.time();
-            if (!globalLoadStartTime) globalLoadStartTime = time;
+            if (!globalLoadStartTime) globalLoadStartTime = time, runInterval();
             transfer.transferred = e.loaded - prev.loaded;
             transfer.time = time - (prev.progressTime || time);
             if (transfer.time > req.maxTransferTime) req.maxTransferTime = transfer.time;
@@ -1446,7 +1452,7 @@ function TestStage(props) {
                     connections.requests.push(_App2.default.fetch({
                         xhr: requestConfig,
                         url: _TestConfig2.default.runType.download ? connections.server.download : connections.server.upload,
-                        get: { v: _App2.default.random(6) + "_" + _App2.default.time() },
+                        get: { v: Math.random() },
                         post: uploadData,
                         fail: breakTest,
                         send: !prevent
@@ -1475,7 +1481,7 @@ function TestStage(props) {
                 for (i = 0; i < connections.count; i++) {
                     connections.preconnect.requests.push(_App2.default.fetch({
                         url: connections.server.preconnectURL ? connections.server.preconnectURL : connections.server.download,
-                        get: { v: _App2.default.random(6) + "_" + _App2.default.time() },
+                        get: { v: Math.random() },
                         type: connections.server.preconnectURL ? "GET" : "HEAD",
                         done: function done() {
                             connections.preconnect.success += 1;
@@ -1887,18 +1893,23 @@ function PingItem(props) {
         ping();
     }
     function ping() {
-        measures.connection = _App2.default.fetch({
-            url: _TestConfig2.default.ping.server.url,
-            get: { v: _App2.default.random(6) },
-            type: "HEAD",
-            fail: function fail() {
-                if (measures.connection.status == 404) {
-                    return success();
+        var xhr = new XMLHttpRequest();
+
+        xhr.open("HEAD", _TestConfig2.default.ping.server.url + (_TestConfig2.default.ping.server.url.indexOf("?") > -1 ? "&" : "?") + "v=" + _App2.default.random(6), true);
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 2) {
+                if (xhr.status == 200) {
+                    success();
+                } else {
+                    finishTest();
                 }
-                finishTest();
-            },
-            success: success
-        });
+            }
+        };
+
+        xhr.send();
+
+        measures.connection = xhr;
         if (measures.sendCount <= 1) {
             startedTime = _App2.default.time();
         }
