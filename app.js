@@ -1280,7 +1280,7 @@ function TestStage(props) {
             buffer.size += transfer.transferred;
 
             if (transfer.transferred && (intervalTime < 6000 || intervalTime > 12000)) {
-                if (time - buffer.items[buffer.last].startTime < 500) {
+                if (time - buffer.items[buffer.last].startTime < 300) {
                     buffer.items[buffer.last].loaded = loaded;
                     buffer.items[buffer.last].loadTime = time;
                 } else {
