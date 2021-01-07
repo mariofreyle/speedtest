@@ -1003,7 +1003,7 @@ function TestStage(props) {
 
             scrollBottom = scrollTop > scrollHeight - elemHeight - 10;
 
-            if (!scrollBottom && consoleLen >= 520 && scrollHeight > elemHeight) return;
+            if (!scrollBottom && consoleLen >= 520) return;
 
             consoleLines.push(data);
             consoleLen++;
@@ -1032,6 +1032,7 @@ function TestStage(props) {
             clear: function clear() {
                 consoleInner = "";
                 consoleLines = [];
+                consoleLen = 0;
                 elem.console.value(consoleInner);
             },
             scroll: function scroll() {
