@@ -864,7 +864,7 @@ var test = window.test = {
     onprogress: false, // true = progress, false = waiting
     increments: [0, 2, 4, 6, 8, 10, 12, 14, 16],
     uploadFileDup: 24,
-    runTime: isLocal ? 1000 * 10 : 15000,
+    runTime: isLocal ? 1000 * 15 : 15000,
     hearbeatTime: 80,
     connections: {
         mode: "multi",
@@ -1240,12 +1240,25 @@ function TestStage(props) {
             loaded: 0,
             transferTime: 0
         },
-            buffer = {
-            enabled: _TestConfig2.default.bufferEnabled && _TestConfig2.default.runType.download,
+            bufferEnabled = _TestConfig2.default.bufferEnabled && _TestConfig2.default.runType.download,
+            buffers = [{
+            maxTime: 6000,
+            sizeTime: 1600,
             items: [{ loaded: 0, loadTime: globalLoadStartTime, startTime: globalLoadStartTime }],
             itemsSpeed: 0,
             last: 0,
             size: 0,
+            speed: 0
+        }, {
+            maxTime: 16000,
+            sizeTime: 6000,
+            items: [{ loaded: 0, loadTime: globalLoadStartTime, startTime: globalLoadStartTime }],
+            itemsSpeed: 0,
+            last: 0,
+            size: 0,
+            speed: 0
+        }],
+            buffer = {
             speed: 0
         },
             instant = {
@@ -1271,6 +1284,7 @@ function TestStage(props) {
                 i = str.indexOf(".");
             return str.substr(0, val >= 1 ? i + 2 : i + 3);
         }
+        function handleBuffer(buffer, time, intervalTime) {}
         function intervalCallback(closeInterval) {
             time = _App2.default.time();
             loadTime = time - globalLoadStartTime;
@@ -1289,37 +1303,41 @@ function TestStage(props) {
                 //console.log(test.runType.download ? "[download]" : "[upload]", "average time:", Math.round(transfer.average.time), "max time:", transfer.maxTime)
             }
 
-            buffer.size += transfer.transferred;
+            buffer.speed = Math.max.apply(null, buffers.map(function (buffer) {
 
-            if (transfer.transferred && (intervalTime < 6000 || intervalTime > 12000)) {
-                if (time - buffer.items[buffer.last].startTime < 300) {
-                    buffer.items[buffer.last].loaded = loaded;
-                    buffer.items[buffer.last].loadTime = time;
-                } else {
-                    buffer.items.push({ loaded: loaded, loadTime: time, startTime: time });
-                    buffer.last++;
+                buffer.size += transfer.transferred;
 
-                    if (buffer.items[buffer.last].loadTime - buffer.items[1].loadTime >= 2000) {
-                        buffer.items.splice(0, 1);
-                        buffer.last--;
+                if (transfer.transferred && intervalTime < buffer.maxTime) {
+                    if (time - buffer.items[buffer.last].startTime < 300) {
+                        buffer.items[buffer.last].loaded = loaded;
+                        buffer.items[buffer.last].loadTime = time;
+                    } else {
+                        buffer.items.push({ loaded: loaded, loadTime: time, startTime: time });
+                        buffer.last++;
 
-                        //buffer.speed = (buffer.items[buffer.last].loaded - buffer.items[0].loaded) / ((buffer.items[buffer.last].loadTime - buffer.items[0].loadTime) / 1000);
-                        //buffer.size = buffer.speed * (loadTime / 1000);
-                        buffer.size = buffer.items[buffer.last].loaded - buffer.items[0].loaded;
+                        if (buffer.items[buffer.last].loadTime - buffer.items[1].loadTime >= buffer.sizeTime) {
+                            buffer.items.splice(0, 1);
+                            buffer.last--;
+
+                            //buffer.speed = (buffer.items[buffer.last].loaded - buffer.items[0].loaded) / ((buffer.items[buffer.last].loadTime - buffer.items[0].loadTime) / 1000);
+                            //buffer.size = buffer.speed * (loadTime / 1000);
+                            buffer.size = buffer.items[buffer.last].loaded - buffer.items[0].loaded;
+                        }
                     }
                 }
-            }
 
-            buffer.speed = buffer.size / ((time - buffer.items[0].loadTime) / 1000);
-            //buffer.speed = buffer.size / (loadTime / 1000);
+                buffer.speed = buffer.size / ((time - buffer.items[0].loadTime) / 1000);
+                //buffer.speed = buffer.size / (loadTime / 1000);
 
+                return buffer.speed;
+            }));
 
             instant.speed = loaded / (loadTime / 1000);
-            if (buffer.enabled) instant.speed = buffer.speed > instant.speed ? buffer.speed : instant.speed;
+            if (bufferEnabled) instant.speed = buffer.speed > instant.speed ? buffer.speed : instant.speed;
 
             instant.maxItems = loadTime > 2000 ? 10 : 4;
             //instant.maxItems += Math.round(transfer.average.time / 80);
-            //instant.maxItems = instant.maxItems > 12 ? 12 : instant.maxItems;
+            //instant.maxItems  = instant.maxItems > 12 ? 12 : instant.maxItems;
 
             instant.average = instant.calc.get(instant.speed, instant.maxItems);
             average.speed = average.calc.get(instant.average, instant.maxItems);
@@ -1348,6 +1366,8 @@ function TestStage(props) {
             });
 
             testConsole.state("loaded: " + (connections.loaded / 1000000).toFixed(2) + "MB, finalSpeed: " + (connections.loaded / 125000 / ((_App2.default.time() - globalLoadStartTime) / 1000)).toFixed(2) + "mbps, maxTransferTime: " + transfer.maxTime + "ms, time: " + (_App2.default.time() - globalLoadStartTime) / 1000 + "s");
+
+            //console.log("speed: " + ((loaded / (loadTime / 1000)) / 125000).toFixed(3) + "mbps, buffer 1: " + (buffers[0].speed / 125000).toFixed(3) + "mbps, buffer 2: " + (buffers[1].speed / 125000).toFixed(3) + "mbps");
 
             setTimeout(function () {
                 _App2.default.event("testStatus", { onprogress: false });
@@ -1816,7 +1836,6 @@ function PingItem(props) {
         sendCount: 0,
         sendTime: 0,
         pingTime: 0,
-        prevPingTime: 0,
         min: {
             value: Infinity
         },
@@ -1829,9 +1848,7 @@ function PingItem(props) {
             value: 0
         },
         jitter: {
-            value: 0,
-            count: 0,
-            items: []
+            value: 0
         },
         results: [],
         connection: null
@@ -1891,11 +1908,28 @@ function PingItem(props) {
     function adjustGraph() {
         elem.lineWrapper.setAttr("viewBox", "0 0 " + elem.graphInner.width() + " " + elem.graphInner.height());
     }
+    function calcJitter(values) {
+        var count = 0,
+            countLen = 0,
+            index,
+            len = values.length;
+        if (len > 1) {
+            for (index = 0; index < len; index++) {
+                if (index != len - 1) {
+                    count += Math.abs(values[index].value - values[index + 1].value);
+                    countLen++;
+                }
+            }
+        }
+        return count / (countLen || 1);
+    }
     function success() {
+        var time = _App2.default.time();
+
         measures.sendCount += 1;
 
         if (measures.sendCount > 1) {
-            measures.pingTime = _App2.default.time() - measures.sendTime;
+            measures.pingTime = time - measures.sendTime;
 
             if (measures.pingTime < measures.min.value) {
                 measures.min.value = measures.pingTime;
@@ -1903,15 +1937,16 @@ function PingItem(props) {
             if (measures.pingTime > measures.max.value) {
                 measures.max.value = measures.pingTime;
             }
-            measures.avg.count += measures.pingTime;
-            measures.avg.items.push(measures.pingTime);
-            measures.avg.value = measures.avg.count / measures.avg.items.length;
 
-            if (measures.prevPingTime) {
-                measures.jitter.count += measures.pingTime > measures.prevPingTime ? measures.pingTime - measures.prevPingTime : measures.prevPingTime - measures.pingTime;
-                measures.jitter.items.push(measures.pingTime);
-                measures.jitter.value = measures.jitter.count / measures.jitter.items.length;
+            measures.avg.items.push({ value: measures.pingTime, time: time });
+            measures.avg.count += measures.pingTime;
+            if (measures.avg.items.length > 1 && measures.avg.items[measures.avg.items.length - 1].time - measures.avg.items[1].time >= 5000) {
+                measures.avg.count -= measures.avg.items[0].value;
+                measures.avg.items.splice(0, 1);
             }
+
+            measures.avg.value = measures.avg.count / measures.avg.items.length;
+            measures.jitter.value = calcJitter(measures.avg.items);
 
             elem.minValue.textContent(measures.min.value + " ms");
             elem.avgValue.textContent(measures.avg.value.toFixed(1) + " ms");
@@ -1926,8 +1961,6 @@ function PingItem(props) {
 
             drawGraph(measures.pingTime);
             updateGraphTooltip();
-
-            measures.prevPingTime = measures.pingTime;
         }
 
         if (_App2.default.time() - startedTime > 10000 + measures.max.value && !_TestConfig2.default.ping.completeAll || measures.sendCount > _TestConfig2.default.ping.results) {
