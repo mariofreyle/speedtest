@@ -874,7 +874,7 @@ var test = window.test = {
     mode: "1",
     bufferEnabled: true,
     resultsPrecision: 1,
-    servers: [{ name: "Local", preconnect: 0, download: URL_BASE + "/download/download.file", upload: URL_BASE }, { name: "Cachefly.net", preconnect: 1, download: "https://open.cachefly.net/downloading", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "New York - Multi Server", multi: [{ download: "https://il-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://tx-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin" }], preconnect: 1, download: "", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "Miami - Vultr.com", preconnect: 1, download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "Washington - Fireprobe.net", preconnect: 1, preconnectURL: "https://s12-je1rw.fireinfra.net/?action=download&size=0", download: "https://s12-je1rw.fireinfra.net/?action=download&size=100", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "Washington - Cfapps.io", download: "https://speed-test.cfapps.io/network?module=download&size=104857600", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "Madrid - Movispeed.es", preconnect: 1, download: "https://m0012.movispeed.es/apolo/data/a100m.dat", upload: "https://m0012.movispeed.es/apolo/subida.php" }, { name: "Sydney - Fireprobe.net", preconnect: 1, preconnectURL: "https://s87-lggif.fireinfra.net/?action=download&size=0", download: "https://s87-lggif.fireinfra.net/?action=download&size=100", upload: "https://s87-lggif.fireinfra.net/?action=xupload" }, { name: "Singapore - Fireprobe.net", preconnect: 1, preconnectURL: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0", download: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100", upload: "https://s281-tnorz.fireinfra.net:9114/?action=xupload" }],
+    servers: [{ name: "Local", preconnect: 0, download: URL_BASE + "/download/download.file", upload: URL_BASE }, { name: "Cachefly.net", preconnect: 1, download: "https://open.cachefly.net/downloading", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "New York - Multi Server", multi: [{ download: "https://nyc.speedtest.clouvider.net/backend/garbage.php?cors=true&ckSize=100" }, { download: "https://ny2.us.backend.librespeed.org/garbage.php?cors=true&ckSize=100" }, { download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin" }], preconnect: 1, download: "", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "Miami - Vultr.com", preconnect: 1, download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "Washington - Fireprobe.net", preconnect: 1, preconnectURL: "https://s12-je1rw.fireinfra.net/?action=download&size=0", download: "https://s12-je1rw.fireinfra.net/?action=download&size=100", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "Washington - Cfapps.io", download: "https://speed-test.cfapps.io/network?module=download&size=104857600", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "Madrid - Movispeed.es", preconnect: 1, download: "https://m0012.movispeed.es/apolo/data/a100m.dat", upload: "https://m0012.movispeed.es/apolo/subida.php" }, { name: "Sydney - Fireprobe.net", preconnect: 1, preconnectURL: "https://s87-lggif.fireinfra.net/?action=download&size=0", download: "https://s87-lggif.fireinfra.net/?action=download&size=100", upload: "https://s87-lggif.fireinfra.net/?action=xupload" }, { name: "Singapore - Fireprobe.net", preconnect: 1, preconnectURL: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0", download: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100", upload: "https://s281-tnorz.fireinfra.net:9114/?action=xupload" }],
     gaugeCircleStrokeMin: 404,
     gaugeCircleStrokeMax: 194,
     gaugeNeedleRotateMin: 49, // in deg
@@ -886,7 +886,6 @@ var test = window.test = {
 };
 
 test.selectedServer = isLocal ? 0 : 2;
-test.selectedServer = 2;
 test.increments = [0, 1, 5, 10, 20, 30, 50, 75, 100];
 
 test.gaugeCircleOffsetRef = test.gaugeCircleStrokeMax - test.gaugeCircleStrokeMin;
@@ -1238,14 +1237,16 @@ function TestStage(props) {
             loaded,
             prev = {
             loaded: 0,
-            transferTime: 0
+            transferTime: 0,
+            instantSpeed: 0,
+            instantAverage: 0
         },
             bufferEnabled = _TestConfig2.default.bufferEnabled && _TestConfig2.default.runType.download,
             buffers = [{
             maxTime: 6000,
-            sizeTime: 1600,
+            sizeTime: 2000,
             items: [{ loaded: 0, loadTime: globalLoadStartTime, startTime: globalLoadStartTime }],
-            itemsSpeed: 0,
+            startTime: globalLoadStartTime,
             last: 0,
             size: 0,
             speed: 0
@@ -1253,7 +1254,7 @@ function TestStage(props) {
             maxTime: 16000,
             sizeTime: 6000,
             items: [{ loaded: 0, loadTime: globalLoadStartTime, startTime: globalLoadStartTime }],
-            itemsSpeed: 0,
+            startTime: globalLoadStartTime,
             last: 0,
             size: 0,
             speed: 0
@@ -1307,26 +1308,31 @@ function TestStage(props) {
 
                 buffer.size += transfer.transferred;
 
-                if (transfer.transferred && intervalTime < buffer.maxTime) {
-                    if (time - buffer.items[buffer.last].startTime < 300) {
+                if ( /*intervalTime < buffer.maxTime && */transfer.transferred && time - buffer.startTime > buffer.sizeTime) {
+                    buffer.speed = buffer.size / (time - buffer.startTime);
+
+                    buffer.size = buffer.speed * buffer.sizeTime;
+                    buffer.startTime = time - buffer.sizeTime;
+                }
+
+                /*if(transfer.transferred && intervalTime < buffer.maxTime){
+                    if(time - buffer.items[buffer.last].startTime < 300){
                         buffer.items[buffer.last].loaded = loaded;
                         buffer.items[buffer.last].loadTime = time;
-                    } else {
-                        buffer.items.push({ loaded: loaded, loadTime: time, startTime: time });
+                    }else{
+                        buffer.items.push({loaded: loaded, loadTime: time, startTime: time});
                         buffer.last++;
-
-                        if (buffer.items[buffer.last].loadTime - buffer.items[1].loadTime >= buffer.sizeTime) {
+                          if(buffer.items[buffer.last].loadTime - buffer.items[1].loadTime >= buffer.sizeTime){
                             buffer.items.splice(0, 1);
                             buffer.last--;
-
                             //buffer.speed = (buffer.items[buffer.last].loaded - buffer.items[0].loaded) / ((buffer.items[buffer.last].loadTime - buffer.items[0].loadTime) / 1000);
-                            //buffer.size = buffer.speed * (loadTime / 1000);
+                          //buffer.size = buffer.speed * (loadTime / 1000);
                             buffer.size = buffer.items[buffer.last].loaded - buffer.items[0].loaded;
                         }
                     }
-                }
+                }*/
 
-                buffer.speed = buffer.size / ((time - buffer.items[0].loadTime) / 1000);
+                buffer.speed = buffer.size / ((time - buffer.startTime) / 1000);
                 //buffer.speed = buffer.size / (loadTime / 1000);
 
                 return buffer.speed;
@@ -1335,11 +1341,14 @@ function TestStage(props) {
             instant.speed = loaded / (loadTime / 1000);
             if (bufferEnabled) instant.speed = buffer.speed > instant.speed ? buffer.speed : instant.speed;
 
-            instant.maxItems = loadTime > 2000 ? 10 : 4;
+            instant.maxItems = loadTime > 2000 ? 6 : 4;
             //instant.maxItems += Math.round(transfer.average.time / 80);
             //instant.maxItems  = instant.maxItems > 12 ? 12 : instant.maxItems;
 
-            instant.average = instant.calc.get(instant.speed, instant.maxItems);
+            instant.average = instant.calc.get(transfer.transferred > 0 ? instant.speed : prev.instantSpeed, instant.maxItems);
+            if (transfer.transferred == 0) {
+                instant.average = prev.instantAverage;
+            }
             average.speed = average.calc.get(instant.average, instant.maxItems);
 
             outputSpeed = _TestConfig2.default.outputSpeed == "average" ? average.speed : instant.speed;
@@ -1353,6 +1362,8 @@ function TestStage(props) {
 
             prev.loaded = loaded;
             prev.transferTime = transfer.time;
+            prev.instantSpeed = instant.speed;
+            prev.instantAverage = instant.average;
             connections.outputSpeed = outputSpeed;
             connections.speedRate = speedRate;
         }
@@ -1365,9 +1376,9 @@ function TestStage(props) {
                 testConsole.state("request " + req.id + " loaded: " + (req.loaded / 1000000).toFixed(3) + "MB, maxTime: " + req.maxTransferTime + "ms" + (req.firstProgressTime ? ", avgTime: " + Math.round((req.lastProgressTime - req.firstProgressTime) / (req.progressCount - 1 || 1)) + "ms" : "") + (req.id > connections.count ? " (added)" : ""));
             });
 
-            testConsole.state("loaded: " + (connections.loaded / 1000000).toFixed(2) + "MB, finalSpeed: " + (connections.loaded / 125000 / ((_App2.default.time() - globalLoadStartTime) / 1000)).toFixed(2) + "mbps, maxTransferTime: " + transfer.maxTime + "ms, time: " + (_App2.default.time() - globalLoadStartTime) / 1000 + "s");
+            testConsole.state("speed: " + (loaded / (loadTime / 1000) / 125000).toFixed(3) + "mbps, buffer 1: " + (buffers[0].speed / 125000).toFixed(3) + "mbps, buffer 2: " + (buffers[1].speed / 125000).toFixed(3) + "mbps");
 
-            //console.log("speed: " + ((loaded / (loadTime / 1000)) / 125000).toFixed(3) + "mbps, buffer 1: " + (buffers[0].speed / 125000).toFixed(3) + "mbps, buffer 2: " + (buffers[1].speed / 125000).toFixed(3) + "mbps");
+            testConsole.state("loaded: " + (connections.loaded / 1000000).toFixed(2) + "MB, finalSpeed: " + (connections.loaded / 125000 / ((_App2.default.time() - globalLoadStartTime) / 1000)).toFixed(2) + "mbps, maxTransferTime: " + transfer.maxTime + "ms, time: " + (_App2.default.time() - globalLoadStartTime) / 1000 + "s");
 
             setTimeout(function () {
                 _App2.default.event("testStatus", { onprogress: false });
