@@ -874,7 +874,7 @@ var test = window.test = {
     mode: "1",
     bufferEnabled: true,
     resultsPrecision: 1,
-    servers: [{ name: "Local", preconnect: 0, download: URL_BASE + "/download/download.file", upload: URL_BASE }, { name: "Cachefly.net", preconnect: 1, download: "https://open.cachefly.net/downloading", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "New York - Multi Server", multi: [{ download: "https://nyc.speedtest.clouvider.net/backend/garbage.php?cors=true&ckSize=100" }, { download: "https://ny2.us.backend.librespeed.org/garbage.php?cors=true&ckSize=100" }, { download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin" }], preconnect: 1, download: "", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "Miami - Vultr.com", preconnect: 1, download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "Washington - Fireprobe.net", preconnect: 1, preconnectURL: "https://s12-je1rw.fireinfra.net/?action=download&size=0", download: "https://s12-je1rw.fireinfra.net/?action=download&size=100", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "Washington - Cfapps.io", download: "https://speed-test.cfapps.io/network?module=download&size=104857600", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "Madrid - Movispeed.es", preconnect: 1, download: "https://m0012.movispeed.es/apolo/data/a100m.dat", upload: "https://m0012.movispeed.es/apolo/subida.php" }, { name: "Sydney - Fireprobe.net", preconnect: 1, preconnectURL: "https://s87-lggif.fireinfra.net/?action=download&size=0", download: "https://s87-lggif.fireinfra.net/?action=download&size=100", upload: "https://s87-lggif.fireinfra.net/?action=xupload" }, { name: "Singapore - Fireprobe.net", preconnect: 1, preconnectURL: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0", download: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100", upload: "https://s281-tnorz.fireinfra.net:9114/?action=xupload" }],
+    servers: [{ name: "Local", preconnect: 0, download: URL_BASE + "/download/download.file", upload: URL_BASE }, { name: "Cachefly.net", preconnect: 1, download: "https://open.cachefly.net/downloading", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "United States (East) - Multi Server", multi: [{ download: "https://nyc.speedtest.clouvider.net/backend/garbage.php?cors=true&ckSize=100" }, { download: "https://ny2.us.backend.librespeed.org/garbage.php?cors=true&ckSize=100" }, { download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin" }], preconnect: 1, download: "", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "Miami - Vultr.com", preconnect: 1, download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "Washington - Fireprobe.net", preconnect: 1, preconnectURL: "https://s12-je1rw.fireinfra.net/?action=download&size=0", download: "https://s12-je1rw.fireinfra.net/?action=download&size=100", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "Washington - Cfapps.io", download: "https://speed-test.cfapps.io/network?module=download&size=104857600", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "Madrid - Movispeed.es", preconnect: 1, download: "https://m0012.movispeed.es/apolo/data/a100m.dat", upload: "https://m0012.movispeed.es/apolo/subida.php" }, { name: "Sydney - Fireprobe.net", preconnect: 1, preconnectURL: "https://s87-lggif.fireinfra.net/?action=download&size=0", download: "https://s87-lggif.fireinfra.net/?action=download&size=100", upload: "https://s87-lggif.fireinfra.net/?action=xupload" }, { name: "Singapore - Fireprobe.net", preconnect: 1, preconnectURL: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0", download: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100", upload: "https://s281-tnorz.fireinfra.net:9114/?action=xupload" }],
     gaugeCircleStrokeMin: 404,
     gaugeCircleStrokeMax: 194,
     gaugeNeedleRotateMin: 49, // in deg
@@ -1247,7 +1247,7 @@ function TestStage(props) {
             sizeTime: 2000,
             items: [{ loaded: 0, loadTime: globalLoadStartTime, startTime: globalLoadStartTime }],
             startTime: globalLoadStartTime,
-            last: 0,
+            loaded: 0,
             size: 0,
             speed: 0
         }, {
@@ -1255,7 +1255,7 @@ function TestStage(props) {
             sizeTime: 6000,
             items: [{ loaded: 0, loadTime: globalLoadStartTime, startTime: globalLoadStartTime }],
             startTime: globalLoadStartTime,
-            last: 0,
+            loaded: 0,
             size: 0,
             speed: 0
         }],
@@ -1307,6 +1307,8 @@ function TestStage(props) {
             buffer.speed = Math.max.apply(null, buffers.map(function (buffer, index) {
 
                 buffer.size += transfer.transferred;
+                buffer.loaded += transfer.transferred;
+
                 buffer._sizeTime = index == 0 ? buffer.sizeTime + transfer.maxTime : buffer.sizeTime;
 
                 if (intervalTime < buffer.maxTime && transfer.transferred && time - buffer.startTime > buffer._sizeTime) {
@@ -1314,27 +1316,13 @@ function TestStage(props) {
 
                     buffer.size = buffer.speed * buffer._sizeTime;
                     buffer.startTime = time - buffer._sizeTime;
+
+                    buffer.speed = buffer.size / (time - buffer.startTime);
+                    buffer.loaded = buffer.speed * loadTime;
                 }
 
-                /*if(transfer.transferred && intervalTime < buffer.maxTime){
-                    if(time - buffer.items[buffer.last].startTime < 300){
-                        buffer.items[buffer.last].loaded = loaded;
-                        buffer.items[buffer.last].loadTime = time;
-                    }else{
-                        buffer.items.push({loaded: loaded, loadTime: time, startTime: time});
-                        buffer.last++;
-                          if(buffer.items[buffer.last].loadTime - buffer.items[1].loadTime >= buffer.sizeTime){
-                            buffer.items.splice(0, 1);
-                            buffer.last--;
-                            //buffer.speed = (buffer.items[buffer.last].loaded - buffer.items[0].loaded) / ((buffer.items[buffer.last].loadTime - buffer.items[0].loadTime) / 1000);
-                          //buffer.size = buffer.speed * (loadTime / 1000);
-                            buffer.size = buffer.items[buffer.last].loaded - buffer.items[0].loaded;
-                        }
-                    }
-                }*/
-
-                buffer.speed = buffer.size / ((time - buffer.startTime) / 1000);
-                //buffer.speed = buffer.size / (loadTime / 1000);
+                //buffer.speed = buffer.size / ((time - buffer.startTime) / 1000);
+                buffer.speed = buffer.loaded / (loadTime / 1000);
 
                 return buffer.speed;
             }));
