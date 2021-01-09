@@ -1252,7 +1252,7 @@ function TestStage(props) {
             speed: 0
         }, {
             maxTime: 16000,
-            sizeTime: 4000,
+            sizeTime: 6000,
             items: [{ loaded: 0, loadTime: globalLoadStartTime, startTime: globalLoadStartTime }],
             startTime: globalLoadStartTime,
             last: 0,
@@ -1371,15 +1371,17 @@ function TestStage(props) {
         function stopInterval() {
             stopTest();
 
+            time = _App2.default.time();
+
             connections.requests.forEach(function (req, index) {
                 if (req.id > 6) return;
 
                 testConsole.state("request " + req.id + " loaded: " + (req.loaded / 1000000).toFixed(3) + "MB, maxTime: " + req.maxTransferTime + "ms" + (req.firstProgressTime ? ", avgTime: " + Math.round((req.lastProgressTime - req.firstProgressTime) / (req.progressCount - 1 || 1)) + "ms" : "") + (req.id > connections.count ? " (added)" : ""));
             });
 
-            testConsole.state("finalSpeed: " + (loaded / (loadTime / 1000) / 125000).toFixed(3) + "mbps, buffer 1: " + (buffers[0].speed / 125000).toFixed(3) + "mbps, buffer 2: " + (buffers[1].speed / 125000).toFixed(3) + "mbps");
+            testConsole.state("finalSpeed: " + (loaded / (loadTime / 1000) / 125000).toFixed(2) + "mbps, buffer 1: " + (buffers[0].speed / 125000).toFixed(2) + "mbps (" + (time - buffers[0].startTime) + "), buffer 2: " + (buffers[1].speed / 125000).toFixed(2) + "mbps (" + (time - buffers[1].startTime) + ")");
 
-            testConsole.state("loaded: " + (connections.loaded / 1000000).toFixed(2) + "MB, maxTransferTime: " + transfer.maxTime + "ms, time: " + (_App2.default.time() - globalLoadStartTime) / 1000 + "s");
+            testConsole.state("loaded: " + (connections.loaded / 1000000).toFixed(2) + "MB, maxTransferTime: " + transfer.maxTime + "ms, time: " + (time - globalLoadStartTime) / 1000 + "s");
 
             setTimeout(function () {
                 _App2.default.event("testStatus", { onprogress: false });
