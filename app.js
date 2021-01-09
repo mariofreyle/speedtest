@@ -1394,7 +1394,7 @@ function TestStage(props) {
         clearTimeout(timeout.runInterval);
     }
     function runInterval() {
-        timeout.runInterval = setTimeout(startInterval, 2500);
+        timeout.runInterval = setTimeout(startInterval, 2000);
     }
     function requestConfig(req, url) {
         var target = _TestConfig2.default.runType.download ? req : req.upload,
