@@ -874,7 +874,9 @@ var test = window.test = {
     mode: "1",
     bufferEnabled: true,
     resultsPrecision: 1,
-    servers: [{ name: "Local", preconnect: 0, download: URL_BASE + "/download/download.file", upload: URL_BASE }, { name: "Cachefly.net", preconnect: 1, download: "https://open.cachefly.net/downloading", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "United States (East) - Multi Server", multi: [{ download: "https://il-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://tx-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://ga-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://tor-ca-ping.vultr.com/vultr.com.100MB.bin" }], preconnect: 1, download: "", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "Miami - Vultr.com", preconnect: 1, download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "Washington - Fireprobe.net", preconnect: 1, preconnectURL: "https://s12-je1rw.fireinfra.net/?action=download&size=0", download: "https://s12-je1rw.fireinfra.net/?action=download&size=100", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "Washington - Cfapps.io", download: "https://speed-test.cfapps.io/network?module=download&size=104857600", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "Madrid - Movispeed.es", preconnect: 1, download: "https://m0012.movispeed.es/apolo/data/a100m.dat", upload: "https://m0012.movispeed.es/apolo/subida.php" }, { name: "Sydney - Fireprobe.net", preconnect: 1, preconnectURL: "https://s87-lggif.fireinfra.net/?action=download&size=0", download: "https://s87-lggif.fireinfra.net/?action=download&size=100", upload: "https://s87-lggif.fireinfra.net/?action=xupload" }, { name: "Singapore - Fireprobe.net", preconnect: 1, preconnectURL: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0", download: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100", upload: "https://s281-tnorz.fireinfra.net:9114/?action=xupload" }],
+    servers: [{ name: "Local", preconnect: 0, download: URL_BASE + "/download/download.file", upload: URL_BASE }, { name: "Cachefly.net", preconnect: 1, download: "https://open.cachefly.net/downloading", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "United States (East) - Multi Server", multi: [{ download: "https://il-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://tx-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://ga-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://tor-ca-ping.vultr.com/vultr.com.100MB.bin" }], preconnect: 1, download: "", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "Miami - Vultr.com", preconnect: 1, download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "Washington - Fireprobe.net", preconnect: 1, preconnectDownload: "https://s12-je1rw.fireinfra.net/?action=download&size=0", preconnectUpload: "https://s12-je1rw.fireinfra.net/?action=download&size=0", download: "https://s12-je1rw.fireinfra.net/?action=download&size=100", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" },
+    /*{name: "Washington - Cfapps.io", download: "https://speed-test.cfapps.io/network?module=download&size=104857600", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true"},*/
+    { name: "Madrid - Movispeed.es", preconnect: 1, download: "https://m0012.movispeed.es/apolo/data/a100m.dat", upload: "https://m0012.movispeed.es/apolo/subida.php" }, { name: "Sydney - Fireprobe.net", preconnect: 1, preconnectDownload: "https://s87-lggif.fireinfra.net/?action=download&size=0", preconnectUpload: "https://s87-lggif.fireinfra.net/?action=download&size=0", download: "https://s87-lggif.fireinfra.net/?action=download&size=100", upload: "https://s87-lggif.fireinfra.net/?action=xupload" }, { name: "Singapore - Fireprobe.net", preconnect: 1, preconnectDownload: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0", preconnectUpload: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0", download: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100", upload: "https://s281-tnorz.fireinfra.net:9114/?action=xupload" }],
     gaugeCircleStrokeMin: 404,
     gaugeCircleStrokeMax: 194,
     gaugeNeedleRotateMin: 49, // in deg
@@ -1511,7 +1513,8 @@ function TestStage(props) {
                     serverUrl = 0,
                     serverIndex = 0,
                     serverLen = 0,
-                    preconnect = connections.server.preconnect && isDownload;
+                    preconnect = connections.server.preconnect,
+                    preconnectUrl = 0;
 
                 if (connections.server.multi && isDownload) {
                     servers = connections.server.multi;
@@ -1524,12 +1527,13 @@ function TestStage(props) {
                 for (index = 0; index < connections.count; index++) {
                     serverItem = servers[serverIndex];
                     serverUrl = serverItem[isDownload ? "download" : "upload"];
+                    preconnectUrl = serverItem["preconnect" + (isDownload ? "Download" : "Upload")];
 
                     if (preconnect) {
                         connections.preconnect.requests.push(_App2.default.fetch({
-                            url: serverItem.preconnectURL ? serverItem.preconnectURL : serverUrl,
+                            url: preconnectUrl ? preconnectUrl : serverUrl,
                             get: { v: _App2.default.random() },
-                            type: serverItem.preconnectURL ? "GET" : "HEAD",
+                            type: preconnectUrl ? "GET" : "HEAD",
                             done: function done() {
                                 connections.preconnect.success += 1;
                                 if (connections.preconnect.success == connections.count) {
