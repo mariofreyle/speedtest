@@ -558,7 +558,7 @@ window.app = function (window, document) {
             return Date.now();
         },
         random: function random(a) {
-            return Math.floor(Math.random() * (a * 1000));
+            return Math.random().toString().slice(-6) + Math.random().toString().slice(-6);
         },
         ucWords: function ucWords(string) {
             if (!string) return;
@@ -874,7 +874,7 @@ var test = window.test = {
     mode: "1",
     bufferEnabled: true,
     resultsPrecision: 1,
-    servers: [{ name: "Local", preconnect: 0, download: URL_BASE + "/download/download.file", upload: URL_BASE }, { name: "Cachefly.net", preconnect: 1, download: "https://open.cachefly.net/downloading", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "United States (East) - Multi Server", multi: [{ download: "https://nyc.speedtest.clouvider.net/backend/garbage.php?cors=true&ckSize=100" }, { download: "https://ny2.us.backend.librespeed.org/garbage.php?cors=true&ckSize=100" }, { download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin" }], preconnect: 1, download: "", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "Miami - Vultr.com", preconnect: 1, download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "Washington - Fireprobe.net", preconnect: 1, preconnectURL: "https://s12-je1rw.fireinfra.net/?action=download&size=0", download: "https://s12-je1rw.fireinfra.net/?action=download&size=100", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "Washington - Cfapps.io", download: "https://speed-test.cfapps.io/network?module=download&size=104857600", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "Madrid - Movispeed.es", preconnect: 1, download: "https://m0012.movispeed.es/apolo/data/a100m.dat", upload: "https://m0012.movispeed.es/apolo/subida.php" }, { name: "Sydney - Fireprobe.net", preconnect: 1, preconnectURL: "https://s87-lggif.fireinfra.net/?action=download&size=0", download: "https://s87-lggif.fireinfra.net/?action=download&size=100", upload: "https://s87-lggif.fireinfra.net/?action=xupload" }, { name: "Singapore - Fireprobe.net", preconnect: 1, preconnectURL: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0", download: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100", upload: "https://s281-tnorz.fireinfra.net:9114/?action=xupload" }],
+    servers: [{ name: "Local", preconnect: 0, download: URL_BASE + "/download/download.file", upload: URL_BASE }, { name: "Cachefly.net", preconnect: 1, download: "https://open.cachefly.net/downloading", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "United States (East) - Multi Server", multi: [{ download: "https://il-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://tx-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://ga-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://tor-ca-ping.vultr.com/vultr.com.100MB.bin" }], preconnect: 1, download: "", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "Miami - Vultr.com", preconnect: 1, download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "Washington - Fireprobe.net", preconnect: 1, preconnectURL: "https://s12-je1rw.fireinfra.net/?action=download&size=0", download: "https://s12-je1rw.fireinfra.net/?action=download&size=100", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" }, { name: "Washington - Cfapps.io", download: "https://speed-test.cfapps.io/network?module=download&size=104857600", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "Madrid - Movispeed.es", preconnect: 1, download: "https://m0012.movispeed.es/apolo/data/a100m.dat", upload: "https://m0012.movispeed.es/apolo/subida.php" }, { name: "Sydney - Fireprobe.net", preconnect: 1, preconnectURL: "https://s87-lggif.fireinfra.net/?action=download&size=0", download: "https://s87-lggif.fireinfra.net/?action=download&size=100", upload: "https://s87-lggif.fireinfra.net/?action=xupload" }, { name: "Singapore - Fireprobe.net", preconnect: 1, preconnectURL: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0", download: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100", upload: "https://s281-tnorz.fireinfra.net:9114/?action=xupload" }],
     gaugeCircleStrokeMin: 404,
     gaugeCircleStrokeMax: 194,
     gaugeNeedleRotateMin: 49, // in deg
@@ -920,7 +920,7 @@ test.runType = {
 test.ping = {
     results: 100,
     completeAll: false,
-    servers: [{ name: "Local", url: URL_BASE + "/download/download.file", connectType: 1 }, { name: "Cachefly.net", url: "https://open.cachefly.net/downloading", connectType: 1 }, { name: "Tigo", url: "https://tigo.5886662453.com", connectType: 1 }, { name: "New York - Librespeed.org", url: "https://ny2.us.backend.librespeed.org/garbage.php?cors=true&ckSize=0", connectType: 1 }, { name: "Miami - Vultr.com", url: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", connectType: 1 }, { name: "Facebook Static", url: "https://z-m-static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg", connectType: 1 }, { name: "Washington - Fireprobe.net", url: "https://s12-je1rw.fireinfra.net/?action=download&size=0", connectType: 1 }, { name: "Sydney - Fireprobe.net", url: "https://s87-lggif.fireinfra.net/?action=download&size=0", connectType: 1 }, { name: "Madrid - Movispeed.es", url: "https://m0011.movispeed.es/apolo/data/a1b.dat", connectType: 1 }, { name: "Singapore - Fireprobe.net", url: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0", connectType: 1 }],
+    servers: [{ name: "Local", url: URL_BASE + "/download/download.file", connectType: 1 }, { name: "Cachefly.net", url: "https://open.cachefly.net/downloading", connectType: 1 }, { name: "New York - Librespeed.org", url: "https://ny2.us.backend.librespeed.org/garbage.php?cors=true&ckSize=0", connectType: 1 }, { name: "New Jersey - Vultr.com", url: "https://nj-us-ping.vultr.com/favicon.ico", connectType: 1 }, { name: "Chicago - Vultr.com", url: "https://il-us-ping.vultr.com/favicon.ico", connectType: 1 }, { name: "Atlanta - Vultr.com", url: "https://ga-us-ping.vultr.com/favicon.ico", connectType: 1 }, { name: "Dallas - Vultr.com", url: "https://tx-us-ping.vultr.com/favicon.ico", connectType: 1 }, { name: "Miami - Vultr.com", url: "https://fl-us-ping.vultr.com/favicon.ico", connectType: 1 }, { name: "Tigo", url: "https://tigo.5886662453.com", connectType: 1 }, { name: "Facebook Static", url: "https://z-m-static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg", connectType: 1 }, { name: "Washington - Fireprobe.net", url: "https://s12-je1rw.fireinfra.net/?action=download&size=0", connectType: 1 }, { name: "Sydney - Fireprobe.net", url: "https://s87-lggif.fireinfra.net/?action=download&size=0", connectType: 1 }, { name: "Madrid - Movispeed.es", url: "https://m0011.movispeed.es/apolo/data/a1b.dat", connectType: 1 }, { name: "Singapore - Fireprobe.net", url: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0", connectType: 1 }],
     runTime: 10000,
     graphItemsLen: 100
 };
@@ -1237,23 +1237,19 @@ function TestStage(props) {
             loaded,
             prev = {
             loaded: 0,
-            transferTime: 0,
-            instantSpeed: 0,
-            instantAverage: 0
+            transferTime: 0
         },
             bufferEnabled = _TestConfig2.default.bufferEnabled && _TestConfig2.default.runType.download,
             buffers = [{
-            maxTime: 6000,
             sizeTime: 2000,
-            items: [{ loaded: 0, loadTime: globalLoadStartTime, startTime: globalLoadStartTime }],
+            maxTime: 6000,
             startTime: globalLoadStartTime,
             loaded: 0,
             size: 0,
             speed: 0
         }, {
-            maxTime: 16000,
             sizeTime: 6000,
-            items: [{ loaded: 0, loadTime: globalLoadStartTime, startTime: globalLoadStartTime }],
+            maxTime: 16000,
             startTime: globalLoadStartTime,
             loaded: 0,
             size: 0,
@@ -1331,13 +1327,10 @@ function TestStage(props) {
             if (bufferEnabled) instant.speed = buffer.speed > instant.speed ? buffer.speed : instant.speed;
 
             instant.maxItems = loadTime > 2000 ? 6 : 4;
-            //instant.maxItems += Math.round(transfer.average.time / 80);
-            //instant.maxItems  = instant.maxItems > 12 ? 12 : instant.maxItems;
+            instant.maxItems += Math.round(transfer.average.time / 80);
+            instant.maxItems = instant.maxItems > 10 ? 10 : instant.maxItems;
 
-            instant.average = instant.calc.get(transfer.transferred > 0 ? instant.speed : prev.instantSpeed, instant.maxItems);
-            if (transfer.transferred == 0) {
-                instant.average = prev.instantAverage;
-            }
+            instant.average = instant.calc.get(instant.speed, instant.maxItems);
             average.speed = average.calc.get(instant.average, instant.maxItems);
 
             outputSpeed = _TestConfig2.default.outputSpeed == "average" ? average.speed : instant.speed;
@@ -1351,8 +1344,6 @@ function TestStage(props) {
 
             prev.loaded = loaded;
             prev.transferTime = transfer.time;
-            prev.instantSpeed = instant.speed;
-            prev.instantAverage = instant.average;
             connections.outputSpeed = outputSpeed;
             connections.speedRate = speedRate;
         }
@@ -1364,12 +1355,12 @@ function TestStage(props) {
             connections.requests.forEach(function (req, index) {
                 if (req.id > 6) return;
 
-                testConsole.state("request " + req.id + " loaded: " + (req.loaded / 1000000).toFixed(3) + "MB, maxTime: " + req.maxTransferTime + "ms" + (req.firstProgressTime ? ", avgTime: " + Math.round((req.lastProgressTime - req.firstProgressTime) / (req.progressCount - 1 || 1)) + "ms" : "") + (req.id > connections.count ? " (added)" : ""));
+                testConsole.state("request " + req.id + " loaded: " + (req.loaded / 1000000).toFixed(3) + "MB, max time: " + req.maxTransferTime + "ms" + (req.firstProgressTime ? ", avg time: " + Math.round((req.lastProgressTime - req.firstProgressTime) / (req.progressCount - 1 || 1)) + "ms" : "") + (req.id > connections.count ? " (added)" : ""));
             });
 
-            testConsole.state("finalSpeed: " + (loaded / (loadTime / 1000) / 125000).toFixed(2) + "mbps, buffer 1: " + (buffers[0].speed / 125000).toFixed(2) + "mbps (" + (time - buffers[0].startTime) + "), buffer 2: " + (buffers[1].speed / 125000).toFixed(2) + "mbps (" + (time - buffers[1].startTime) + ")");
+            testConsole.state("final speed: " + (loaded / (loadTime / 1000) / 125000).toFixed(2) + "mbps, buffer 1: " + (buffers[0].speed / 125000).toFixed(2) + "mbps (" + (time - buffers[0].startTime) + "), buffer 2: " + (buffers[1].speed / 125000).toFixed(2) + "mbps (" + (time - buffers[1].startTime) + ")");
 
-            testConsole.state("loaded: " + (connections.loaded / 1000000).toFixed(2) + "MB, maxTransferTime: " + transfer.maxTime + "ms, time: " + (time - globalLoadStartTime) / 1000 + "s");
+            testConsole.state("total loaded: " + (connections.loaded / 1000000).toFixed(2) + "MB, max time: " + transfer.maxTime + "ms, avg time: " + Math.round(transfer.average.time) + "ms");
 
             setTimeout(function () {
                 _App2.default.event("testStatus", { onprogress: false });
@@ -1495,7 +1486,7 @@ function TestStage(props) {
                             requestConfig(_xhr, url);
                         },
                         url: url,
-                        get: { v: Math.random() },
+                        get: { v: _App2.default.random() },
                         post: uploadData,
                         fail: breakTest,
                         send: !prevent
@@ -1537,7 +1528,7 @@ function TestStage(props) {
                     if (preconnect) {
                         connections.preconnect.requests.push(_App2.default.fetch({
                             url: serverItem.preconnectURL ? serverItem.preconnectURL : serverUrl,
-                            get: { v: Math.random() },
+                            get: { v: _App2.default.random() },
                             type: serverItem.preconnectURL ? "GET" : "HEAD",
                             done: function done() {
                                 connections.preconnect.success += 1;
@@ -1974,7 +1965,7 @@ function PingItem(props) {
     function ping() {
         var xhr = new XMLHttpRequest();
 
-        xhr.open("HEAD", _TestConfig2.default.ping.server.url + (_TestConfig2.default.ping.server.url.indexOf("?") > -1 ? "&" : "?") + "v=" + _App2.default.random(6), true);
+        xhr.open("HEAD", _TestConfig2.default.ping.server.url + (_TestConfig2.default.ping.server.url.indexOf("?") > -1 ? "&" : "?") + "v=" + _App2.default.random(), true);
 
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 2) {
