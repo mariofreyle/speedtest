@@ -1206,10 +1206,8 @@ function TestStage(props) {
                 chartPoints += " " + pointX + "," + pointY;
             }
 
-            chartPoints += " " + pointX + "," + this.height;
-
-            this.chart.setAttr("points", chartPoints);
-            this.line.setAttr("points", pointX + "," + pointY + " " + this.width + "," + pointY);
+            this.chart.setAttr("points", chartPoints + " " + pointX + "," + this.height);
+            this.line.setAttr("points", chartPoints + " " + this.width + "," + pointY);
         };
     }
     function startInterval() {
