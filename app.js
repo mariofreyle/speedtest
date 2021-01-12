@@ -1852,12 +1852,19 @@ function PingItem(props) {
     },
         graph = {
         values: [],
-        maxValue: 0
+        maxValue: 50
     },
         tooltipIndex,
-        mousePosX;
+        mousePosX,
+        timeout = {
+        ping: null
+    };
 
+    function minValue(val, min) {
+        return val < min ? min : val;
+    }
     function finishTest() {
+        clearTimeout(timeout.ping);
         measures.connection && measures.connection.abort();
         _App2.default.event("pingTestFinished");
     }
@@ -1883,7 +1890,7 @@ function PingItem(props) {
 
         var chartPoints = "",
             portWidth = elem.graphInner.width(),
-            portHeight = elem.graphInner.height() - 20,
+            portHeight = elem.graphInner.height() - 25,
             pointWidth = portWidth / _TestConfig2.default.ping.graphItems.length,
             index,
             len = graph.values.length,
@@ -1923,48 +1930,49 @@ function PingItem(props) {
     function success() {
         var time = _App2.default.time();
 
+        measures.pingTime = time - measures.sendTime;
+
         measures.sendCount += 1;
+        timeout.ping = setTimeout(function () {
+            if (measures.sendCount > 1) {
+                if (measures.pingTime < measures.min.value) {
+                    measures.min.value = measures.pingTime;
+                }
+                if (measures.pingTime > measures.max.value) {
+                    measures.max.value = measures.pingTime;
+                }
 
-        if (measures.sendCount > 1) {
-            measures.pingTime = time - measures.sendTime;
+                measures.avg.items.push({ value: measures.pingTime, time: time });
+                measures.avg.count += measures.pingTime;
+                if (measures.avg.items.length > 1 && measures.avg.items[measures.avg.items.length - 1].time - measures.avg.items[1].time >= 6000) {
+                    measures.avg.count -= measures.avg.items[0].value;
+                    measures.avg.items.splice(0, 1);
+                }
 
-            if (measures.pingTime < measures.min.value) {
-                measures.min.value = measures.pingTime;
+                measures.avg.value = measures.avg.count / measures.avg.items.length;
+                measures.jitter.value = calcJitter(measures.avg.items);
+
+                elem.minValue.textContent(measures.min.value + " ms");
+                elem.avgValue.textContent(measures.avg.value.toFixed(1) + " ms");
+                elem.maxValue.textContent(measures.max.value + " ms");
+                elem.jitterValue.textContent(measures.jitter.value.toFixed(1) + " ms");
+
+                measures.results.push(measures.pingTime);
+
+                if (measures.results.length > _TestConfig2.default.ping.graphItemsLen) {
+                    measures.results.splice(0, 1);
+                }
+
+                drawGraph(measures.pingTime);
+                updateGraphTooltip();
             }
-            if (measures.pingTime > measures.max.value) {
-                measures.max.value = measures.pingTime;
+
+            if (_App2.default.time() - startedTime > 10000 + measures.max.value && !_TestConfig2.default.ping.completeAll || measures.sendCount > _TestConfig2.default.ping.results) {
+                return setTimeout(finishTest, 100);
             }
 
-            measures.avg.items.push({ value: measures.pingTime, time: time });
-            measures.avg.count += measures.pingTime;
-            if (measures.avg.items.length > 1 && measures.avg.items[measures.avg.items.length - 1].time - measures.avg.items[1].time >= 5000) {
-                measures.avg.count -= measures.avg.items[0].value;
-                measures.avg.items.splice(0, 1);
-            }
-
-            measures.avg.value = measures.avg.count / measures.avg.items.length;
-            measures.jitter.value = calcJitter(measures.avg.items);
-
-            elem.minValue.textContent(measures.min.value + " ms");
-            elem.avgValue.textContent(measures.avg.value.toFixed(1) + " ms");
-            elem.maxValue.textContent(measures.max.value + " ms");
-            elem.jitterValue.textContent(measures.jitter.value.toFixed(1) + " ms");
-
-            measures.results.push(measures.pingTime);
-
-            if (measures.results.length > _TestConfig2.default.ping.graphItemsLen) {
-                measures.results.splice(0, 1);
-            }
-
-            drawGraph(measures.pingTime);
-            updateGraphTooltip();
-        }
-
-        if (_App2.default.time() - startedTime > 10000 + measures.max.value && !_TestConfig2.default.ping.completeAll || measures.sendCount > _TestConfig2.default.ping.results) {
-            return setTimeout(finishTest, 100);
-        }
-
-        ping();
+            ping();
+        }, minValue(50 - measures.pingTime, 0));
     }
     function ping() {
         var xhr = new XMLHttpRequest();
