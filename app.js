@@ -885,7 +885,7 @@ var test = window.test = {
     mode: "1",
     bufferEnabled: true,
     resultsPrecision: 1,
-    servers: [{ name: "Local", preconnect: 0, download: URL_BASE + "/download/download.file", upload: URL_BASE }, { name: "Cachefly.net", preconnect: 1, download: "https://open.cachefly.net/downloading", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "United States (East) - Multi Server", multi: [{ download: "https://il-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://tx-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://ga-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://tor-ca-ping.vultr.com/vultr.com.100MB.bin" }], preconnect: 1, download: "", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "Miami - Vultr.com", preconnect: 1, download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "Washington - Fireprobe.net", preconnect: 1, preconnectDownload: "https://s12-je1rw.fireinfra.net/?action=download&size=0", preconnectUpload: "https://s12-je1rw.fireinfra.net/?action=download&size=0", download: "https://s12-je1rw.fireinfra.net/?action=download&size=100", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" },
+    servers: [{ name: "Local", preconnect: 0, download: URL_BASE + "/download/download.file", upload: URL_BASE }, { name: "Cachefly.net", preconnect: 1, download: "https://open.cachefly.net/downloading", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "United States (East) - Multi Server", multi: [{ download: "https://il-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://ga-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://tx-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://tor-ca-ping.vultr.com/vultr.com.100MB.bin" }], preconnect: 1, download: "", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "Miami - Vultr.com", preconnect: 1, download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }, { name: "Washington - Fireprobe.net", preconnect: 1, preconnectDownload: "https://s12-je1rw.fireinfra.net/?action=download&size=0", preconnectUpload: "https://s12-je1rw.fireinfra.net/?action=download&size=0", download: "https://s12-je1rw.fireinfra.net/?action=download&size=100", upload: "https://s12-je1rw.fireinfra.net/?action=xupload" },
     /*{name: "Washington - Cfapps.io", download: "https://speed-test.cfapps.io/network?module=download&size=104857600", upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true"},*/
     { name: "Madrid - Movispeed.es", preconnect: 1, download: "https://m0012.movispeed.es/apolo/data/a100m.dat", upload: "https://m0012.movispeed.es/apolo/subida.php" }, { name: "Sydney - Fireprobe.net", preconnect: 1, preconnectDownload: "https://s87-lggif.fireinfra.net/?action=download&size=0", preconnectUpload: "https://s87-lggif.fireinfra.net/?action=download&size=0", download: "https://s87-lggif.fireinfra.net/?action=download&size=100", upload: "https://s87-lggif.fireinfra.net/?action=xupload" }, { name: "Singapore - Fireprobe.net", preconnect: 1, preconnectDownload: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0", preconnectUpload: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0", download: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100", upload: "https://s281-tnorz.fireinfra.net:9114/?action=xupload" }],
     gaugeCircleStrokeMin: 404,
@@ -1884,7 +1884,7 @@ function PingItem(props) {
     function updateGraphTooltip() {
         if (tooltipIndex) {
             elem.graphTooltipItem.textContent(tooltipIndex);
-            elem.graphTooltipValue.textContent("ping: " + measures.results[tooltipIndex] + " ms");
+            elem.graphTooltipValue.textContent("ping: " + graph.values[tooltipIndex] + " ms");
         }
 
         var parentPos = elem.graphInner.node.getBoundingClientRect(),
@@ -1898,8 +1898,15 @@ function PingItem(props) {
         elem.graphTooltip.style({ left: posX + "px" });
     }
     function drawGraph(value) {
-        graph.values = measures.results;
-        if (value && value > graph.maxValue) graph.maxValue = value;
+        if (!isNaN(value)) {
+            graph.values.push(value);
+            if (graph.values.length > 100) {
+                graph.values.splice(0, 90);
+            }
+            if (value > graph.maxValue) {
+                graph.maxValue = value;
+            }
+        }
 
         var chartPoints = "",
             portWidth = elem.graphInner.width(),
@@ -1943,73 +1950,79 @@ function PingItem(props) {
     function handlePing() {
         var time = _App2.default.time();
 
-        measures.ping.time = time - measures.ping.start;
-
         measures.ping.count += 1;
 
-        timeout.ping = setTimeout(function () {
-            if (measures.ping.time < measures.min.value) {
-                measures.min.value = measures.ping.time;
-            }
-            if (measures.ping.time > measures.max.value) {
-                measures.max.value = measures.ping.time;
-            }
+        if (measures.ping.time < measures.min.value) {
+            measures.min.value = measures.ping.time;
+        }
+        if (measures.ping.time > measures.max.value) {
+            measures.max.value = measures.ping.time;
+        }
 
-            measures.avg.items.push({ value: measures.ping.time, time: time });
-            measures.avg.count += measures.ping.time;
-            if (measures.avg.items.length > 1 && measures.avg.items[measures.avg.items.length - 1].time - measures.avg.items[1].time >= 6000) {
+        measures.avg.items.push({ value: measures.ping.time, time: time });
+        measures.avg.count += measures.ping.time;
+        if (measures.avg.items.length > 100 /*&& measures.avg.items[measures.avg.items.length - 1].time - measures.avg.items[1].time >= 6000*/) {
                 measures.avg.count -= measures.avg.items[0].value;
                 measures.avg.items.splice(0, 1);
             }
 
-            measures.avg.value = measures.avg.count / measures.avg.items.length;
-            measures.jitter.value = calcJitter(measures.avg.items);
+        measures.avg.value = measures.avg.count / measures.avg.items.length;
+        measures.jitter.value = calcJitter(measures.avg.items);
 
-            elem.minValue.textContent(measures.min.value + " ms");
-            elem.avgValue.textContent(measures.avg.value.toFixed(1) + " ms");
-            elem.maxValue.textContent(measures.max.value + " ms");
-            elem.jitterValue.textContent(measures.jitter.value.toFixed(1) + " ms");
+        elem.minValue.textContent(measures.min.value + " ms");
+        elem.avgValue.textContent(measures.avg.value.toFixed(1) + " ms");
+        elem.maxValue.textContent(measures.max.value + " ms");
+        elem.jitterValue.textContent(measures.jitter.value.toFixed(1) + " ms");
 
-            measures.results.push(measures.ping.time);
+        measures.results.push(measures.ping.time);
 
-            if (measures.results.length > _TestConfig2.default.ping.graphItemsLen) {
-                measures.results.splice(0, 1);
-            }
+        if (measures.results.length > _TestConfig2.default.ping.graphItemsLen) {
+            measures.results.splice(0, 1);
+        }
 
-            drawGraph(measures.ping.time);
-            updateGraphTooltip();
+        drawGraph(measures.ping.time);
+        updateGraphTooltip();
 
-            if (_App2.default.time() - startedTime > 10000 + measures.max.value && !_TestConfig2.default.ping.completeAll || measures.ping.count >= _TestConfig2.default.ping.results) {
-                return setTimeout(finishTest, 100);
-            }
+        if (_App2.default.time() - startedTime > 10000 + measures.max.value && !_TestConfig2.default.ping.completeAll || measures.ping.count >= _TestConfig2.default.ping.results) {
+            return finishTest();
+        }
 
-            if (!measures.progressMode) ping();
-        }, minValue(50 - measures.ping.time, 0));
+        if (!measures.progressMode) ping();
     }
     function ping() {
         var xhr = new XMLHttpRequest(),
-            progress = 0;
+            progress = 0,
+            time;
 
-        xhr.open(measures.connectionType, measures.connectionUrl + (measures.connectionUrl.indexOf("?") > -1 ? "&" : "?") + "v=" + _App2.default.random(), true);
+        xhr.open(measures.connectionType, measures.connectionUrl + measures.connectionPrefix + "v=" + _App2.default.random(), true);
 
         if (measures.progressMode) {
             xhr.onprogress = function () {
+                time = _App2.default.time();
                 progress += 1;
 
-                if (progress == 1) {
-                    startedTime = _App2.default.time();
+                measures.ping.time = time - measures.ping.start;
+
+                if (progress <= 2) {
+                    startedTime = time;
                 } else {
                     handlePing();
                 }
 
-                measures.ping.start = _App2.default.time();
+                measures.ping.start = time;
             };
             xhr.onload = ping;
         } else {
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 2) {
                     if (xhr.status == 200) {
-                        measures.sendCount > 1 ? handlePing() : ping(startedTime = _App2.default.time());
+                        measures.ping.time = _App2.default.time() - measures.ping.start;
+
+                        if (measures.sendCount > 1) {
+                            timeout.ping = setTimeout(handlePing, minValue(50 - measures.ping.time, 0));
+                        } else {
+                            ping(startedTime = _App2.default.time());
+                        }
                     } else {
                         finishTest();
                     }
@@ -2049,6 +2062,7 @@ function PingItem(props) {
         startedTime = _App2.default.time();
         measures.connectionUrl = measures.progressMode ? _TestConfig2.default.ping.server.progress : _TestConfig2.default.ping.server.url;
         measures.connectionType = measures.progressMode ? "GET" : "HEAD";
+        measures.connectionPrefix = measures.connectionUrl.indexOf("?") > -1 ? "&" : "?";
 
         ping();
         adjustGraph();
@@ -2073,7 +2087,7 @@ function PingStage() {
         settingsMenu: (0, _App.createRef)("div"),
         completeAll: (0, _App.createRef)("input"),
         progressMode: (0, _App.createRef)("input"),
-        resultsCount: (0, _App.createRef)("input"),
+        resultsCount: (0, _App.createRef)("select"),
         pingItems: (0, _App.createRef)("div")
     },
         testStarted = false,
@@ -2135,6 +2149,8 @@ function PingStage() {
         var checked = elem.progressMode.checked(),
             child;
         elem.selectServer.node.childNodes.forEach(function (item, index) {
+            if (!isLocal && index == 0) return;
+
             child = elem.selectServer.child(index);
             child.style({ display: checked && _TestConfig2.default.ping.servers[index].progress === void 0 ? "none" : "block" });
             if (child.selected() && _TestConfig2.default.ping.servers[index].progress === void 0) {
@@ -2153,7 +2169,7 @@ function PingStage() {
     return (0, _App.createElement)("div", { className: "stage-Kbsc8 pingStage", events: this.events, onMount: this.onMount }, (0, _App.createElement)(elem.start, { className: "start-inBnq" }, (0, _App.createElement)("div", { className: "contents-vr4n" }, (0, _App.createElement)(elem.startButton, { className: "startButton-twMcg", textContent: "start", onclick: startTest }), (0, _App.createElement)("div", { className: "selectedServer-xncHv" }, (0, _App.createElement)(elem.serverDetails, { className: "serverDetails-xncHv", textContent: _TestConfig2.default.ping.server.name }), (0, _App.createElement)("div", { className: "testSettings-qRnpi" }, (0, _App.createElement)("div", { className: "changeServer-xncHv" }, (0, _App.createElement)(elem.selectServer, { className: "select-fquMx", onchange: changeServer }, _TestConfig2.default.ping.servers.map(function (item, index) {
         if (!isLocal && index == 0) return null;
         return item.name == _TestConfig2.default.ping.server.name ? (0, _App.createElement)("option", { value: index, textContent: item.name, selected: "selected" }) : (0, _App.createElement)("option", { value: index, textContent: item.name });
-    })), (0, _App.createElement)("button", { className: "changeButton-xncHv", textContent: "Change server" })), (0, _App.createElement)("div", { className: "buttonWrapper-xvYef" }, (0, _App.createElement)(elem.settingsButton, { className: "button-xvYef", title: "Test settings", onclick: toggleSettingsMenu }, (0, _App.svgIcon)("settings")), (0, _App.createElement)(elem.settingsMenu, { className: "menu-Jrb2E", style: "display: none;" }, (0, _App.createElement)("div", { className: "menuInner-Jrb2E" }, (0, _App.createElement)("div", { className: "menuItem-Jrb2E" }, (0, _App.createElement)("span", { textContent: "Complete all:" }), (0, _App.createElement)(elem.completeAll, { type: "checkbox" })), (0, _App.createElement)("div", { className: "menuItem-Jrb2E" }, (0, _App.createElement)("span", { textContent: "Results:" }), (0, _App.createElement)(elem.resultsCount, { type: "number", min: 50, max: 1000, placeholder: _TestConfig2.default.ping.results })), (0, _App.createElement)("div", { className: "menuItem-Jrb2E" }, (0, _App.createElement)("span", { textContent: "Progress mode:" }), (0, _App.createElement)(elem.progressMode, { type: "checkbox", onclick: elem.progressMode.handleClick }))), (0, _App.createElement)("div", { className: "menuOverlay-Jrb2E", onclick: toggleSettingsMenu }))))))), (0, _App.createElement)(elem.pingItems, { className: "pingItems-id3Lk" }));
+    })), (0, _App.createElement)("button", { className: "changeButton-xncHv", textContent: "Change server" })), (0, _App.createElement)("div", { className: "buttonWrapper-xvYef" }, (0, _App.createElement)(elem.settingsButton, { className: "button-xvYef", title: "Test settings", onclick: toggleSettingsMenu }, (0, _App.svgIcon)("settings")), (0, _App.createElement)(elem.settingsMenu, { className: "menu-Jrb2E", style: "display: none;" }, (0, _App.createElement)("div", { className: "menuInner-Jrb2E" }, (0, _App.createElement)("div", { className: "menuItem-Jrb2E" }, (0, _App.createElement)("span", { textContent: "Complete all:" }), (0, _App.createElement)(elem.completeAll, { type: "checkbox" })), (0, _App.createElement)("div", { className: "menuItem-Jrb2E" }, (0, _App.createElement)("span", { textContent: "Results:" }), (0, _App.createElement)(elem.resultsCount, {}, (0, _App.createElement)("option", { value: "100", textContent: "100", selected: "" }), (0, _App.createElement)("option", { value: "190", textContent: "190" }), (0, _App.createElement)("option", { value: "280", textContent: "280" }), (0, _App.createElement)("option", { value: "460", textContent: "460" }), (0, _App.createElement)("option", { value: "920", textContent: "920" }))), (0, _App.createElement)("div", { className: "menuItem-Jrb2E" }, (0, _App.createElement)("span", { textContent: "Progress mode:" }), (0, _App.createElement)(elem.progressMode, { type: "checkbox", onclick: elem.progressMode.handleClick }))), (0, _App.createElement)("div", { className: "menuOverlay-Jrb2E", onclick: toggleSettingsMenu }))))))), (0, _App.createElement)(elem.pingItems, { className: "pingItems-id3Lk" }));
 };
 
 exports.default = PingStage;
