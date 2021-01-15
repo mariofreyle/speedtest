@@ -2147,13 +2147,13 @@ function PingStage() {
 
     elem.progressMode.handleClick = function () {
         var checked = elem.progressMode.checked(),
-            child;
+            child,
+            value;
         elem.selectServer.node.childNodes.forEach(function (item, index) {
-            if (!isLocal && index == 0) return;
-
             child = elem.selectServer.child(index);
-            child.style({ display: checked && _TestConfig2.default.ping.servers[index].progress === void 0 ? "none" : "block" });
-            if (child.selected() && _TestConfig2.default.ping.servers[index].progress === void 0) {
+            value = child.attr("value");
+            child.style({ display: checked && _TestConfig2.default.ping.servers[value].progress === void 0 ? "none" : "block" });
+            if (child.selected() && _TestConfig2.default.ping.servers[value].progress === void 0) {
                 elem.selectServer.child(1).selected(true);
                 changeServer();
             }
