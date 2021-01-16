@@ -1287,6 +1287,14 @@ function TestStage(props) {
         graph = new drawGraph();
         graph.open();
 
+        function consoleTime(time) {
+            return (time / 1000).toFixed(time < 10000 ? 3 : 2);
+        }
+        function consoleSpeed(speed) {
+            speed = speed / 125000;
+
+            return speed.toFixed(speed < 10 ? 3 : 2);
+        }
         function parseValue(val) {
             if (_TestConfig2.default.resultsPrecision > 1) return val;
             var str = val.toString(),
@@ -1352,7 +1360,7 @@ function TestStage(props) {
             _App2.default.event("updateGauge", { speedRate: speedRate });
             graph.draw(outputSpeed, intervalTime, time, closeInterval);
 
-            testConsole.state("instant: " + (instant.speed / 125000).toFixed(2) + "mbps, average: " + (average.speed / 125000).toFixed(2) + "mbps, time: " + loadTime / 1000 + "s, loaded: " + loadedData(loaded) + ", transf: " + loadedData(transfer.transferred));
+            testConsole.state("instant: " + consoleSpeed(instant.speed) + "mbps, average: " + consoleSpeed(average.speed) + "mbps, time: " + consoleTime(loadTime) + "s, loaded: " + loadedData(loaded) + ", transf: " + loadedData(transfer.transferred));
 
             prev.loaded = loaded;
             prev.transferTime = transfer.time;
@@ -1367,7 +1375,7 @@ function TestStage(props) {
             connections.requests.forEach(function (req, index) {
                 if (req.id > 6) return;
 
-                testConsole.state("request " + req.id + " loaded: " + (req.loaded / 1000000).toFixed(3) + "MB, max time: " + req.maxTransferTime + "ms" + (req.firstProgressTime ? ", avg time: " + Math.round((req.lastProgressTime - req.firstProgressTime) / (req.progressCount - 1 || 1)) + "ms" : "") + (req.id > connections.count ? " (added)" : ""));
+                testConsole.state("request " + req.id + " loaded: " + (req.loaded / 1000000).toFixed(2) + "MB, max time: " + req.maxTransferTime + "ms" + (req.firstProgressTime ? ", avg time: " + Math.round((req.lastProgressTime - req.firstProgressTime) / (req.progressCount - 1 || 1)) + "ms" : "") + (req.id > connections.count ? " (added)" : ""));
             });
 
             testConsole.state("final speed: " + (loaded / (loadTime / 1000) / 125000).toFixed(2) + "mbps, buffer 1: " + (buffers[0].speed / 125000).toFixed(2) + "mbps (" + (time - buffers[0].startTime) + "), buffer 2: " + (buffers[1].speed / 125000).toFixed(2) + "mbps (" + (time - buffers[1].startTime) + ")");
