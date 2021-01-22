@@ -406,14 +406,13 @@ window.app = function (window, document) {
                 postData = config.post ? !isFormData ? encodeUrlParams(config.post) : config.post : null,
                 type = config.post ? "POST" : "GET",
                 url = config.url || "",
-                contentType = config.contentType || null,
-                headers = config.headers || {},
                 xhr = new XMLHttpRequest(),
-                send = config.send === void 0 ? true : config.send,
-                fail = function fail() {
-                console.log("Request Fail: " + url);
+                send = config.send === void 0 ? true : config.send;
+
+            function fail() {
+                console.log("Request Fail: " + url, xhr.status);
                 config.fail && config.fail();
-            };
+            }
 
             if (config.get) {
                 url += (url && url.indexOf("?") > -1 ? "&" : "?") + encodeUrlParams(config.get);
@@ -449,8 +448,7 @@ window.app = function (window, document) {
             xhr.ontimeout = fail;
             xhr.onerror = fail;
 
-            !isFormData && !contentType && xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            contentType && xhr.setRequestHeader("Content-type", contentType);
+            !isFormData && xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
             xhr._send = function () {
                 xhr.send(postData);
@@ -890,46 +888,54 @@ var test = window.test = {
         upload: URL_BASE
     }, {
         name: "Cachefly.net",
-        preconnect: true,
         download: "https://open.cachefly.net/downloading",
         upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true"
     }, {
         name: "United States (East) - Multi Server", multi: [{ download: "https://il-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://ga-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://tx-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://tor-ca-ping.vultr.com/vultr.com.100MB.bin" }],
-        preconnect: true,
         download: "",
         upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true"
     }, {
         name: "New York - Multi Server", multi: [{ download: "https://nyc.speedtest.clouvider.net/backend/garbage.php?cors=true&ckSize=100" }, { download: "https://ny2.us.backend.librespeed.org/garbage.php?cors=true&ckSize=100" }],
-        preconnect: true,
         download: "",
         upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true"
     }, {
+        name: "New Jersey - Vultr.com",
+        download: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin",
+        upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true"
+    }, {
+        name: "Chicago - Vultr.com",
+        download: "https://il-us-ping.vultr.com/vultr.com.100MB.bin",
+        upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true"
+    }, {
+        name: "Atlanta - Vultr.com",
+        download: "https://ga-us-ping.vultr.com/vultr.com.100MB.bin",
+        upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true"
+    }, {
+        name: "Dallas - Vultr.com",
+        download: "https://tx-us-ping.vultr.com/vultr.com.100MB.bin",
+        upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true"
+    }, {
         name: "Miami - Vultr.com",
-        preconnect: true,
         download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin",
         upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true"
     }, {
         name: "Washington - Fireprobe.net",
-        preconnect: true,
         preconnectDownload: "https://s12-je1rw.fireinfra.net/?action=download&size=0",
         preconnectUpload: "https://s12-je1rw.fireinfra.net/?action=download&size=0",
         download: "https://s12-je1rw.fireinfra.net/?action=download&size=100",
         upload: "https://s12-je1rw.fireinfra.net/?action=xupload"
     }, {
         name: "Madrid - Movispeed.es",
-        preconnect: true,
         download: "https://m0012.movispeed.es/apolo/data/a100m.dat",
         upload: "https://m0012.movispeed.es/apolo/subida.php"
     }, {
         name: "Sydney - Fireprobe.net",
-        preconnect: true,
         preconnectDownload: "https://s87-lggif.fireinfra.net/?action=download&size=0",
         preconnectUpload: "https://s87-lggif.fireinfra.net/?action=download&size=0",
         download: "https://s87-lggif.fireinfra.net/?action=download&size=100",
         upload: "https://s87-lggif.fireinfra.net/?action=xupload"
     }, {
         name: "Singapore - Fireprobe.net",
-        preconnect: true,
         preconnectDownload: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0",
         preconnectUpload: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0",
         download: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100",
@@ -1176,6 +1182,18 @@ function TestStage(props) {
         testConsole.clear();
         testConsole.log("Starting test...");
     }
+    function progressEnd() {
+        _App2.default.event("testStatus", { onprogress: false });
+        _App2.default.event("clearGauge");
+
+        setTimeout(function () {
+            if (_TestConfig2.default.runType.download && _TestConfig2.default.mode == "1") {
+                _App2.default.event("runTest", { runType: "upload" });
+            } else {
+                _App2.default.event("closeTest"), closeGauge();
+            }
+        }, 500);
+    }
     function breakTest() {
         var id = setTimeout(function () {}, 0);
         while (id--) {
@@ -1184,18 +1202,7 @@ function TestStage(props) {
         stopTest();
         graph && connections.outputSpeed && graph.draw(connections.outputSpeed, _TestConfig2.default.runTime, _App2.default.time(), true);
         testConsole.state("measures error");
-        setTimeout(function () {
-            _App2.default.event("testStatus", { onprogress: false });
-            _App2.default.event("clearGauge");
-            setTimeout(function () {
-                if (_TestConfig2.default.runType.download) {
-                    _App2.default.event("runTest", { runType: "upload" });
-                } else {
-                    _App2.default.event("closeTest");
-                    closeGauge();
-                }
-            }, 500);
-        }, 1300);
+        setTimeout(progressEnd, 1300);
     }
     function averageSpeed() {
         this.items = [];
@@ -1432,18 +1439,7 @@ function TestStage(props) {
 
             testConsole.state("total loaded: " + (connections.loaded / 1000000).toFixed(2) + "MB, max time: " + transfer.maxTime + "ms, avg time: " + Math.round(transfer.average.time) + "ms");
 
-            setTimeout(function () {
-                _App2.default.event("testStatus", { onprogress: false });
-                _App2.default.event("clearGauge");
-
-                setTimeout(function () {
-                    if (_TestConfig2.default.runType.download && _TestConfig2.default.mode == "1") {
-                        _App2.default.event("runTest", { runType: "upload" });
-                    } else {
-                        _App2.default.event("closeTest"), closeGauge();
-                    }
-                }, 500);
-            }, 500);
+            setTimeout(progressEnd, 500);
         }
 
         setTimeout(function () {
@@ -1584,7 +1580,7 @@ function TestStage(props) {
                     serverUrl = 0,
                     serverIndex = 0,
                     serverLen = 0,
-                    preconnect = connections.server.preconnect,
+                    preconnect = connections.server.preconnect === void 0 ? true : connections.server.preconnect,
                     preconnectUrl = 0;
 
                 if (connections.server.multi && isDownload) {
