@@ -288,8 +288,8 @@ window.app = function (window, document) {
         textContent: function textContent(value) {
             this.node.textContent = value;
         },
-        attr: function attr(_attr) {
-            return this.node.getAttribute(_attr);
+        attr: function attr(_attr, value) {
+            return value === void 0 ? this.node.getAttribute(_attr) : this.node.setAttribute(_attr, value);
         },
         setAttr: function setAttr(name, value) {
             this.node.setAttribute(name, value);
@@ -875,8 +875,6 @@ var test = window.test = {
     connections: {
         default: 4,
         count: 4
-        //        multi: {download: 4, upload: 4, default: 4},
-        //        single: {download: 1, upload: 1, default: 1}
     },
     mode: "1",
     bufferEnabled: true,
@@ -949,7 +947,8 @@ var test = window.test = {
         isp: null,
         ip: null
     },
-    networkBasicUrl: "https://z-m-scontent.fctg2-1.fna.fbcdn.net/v/t1.15752-9/fr/cp0/e15/q65/135856944_1366451607033113_1598808278752931662_n.jpg?_nc_cat=108&ccb=2&_nc_sid=58c789&efg=eyJpIjoibyJ9&_nc_eui2=AeHt6CAq5yTPwLYNQBa1yNudTvXFk30_ZfVO9cWTfT9l9Vq9sBMVOuHnd3u6jr2TKi-wHeCtj_mcDCDsK8l62o-o&_nc_ohc=1RPn39i0edEAX87zwdQ&_nc_ad=z-m&_nc_cid=1180&_nc_eh=15205758407eb067bfe2cae3a52838b7&_nc_ht=z-m-scontent.fctg2-1.fna&tp=14&oh=90d2094f7da6ceb5a800f9e7311cf467&oe=60288D8C"
+    networkBasicUrl: "https://z-m-scontent.fctg2-1.fna.fbcdn.net/v/t1.15752-9/fr/cp0/e15/q65/135856944_1366451607033113_1598808278752931662_n.jpg?_nc_cat=108&ccb=2&_nc_sid=58c789&efg=eyJpIjoibyJ9&_nc_eui2=AeHt6CAq5yTPwLYNQBa1yNudTvXFk30_ZfVO9cWTfT9l9Vq9sBMVOuHnd3u6jr2TKi-wHeCtj_mcDCDsK8l62o-o&_nc_ohc=1RPn39i0edEAX87zwdQ&_nc_ad=z-m&_nc_cid=1180&_nc_eh=15205758407eb067bfe2cae3a52838b7&_nc_ht=z-m-scontent.fctg2-1.fna&tp=14&oh=90d2094f7da6ceb5a800f9e7311cf467&oe=60288D8C",
+    networkUploadBasicUrl: "https://z-m-static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg"
 };
 
 test.selectedServer = isLocal ? 0 : 2;
@@ -957,11 +956,13 @@ test.increments = [0, 1, 5, 10, 20, 30, 50, 75, 100];
 
 test.gaugeCircleOffsetRef = test.gaugeCircleStrokeMax - test.gaugeCircleStrokeMin;
 test.gaugeNeedleRotateRef = test.gaugeNeedleRotateMax - test.gaugeNeedleRotateMin; // in deg
-test.uploadData = function (size) {
-    var str = "11",
-        dup = 0,
-        blob,
-        formData = new FormData();
+test.uploadData30 = function () {
+    var str = "111111111111111",
+        size = 21,
+        formData30 = new FormData(),
+        formData100 = new FormData(),
+        dup,
+        blob;
 
     for (dup = 0; dup < size; dup++) {
         str += str;
@@ -969,10 +970,16 @@ test.uploadData = function (size) {
 
     blob = new Blob([str], { type: "plain/text" });
 
-    formData.append("file-" + _App2.default.random(13), blob);
+    formData30.append("x-file-0", blob);
 
-    return formData;
-}(test.uploadFileDup);
+    formData100.append("x-file-0", blob);
+    formData100.append("x-file-1", blob);
+    formData100.append("x-file-2", blob);
+
+    test.uploadData100 = formData100;
+
+    return formData30;
+}();
 
 test.runType = {
     download: false,
@@ -1536,7 +1543,7 @@ function TestStage(props) {
             //            setTimeout(function(){ app.event("closeTest"), closeGauge(); }, 2000);
             //            return;
 
-            var uploadData = _TestConfig2.default.runType.download ? null : _TestConfig2.default.uploadData,
+            var uploadData = _TestConfig2.default.runType.download ? null : _TestConfig2.default.uploadData30,
                 i;
 
             testConsole.state("starting measures...");
@@ -2259,6 +2266,7 @@ function NetworkStage(props) {
         urlInput: (0, _App.createRef)("input"),
         requestsCount: (0, _App.createRef)("input"),
         persistentMode: (0, _App.createRef)("input"),
+        uploadMode: (0, _App.createRef)("input"),
         recordButton: (0, _App.createRef)("a"),
         console: (0, _App.createRef)("textarea"),
         doneRequests: (0, _App.createRef)("span"),
@@ -2334,13 +2342,13 @@ function NetworkStage(props) {
             measures.started = false;
             measures.preconnectRequests.forEach(function (req) {
                 req.onloadend = null;
-                req._aborted = true;
+                req.upload.onloadend = null;
                 req.abort();
             });
             for (prop in currentRequests) {
                 req = currentRequests[prop];
                 req.onloadend = null;
-                req._aborted = true;
+                req.upload.onloadend = null;
                 req.abort();
             }
             measures.activeRequests = 0;
@@ -2399,76 +2407,51 @@ function NetworkStage(props) {
             measures.preconnectRequests.push(xhr);
         });
     }
-    function requestPersistent(props) {
+    function request(props) {
         var xhr = new XMLHttpRequest(),
             prevLoaded = 0,
             first = true,
-            progress = 0;
+            loaded = 0,
+            post = measures.uploadMode ? _TestConfig2.default.uploadData100 : null,
+            target = measures.uploadMode ? xhr.upload : xhr;
 
-        xhr._id = reqId += 1;
+        xhr._id = "_" + (reqId += 1);
 
-        xhr.open("GET", props.url + props.prefix + "vr=" + random(), true);
+        xhr.open(post ? "POST" : "GET", props.url + props.prefix + "vr=" + random(), true);
 
-        xhr.onprogress = function (e) {
+        target.onprogress = function (e) {
             measures.loaded += e.loaded - prevLoaded;
+            loaded = e.loaded;
             prevLoaded = e.loaded;
 
-            if (first) measures.activeRequests += 1, first = false, progress = 1;
+            if (first) measures.activeRequests += 1, first = false;
         };
-        xhr.onloadend = function () {
+        target.onloadend = function () {
             measures.doneRequests += 1;
-            measures.activeRequests -= progress;
-
-            delete currentRequests["_" + xhr._id];
-            currentRequestsCount -= 1;
+            measures.activeRequests -= first ? 0 : 1;
 
             elem.doneRequests.textContent(measures.doneRequests);
 
-            if (xhr.response.length > 10000) {
-                // 10KB
-                requestPersistent(props).send();
+            target.onloadend = null;
+            xhr.abort();
+
+            delete currentRequests[xhr._id];
+            currentRequestsCount -= 1;
+
+            if (measures.persistentMode && loaded > 10000) {
+                // > 1KB
+                request(props).sendRequest();
             }
 
             if (currentRequestsCount == 0) stopMeasures();
         };
 
-        currentRequests["_" + xhr._id] = xhr;
+        currentRequests[xhr._id] = xhr;
         currentRequestsCount += 1;
 
-        return xhr;
-    }
-    function request(props) {
-        var xhr = new XMLHttpRequest(),
-            prevLoaded = 0,
-            first = true,
-            progress = 0;
-
-        xhr._id = reqId += 1;
-
-        xhr.open("GET", props.url + props.prefix + "vr=" + random(), true);
-
-        xhr.onprogress = function (e) {
-            measures.loaded += e.loaded - prevLoaded;
-            prevLoaded = e.loaded;
-
-            if (first) measures.activeRequests += 1, first = false, progress = 1;
+        xhr.sendRequest = function () {
+            xhr.send(post);
         };
-        xhr.onloadend = function () {
-            measures.doneRequests += 1;
-            measures.activeRequests -= progress;
-
-            delete currentRequests["_" + xhr._id];
-            currentRequestsCount -= 1;
-
-            if (measures.doneRequests == measures.requestsCount) {
-                stopMeasures();
-            }
-
-            elem.doneRequests.textContent(measures.doneRequests);
-        };
-
-        currentRequests["_" + xhr._id] = xhr;
-        currentRequestsCount += 1;
 
         return xhr;
     }
@@ -2498,7 +2481,6 @@ function NetworkStage(props) {
             replacedUrl,
             requestsCount,
             reqLen,
-            _request,
             inputValue = elem.urlInput.value().trim();
 
         mconsole.log("Starting measures...");
@@ -2506,22 +2488,23 @@ function NetworkStage(props) {
         elem.doneRequests.textContent("0");
         elem.currentRequests.textContent("0");
 
-        urlMaster = inputValue == "" ? elem.urlInput.attr("placeholder") : inputValue;
-        urlSign = ["fbog11-1", "fbog10-1", "fclo7-1", "fctg2-1", "fbaq1-1", "feoh3-1"];
-        requestsCount = parseNumber(elem.requestsCount.value(), 5, 1200, 20);
-        currentRequests = {};
-        currentRequestsCount = 0;
-        interval = new _interval();
-
         measures.started = true;
         measures.loaded = 0;
         measures.requestsCount = requestsCount;
         measures.doneRequests = 0;
         measures.preconnectRequests = [];
         measures.activeRequests = 0;
-        measures.persistentMode = elem.persistentMode.node.checked;
+        measures.persistentMode = elem.persistentMode.checked();
+        measures.uploadMode = elem.uploadMode.checked();
 
-        if (urlMaster.indexOf("fna.fbcdn.net") > -1) {
+        urlMaster = inputValue == "" ? elem.urlInput.attr("placeholder") : inputValue;
+        urlSign = ["fbog11-1", "fbog10-1", "fclo7-1", "fctg2-1", "fbaq1-1", "feoh3-1"];
+        requestsCount = parseNumber(elem.requestsCount.value(), 1, measures.uploadMode ? 60 : 1200, 20);
+        currentRequests = {};
+        currentRequestsCount = 0;
+        interval = new _interval();
+
+        if (urlMaster.indexOf("fna.fbcdn.net") > -1 && !measures.uploadMode) {
             urlSign.forEach(function (item) {
                 replacedUrl = urlMaster.split(".");
                 replacedUrl[1] = item;
@@ -2534,7 +2517,6 @@ function NetworkStage(props) {
         }
 
         reqLen = Math.ceil(requestsCount / (urls.length || 1));
-        _request = measures.persistentMode ? requestPersistent : request;
 
         preconnectRequest(urls, function () {
             urls.forEach(function (item) {
@@ -2542,12 +2524,12 @@ function NetworkStage(props) {
                     if (currentRequestsCount == requestsCount) {
                         return;
                     }
-                    req = _request({ url: item.url, prefix: item.url.indexOf("?") > -1 ? "&" : "?" });
+                    req = request({ url: item.url, prefix: item.url.indexOf("?") > -1 ? "&" : "?" });
                 }
             });
 
             for (req in currentRequests) {
-                currentRequests[req].send();
+                currentRequests[req].sendRequest();
             }
 
             interval.start();
@@ -2557,8 +2539,11 @@ function NetworkStage(props) {
         elem.recordButton.toggleClass("off-t2qKV");
         measures.recordConsole = !elem.recordButton.hasClass("off-t2qKV");
     };
+    elem.uploadMode.handleClick = function () {
+        elem.urlInput.attr("placeholder", elem.uploadMode.checked() ? _TestConfig2.default.networkUploadBasicUrl : _TestConfig2.default.networkBasicUrl);
+    };
 
-    return (0, _App.createElement)(elem.networkStage, { className: "stage-Kbsc8 networkStage" }, (0, _App.createElement)("div", { className: "start-BgYmU" }, (0, _App.createElement)("div", { className: "buttonWrapper-jM8zj" }, (0, _App.createElement)(elem.startButton, { className: "startButton-x4Jsv", onclick: startMeasures }, (0, _App.createElement)("span", { textContent: "start" }), (0, _App.createElement)("span", { textContent: "stop" }))), (0, _App.createElement)("div", { className: "configOptions-cs8qH" }, (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("div", { className: "url-RD6hW" }, (0, _App.createElement)("form", {}, (0, _App.createElement)(elem.urlInput, { type: "text", name: "__url", value: "", placeholder: _TestConfig2.default.networkBasicUrl })))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)(elem.requestsCount, { className: "inputNumber-neXQ6", type: "number", value: "24" })), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.persistentMode, { className: "input-dU4km", type: "checkbox" }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Persistent measures" }))))), (0, _App.createElement)("div", { className: "content-LJepA" }, (0, _App.createElement)("div", { className: "header-cSqe2" }, (0, _App.createElement)("div", { className: "measuresDetails-Cs7YH" }, (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Done requests: " }, (0, _App.createElement)(elem.doneRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Current requests: " }, (0, _App.createElement)(elem.currentRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Active requests: " }, (0, _App.createElement)(elem.activeRequests, { textContent: 0 }))), (0, _App.createElement)("div", { className: "options-jRr7U" }, (0, _App.createElement)(elem.recordButton, { className: "item-nEaZk button-t2qKV", onclick: elem.recordButton.handleClick }))), (0, _App.createElement)("div", { className: "consoleWrapper-rWFEZ" }, (0, _App.createElement)(elem.console, { className: "console-r4XGp console-Sq3NP", readonly: "" }))));
+    return (0, _App.createElement)(elem.networkStage, { className: "stage-Kbsc8 networkStage" }, (0, _App.createElement)("div", { className: "start-BgYmU" }, (0, _App.createElement)("div", { className: "buttonWrapper-jM8zj" }, (0, _App.createElement)(elem.startButton, { className: "startButton-x4Jsv", onclick: startMeasures }, (0, _App.createElement)("span", { textContent: "start" }), (0, _App.createElement)("span", { textContent: "stop" }))), (0, _App.createElement)("div", { className: "configOptions-cs8qH" }, (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("div", { className: "url-RD6hW" }, (0, _App.createElement)("form", {}, (0, _App.createElement)(elem.urlInput, { type: "text", name: "__url", value: "", placeholder: _TestConfig2.default.networkBasicUrl })))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)(elem.requestsCount, { className: "inputNumber-neXQ6", type: "number", value: "24" })), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.persistentMode, { className: "input-dU4km", type: "checkbox" }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Persistent measures" }))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.uploadMode, { className: "input-dU4km", type: "checkbox", onclick: elem.uploadMode.handleClick }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Upload mode" }))))), (0, _App.createElement)("div", { className: "content-LJepA" }, (0, _App.createElement)("div", { className: "header-cSqe2" }, (0, _App.createElement)("div", { className: "measuresDetails-Cs7YH" }, (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Done requests: " }, (0, _App.createElement)(elem.doneRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Current requests: " }, (0, _App.createElement)(elem.currentRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Active requests: " }, (0, _App.createElement)(elem.activeRequests, { textContent: 0 }))), (0, _App.createElement)("div", { className: "options-jRr7U" }, (0, _App.createElement)(elem.recordButton, { className: "item-nEaZk button-t2qKV", onclick: elem.recordButton.handleClick }))), (0, _App.createElement)("div", { className: "consoleWrapper-rWFEZ" }, (0, _App.createElement)(elem.console, { className: "console-r4XGp console-Sq3NP", readonly: "" }))));
 }
 
 exports.default = NetworkStage;
