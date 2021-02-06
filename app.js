@@ -2424,8 +2424,8 @@ function NetworkStage(props) {
 
                     buffer.speed = buffer.speed / 125000;
 
-                    //speedRate = buffer.speed > speedRate ? buffer.speed : speedRate;
-                    speedRate = buffer.speed;
+                    speedRate = buffer.speed > speedRate ? buffer.speed : speedRate;
+                    //speedRate = buffer.speed;
 
                     average.items.push(speedRate);
                     average.count += speedRate;
