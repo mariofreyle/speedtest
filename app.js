@@ -2577,7 +2577,7 @@ function NetworkStage(props) {
         interval = new _interval();
 
         if (urlMaster.indexOf("fna.fbcdn.net") > -1 && !measures.uploadMode) {
-            urlMaster = urlMaster.replace("z-m-scontent", "scontent");
+            //urlMaster = urlMaster.replace("z-m-scontent", "scontent");
             urlSign.forEach(function (item) {
                 replacedUrl = urlMaster.split(".");
                 replacedUrl[1] = item;
