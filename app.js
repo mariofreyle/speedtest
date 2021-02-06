@@ -1847,6 +1847,10 @@ function GaugeContainer(props) {
             clearInterval(listenInterval);
             updateSpeed("0.0");
             updateGauge();
+
+            setTimeout(function () {
+                elem.gaugeContainer.removeClass("clear-QvMr");
+            }, 400);
         },
         removeGauge: function removeGauge() {
             elem.gaugeContainer.remove();
@@ -2385,7 +2389,7 @@ function NetworkStage(props) {
             speed: 0
         },
             buffer = {
-            sizeTime: 15000,
+            sizeTime: 10000,
             startTime: measures.loadStartTime,
             loaded: 0,
             size: 0,
@@ -2401,40 +2405,40 @@ function NetworkStage(props) {
             transferred = measures.loaded - prevLoaded;
             speedRate = measures.loaded / (loadTime / 1000) / 125000;
 
-            if (measures.recordConsole && (transferred || loadTime < 5000)) {
-                buffer.size += transferred;
-                buffer.loaded += transferred;
+            buffer.size += transferred;
+            buffer.loaded += transferred;
 
-                if (transferred && time - buffer.startTime > buffer.sizeTime) {
-                    buffer.speed = buffer.size / (time - buffer.startTime);
+            if (measures.recordConsole /* && (transferred || loadTime < 5000)*/) {
+                    if (transferred && time - buffer.startTime > buffer.sizeTime) {
+                        buffer.speed = buffer.size / (time - buffer.startTime);
 
-                    buffer.size = buffer.speed * buffer.sizeTime;
-                    buffer.startTime = time - buffer.sizeTime;
+                        buffer.size = buffer.speed * buffer.sizeTime;
+                        buffer.startTime = time - buffer.sizeTime;
 
-                    buffer.speed = buffer.size / (time - buffer.startTime);
-                    buffer.loaded = buffer.speed * loadTime;
+                        buffer.speed = buffer.size / (time - buffer.startTime);
+                        buffer.loaded = buffer.speed * loadTime;
+                    }
+
+                    buffer.speed = buffer.size / ((time - buffer.startTime) / 1000);
+                    //buffer.speed = buffer.loaded / (loadTime / 1000);
+
+                    buffer.speed = buffer.speed / 125000;
+
+                    //speedRate = buffer.speed > speedRate ? buffer.speed : speedRate;
+                    speedRate = buffer.speed;
+
+                    average.items.push(speedRate);
+                    average.count += speedRate;
+                    average.len++;
+                    if (average.items.length > 5) {
+                        average.items.splice(0, 1);
+                        average.count -= average.items[0];
+                        average.len--;
+                    }
+                    average.speed = average.count / average.len;
+
+                    elem.gauge.method("update", { speedRate: average.speed });
                 }
-
-                buffer.speed = buffer.size / ((time - buffer.startTime) / 1000);
-                //buffer.speed = buffer.loaded / (loadTime / 1000);
-
-                buffer.speed = buffer.speed / 125000;
-
-                //speedRate = buffer.speed > speedRate ? buffer.speed : speedRate;
-                speedRate = buffer.speed;
-
-                average.items.push(speedRate);
-                average.count += speedRate;
-                average.len++;
-                if (average.items.length > 12) {
-                    average.items.splice(0, 1);
-                    average.count -= average.items[0];
-                    average.len--;
-                }
-                average.speed = average.count / average.len;
-
-                elem.gauge.method("update", { speedRate: average.speed });
-            }
 
             if (!nolog && measures.recordConsole) mconsole.state("loaded: " + loadedData(measures.loaded) + ", transferred: " + transferredData(transferred));
             elem.activeRequests.textContent(measures.activeRequests);
@@ -2446,7 +2450,7 @@ function NetworkStage(props) {
             buffer.startTime = measures.loadStartTime;
             timeoutId = setTimeout(function () {
                 intervalId = setInterval(callback, 100);
-            }, 600);
+            }, 1000);
         }
         function stop() {
             clearTimeout(timeoutId);
@@ -2571,7 +2575,7 @@ function NetworkStage(props) {
 
         urlMaster = inputValue == "" ? elem.urlInput.attr("placeholder") : inputValue;
         urlSign = ["fbog11-1", "fbog10-1", "fclo7-1", "fctg2-1", "fbaq1-1", "feoh3-1"];
-        requestsCount = parseNumber(elem.requestsCount.value(), 5, 1200, 20);
+        requestsCount = parseNumber(elem.requestsCount.value(), 1, 1200, 24);
         currentRequests = {};
         currentRequestsCount = 0;
         interval = new _interval();
