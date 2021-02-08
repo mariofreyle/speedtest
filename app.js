@@ -1184,6 +1184,7 @@ function TestStage(props) {
         setTimeout(function () {
             if (_TestConfig2.default.runType.download && _TestConfig2.default.mode == "1") {
                 _App2.default.event("runTest", { runType: "upload" });
+                elem.gauge.method("loadType", { type: "upload" });
             } else {
                 _App2.default.event("closeTest"), closeGauge();
             }
@@ -1507,20 +1508,20 @@ function TestStage(props) {
 
     this.events = {
         initializeTest: function initializeTest() {
-            var mode = elem.startTestWith.value(),
+            var startWith = elem.startTestWith.value(),
+                runType = startWith == "1" || startWith == "2" ? "download" : "upload",
                 gaugeNode;
 
             clearResults();
 
-            gaugeNode = (0, _App.createElement)(_GaugeContainer2.default, { animate: true });
+            gaugeNode = (0, _App.createElement)(_GaugeContainer2.default, { animate: true, loadType: runType });
 
             elem.gauge = _App2.default.element(gaugeNode);
 
-            elem.startWrapper.append(gaugeNode);
-            elem.startWrapper.addClass("open-m6jHb");
+            elem.startWrapper.append(gaugeNode).addClass("open-m6jHb");
 
             setTimeout(function () {
-                _App2.default.event("runTest", { runType: mode == "1" || mode == "2" ? "download" : "upload" });
+                _App2.default.event("runTest", { runType: runType });
             }, 900);
 
             _TestConfig2.default.runTime = parseNumber({ value: elem.testTimeInput.value(), min: 1, max: 1800, default: 15 }) * 1000;
@@ -1528,7 +1529,7 @@ function TestStage(props) {
             _TestConfig2.default.selectedServer = parseInt(elem.serverSelect.value());
             _TestConfig2.default.bufferEnabled = elem.enableBuffer.node.checked;
             _TestConfig2.default.outputSpeed = elem.outputSpeedSelect.value();
-            _TestConfig2.default.mode = elem.startTestWith.value();
+            _TestConfig2.default.mode = startWith;
 
             toggleConnectionsMode();
             _App2.default.event("testStatus", { opened: true, finished: false });
@@ -1828,6 +1829,9 @@ function GaugeContainer(props) {
     }
 
     this.methods = {
+        loadType: function loadType(e) {
+            elem.gaugeContainer.removeClass("download-QvMr", "upload-QvMr").addClass(e.type + "-QvMr");
+        },
         listenSpeed: function listenSpeed() {
             elem.speedDatils.removeClass("unseen");
             elem.connectingText.addClass("unseen");
@@ -1863,7 +1867,7 @@ function GaugeContainer(props) {
         clearInterval(listenInterval);
     };
 
-    return (0, _App.createElement)(elem.gaugeContainer, { className: "gaugeContainer" + (props.animate ? " animate-QvMr" : ""), methods: this.methods, onMount: this.onMount, onDismount: this.onDismount }, (0, _App.createElement)(elem.gaugeIcon, { className: "gaugeAnim gaugeIcon" }, (0, _App.svgIcon)("gaugeVector")), (0, _App.createElement)("div", { className: "gaugeInner" }, (0, _App.createElement)(elem.incrementsContainer, { className: "incrementsContainer" }, increments.map(function (num, i) {
+    return (0, _App.createElement)(elem.gaugeContainer, { className: "gaugeContainer " + (props.loadType === void 0 ? "download" : props.loadType) + "-QvMr" + (props.animate ? " animate-QvMr" : ""), methods: this.methods, onMount: this.onMount, onDismount: this.onDismount }, (0, _App.createElement)(elem.gaugeIcon, { className: "gaugeAnim gaugeIcon" }, (0, _App.svgIcon)("gaugeVector")), (0, _App.createElement)("div", { className: "gaugeInner" }, (0, _App.createElement)(elem.incrementsContainer, { className: "incrementsContainer" }, increments.map(function (num, i) {
         return (0, _App.createElement)("div", { className: "increment increment--" + i, textContent: num });
     })), (0, _App.createElement)(elem.gaugeNeedle, { className: "gaugeNeedle" }, (0, _App.svgIcon)("gaugeNeedle")), (0, _App.createElement)(elem.gaugeState, { className: "gaugeState" }, (0, _App.createElement)(elem.speedDatils, { className: "speedDetailsContainer" }, (0, _App.createElement)(elem.speedDetailsNumber, { className: "speedDetailsNumber" }, (0, _App.createElement)("span", { textContent: "0.0" })), (0, _App.createElement)("div", { className: "" }, (0, _App.createElement)("span", { className: "speedDetailsIcon" }, (0, _App.svgIcon)("uplink")), (0, _App.createElement)("span", { className: "speedDetailsUnit textHolder", textContent: "Mbps" }))), (0, _App.createElement)(elem.connectingText, { className: "connectingServer state textHolder hidden" }, (0, _App.createElement)("b", { textContent: "Conectando..." })))));
 }
@@ -2382,8 +2386,19 @@ function NetworkStage(props) {
             loadTime,
             transferred,
             speedRate,
+            transfer = {
+            time: 0,
+            lastTime: 0,
+            average: {
+                items: [],
+                count: 0,
+                len: 0,
+                time: 0
+            }
+        },
             average = {
             items: [],
+            maxLen: 0,
             count: 0,
             len: 0,
             speed: 0
@@ -2395,56 +2410,84 @@ function NetworkStage(props) {
             size: 0,
             speed: 0
         },
-            prevLoaded = 0,
+            prev = {
+            loaded: 0,
+            transferTime: 0
+        },
             intervalId,
-            timeoutId;
+            timeoutId,
+            index,
+            len;
 
         function callback(nolog) {
             time = getTime();
             loadTime = time - measures.loadStartTime;
-            transferred = measures.loaded - prevLoaded;
+            transferred = measures.loaded - prev.loaded;
+            transfer.lastTime = transferred > 0 ? time : transfer.lastTime;
+            transfer.time = time - transfer.lastTime;
             speedRate = measures.loaded / (loadTime / 1000) / 125000;
+
+            if (transferred > 0 && prev.transferTime > 0) {
+                transfer.average.items.push(prev.transferTime);
+                transfer.average.count += prev.transferTime;
+                transfer.average.len += 1;
+                if (transfer.average.items.length > 20) {
+                    transfer.average.count -= transfer.average.items[0];
+                    transfer.average.len--;
+                    transfer.average.items.splice(0, 1);
+                }
+                transfer.average.time = transfer.average.count / transfer.average.len;
+            }
 
             buffer.size += transferred;
             buffer.loaded += transferred;
 
-            if (measures.recordConsole /* && (transferred || loadTime < 5000)*/) {
-                    if (transferred && time - buffer.startTime > buffer.sizeTime) {
-                        buffer.speed = buffer.size / (time - buffer.startTime);
+            if (measures.recordConsole) {
+                if (transferred && time - buffer.startTime > buffer.sizeTime) {
+                    buffer.speed = buffer.size / (time - buffer.startTime);
 
-                        buffer.size = buffer.speed * buffer.sizeTime;
-                        buffer.startTime = time - buffer.sizeTime;
+                    buffer.size = buffer.speed * buffer.sizeTime;
+                    buffer.startTime = time - buffer.sizeTime;
 
-                        buffer.speed = buffer.size / (time - buffer.startTime);
-                        buffer.loaded = buffer.speed * loadTime;
-                    }
-
-                    buffer.speed = buffer.size / ((time - buffer.startTime) / 1000);
-                    //buffer.speed = buffer.loaded / (loadTime / 1000);
-
-                    buffer.speed = buffer.speed / 125000;
-
-                    speedRate = buffer.speed > speedRate ? buffer.speed : speedRate;
-                    //speedRate = buffer.speed;
-
-                    average.items.push(speedRate);
-                    average.count += speedRate;
-                    average.len++;
-                    if (average.items.length > 5) {
-                        average.items.splice(0, 1);
-                        average.count -= average.items[0];
-                        average.len--;
-                    }
-                    average.speed = average.count / average.len;
-
-                    elem.gauge.method("update", { speedRate: average.speed });
+                    buffer.speed = buffer.size / (time - buffer.startTime);
+                    buffer.loaded = buffer.speed * loadTime;
                 }
+
+                buffer.speed = buffer.size / ((time - buffer.startTime) / 1000);
+                //buffer.speed = buffer.loaded / (loadTime / 1000);
+
+                buffer.speed = buffer.speed / 125000;
+
+                speedRate = buffer.speed > speedRate ? buffer.speed : speedRate;
+                //speedRate = buffer.speed;
+
+                transfer.maxLen = Math.round(transfer.average.time / 100 * 2);
+                transfer.maxLen = Math.min(transfer.maxLen, 30);
+                transfer.maxLen = Math.max(transfer.maxLen, 1);
+                //transfer.maxLen = 30;
+                average.items.push(speedRate);
+                average.count += speedRate;
+                average.len++;
+                if (average.items.length > transfer.maxLen) {
+                    len = average.items.length - transfer.maxLen;
+                    for (index = 0; index < len; index++) {
+                        average.count -= average.items[index];
+                    }
+                    average.len -= len;
+                    average.items.splice(0, len);
+                }
+                console.log("average time: " + Math.round(transfer.average.time) + "ms", "maxLen: " + transfer.maxLen, "itemsLen: " + average.items.length);
+                average.speed = average.count / average.len;
+
+                elem.gauge.method("update", { speedRate: average.speed });
+            }
 
             if (!nolog && measures.recordConsole) mconsole.state("loaded: " + loadedData(measures.loaded) + ", transferred: " + transferredData(transferred));
             elem.activeRequests.textContent(measures.activeRequests);
             elem.currentRequests.textContent(currentRequestsCount);
 
-            prevLoaded = measures.loaded;
+            prev.loaded = measures.loaded;
+            prev.transferTime = transfer.time;
         }
         function start() {
             buffer.startTime = measures.loadStartTime;
@@ -2621,10 +2664,10 @@ function NetworkStage(props) {
     elem.uploadMode.handleClick = function () {
         var checked = elem.uploadMode.checked();
         elem.urlInput.attr("placeholder", checked ? _TestConfig2.default.networkUploadBasicUrl : _TestConfig2.default.networkBasicUrl);
-        elem.content.className("content-LJepA test--" + (checked ? "upload" : "download"));
+        elem.gauge.method("loadType", { type: checked ? "upload" : "download" });
     };
 
-    return (0, _App.createElement)(elem.networkStage, { className: "stage-Kbsc8 networkStage" }, (0, _App.createElement)("div", { className: "start-BgYmU" }, (0, _App.createElement)("div", { className: "buttonWrapper-jM8zj" }, (0, _App.createElement)(elem.startButton, { className: "startButton-x4Jsv", onclick: startMeasures }, (0, _App.createElement)("span", { textContent: "start" }), (0, _App.createElement)("span", { textContent: "stop" }))), (0, _App.createElement)("div", { className: "configOptions-cs8qH" }, (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("div", { className: "url-RD6hW" }, (0, _App.createElement)("form", {}, (0, _App.createElement)(elem.urlInput, { type: "text", name: "__url", value: "", placeholder: _TestConfig2.default.networkBasicUrl })))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)(elem.requestsCount, { className: "inputNumber-neXQ6", type: "number", value: "24" })), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.persistentMode, { className: "input-dU4km", type: "checkbox" }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Persistent measures" }))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.uploadMode, { className: "input-dU4km", type: "checkbox", onclick: elem.uploadMode.handleClick }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Upload mode" }))))), (0, _App.createElement)(elem.content, { className: "content-LJepA test--download" }, (0, _App.createElement)("div", { className: "engine-d3WGk " }, (0, _App.createElement)("div", { className: "header-cSqe2" }, (0, _App.createElement)("div", { className: "measuresDetails-Cs7YH" }, (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Done requests: " }, (0, _App.createElement)(elem.doneRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Current requests: " }, (0, _App.createElement)(elem.currentRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Active requests: " }, (0, _App.createElement)(elem.activeRequests, { textContent: 0 }))), (0, _App.createElement)("div", { className: "options-jRr7U" }, (0, _App.createElement)(elem.recordButton, { className: "item-nEaZk button-t2qKV", onclick: elem.recordButton.handleClick }))), (0, _App.createElement)("div", { className: "consoleWrapper-rWFEZ" }, (0, _App.createElement)(elem.console, { className: "console-r4XGp console-Sq3NP", readonly: "" }))), (0, _App.createElement)("div", { className: "gauge-dJ3hc" }, gaugeNode)));
+    return (0, _App.createElement)(elem.networkStage, { className: "stage-Kbsc8 networkStage" }, (0, _App.createElement)("div", { className: "start-BgYmU" }, (0, _App.createElement)("div", { className: "buttonWrapper-jM8zj" }, (0, _App.createElement)(elem.startButton, { className: "startButton-x4Jsv", onclick: startMeasures }, (0, _App.createElement)("span", { textContent: "start" }), (0, _App.createElement)("span", { textContent: "stop" }))), (0, _App.createElement)("div", { className: "configOptions-cs8qH" }, (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("div", { className: "url-RD6hW" }, (0, _App.createElement)("form", {}, (0, _App.createElement)(elem.urlInput, { type: "text", name: "__url", value: "", placeholder: _TestConfig2.default.networkBasicUrl })))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)(elem.requestsCount, { className: "inputNumber-neXQ6", type: "number", value: "24" })), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.persistentMode, { className: "input-dU4km", type: "checkbox" }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Persistent measures" }))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.uploadMode, { className: "input-dU4km", type: "checkbox", onclick: elem.uploadMode.handleClick }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Upload mode" }))))), (0, _App.createElement)(elem.content, { className: "content-LJepA" }, (0, _App.createElement)("div", { className: "engine-d3WGk " }, (0, _App.createElement)("div", { className: "header-cSqe2" }, (0, _App.createElement)("div", { className: "measuresDetails-Cs7YH" }, (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Done requests: " }, (0, _App.createElement)(elem.doneRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Current requests: " }, (0, _App.createElement)(elem.currentRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Active requests: " }, (0, _App.createElement)(elem.activeRequests, { textContent: 0 }))), (0, _App.createElement)("div", { className: "options-jRr7U" }, (0, _App.createElement)(elem.recordButton, { className: "item-nEaZk button-t2qKV", onclick: elem.recordButton.handleClick }))), (0, _App.createElement)("div", { className: "consoleWrapper-rWFEZ" }, (0, _App.createElement)(elem.console, { className: "console-r4XGp console-Sq3NP", readonly: "" }))), (0, _App.createElement)("div", { className: "gauge-dJ3hc" }, gaugeNode)));
 }
 
 exports.default = NetworkStage;
