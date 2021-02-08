@@ -1219,60 +1219,105 @@ function TestStage(props) {
     }
     function drawGraph() {
         this.elem = (_TestConfig2.default.runType.download ? elem.resultDownload : elem.resultUpload).find("graph");
-        this.width = Math.round(this.elem.width());
-        this.height = Math.round(this.elem.height());
+        this.elemWidth = Math.round(this.elem.width());
+        this.elemHeight = Math.round(this.elem.height());
         this.chart = this.elem.find("chart");
         this.line = this.elem.find("line");
         this.points = [];
-        this.chartPoints = [];
         this.maxPoint = 0;
         this.maxTime = _TestConfig2.default.runTime;
-        this.pointWidth = this.width / this.pointsLen;
+        this.pointWidth = this.elemWidth / this.pointsLen;
         this.updateTime = _TestConfig2.default.runTime / 190;
         this.lastTime = 0;
 
-        this.open = function () {
-            this.chart.setAttr("points", "");
-            this.line.setAttr("points", "");
-            this.elem.setAttr("viewBox", "0 0 " + this.width + " " + this.height);
-            this.elem.removeClass("unseen");
-        };
-        this.draw = function (point, intervalTime, time, close) {
-            if (_TestConfig2.default.runTime > 16000 && time - this.lastTime < this.updateTime && !close) {
-                return;
-            }
-            this.lastTime = time;
+        var update,
+            chartPoints = [],
+            _chartPoints,
+            viewWidth,
+            viewHeight,
+            len,
+            pointWidth,
+            index,
+            item,
+            pointX,
+            pointY;
+
+        function draw1(point, intervalTime, time) {
             point = parseFloat(point);
             this.points.push(point);
             if (point > this.maxPoint) this.maxPoint = point;
             if (intervalTime > this.maxTime) this.maxTime = intervalTime;
 
-            var chartPoints = "",
-                viewWidth = intervalTime / this.maxTime * this.width,
-                viewHeight = this.height - 4,
-                len = this.points.length,
-                pointWidth = viewWidth / len,
-                item,
-                pointX,
-                pointY;
+            chartPoints = "", viewWidth = intervalTime / this.maxTime * this.elemWidth;
+            viewHeight = this.elemHeight - 4;
+            len = this.points.length;
+            pointWidth = viewWidth / len;
 
-            chartPoints += "0," + this.height;
+            chartPoints += "0," + this.elemHeight;
 
-            for (var index = 0; index < len; index++) {
+            for (index = 0; index < len; index++) {
                 item = this.points[index];
 
-                pointX = pointWidth * (index + 1);
-                pointY = viewHeight - item / this.maxPoint * viewHeight + 2;
-
-                pointX = pointX.toFixed(2);
-                pointY = pointY.toFixed(2);
+                pointX = (pointWidth * (index + 1)).toFixed(2);
+                pointY = (viewHeight - item / this.maxPoint * viewHeight + 2).toFixed(2);
 
                 if (index == 0) chartPoints += " 0," + pointY;
                 chartPoints += " " + pointX + "," + pointY;
             }
 
-            this.chart.setAttr("points", chartPoints + " " + pointX + "," + this.height);
-            this.line.setAttr("points", chartPoints + " " + this.width + "," + pointY);
+            this.chart.setAttr("points", chartPoints + " " + pointX + "," + this.elemHeight);
+            this.line.setAttr("points", chartPoints + " " + this.elemWidth + "," + pointY);
+        }
+        function draw2(point, intervalTime, time) {
+            point = parseFloat(point);
+            update = false;
+
+            if (point > this.maxPoint) this.maxPoint = point, update = true;
+            if (intervalTime > this.maxTime) this.maxTime = intervalTime;
+
+            viewWidth = intervalTime / this.maxTime * this.elemWidth;
+            viewHeight = this.elemHeight - 4;
+
+            pointX = viewWidth.toFixed(2);
+            pointY = (viewHeight - point / this.maxPoint * viewHeight + 2).toFixed(2);
+
+            if (chartPoints.length == 0) {
+                this.points.push({ value: point, x: 0 });
+                chartPoints.push("0," + pointY);
+            }
+
+            if (time - this.lastTime < this.updateTime) {
+                this.points[chartPoints.length - 1] = { value: point, x: pointX };
+                chartPoints[chartPoints.length - 1] = pointX + "," + pointY;
+            } else {
+                this.points.push({ value: point, x: pointX });
+                chartPoints.push(pointX + "," + pointY);
+                this.lastTime = time;
+            }
+
+            if (update) {
+                len = this.points.length;
+                for (index = 0; index < len; index++) {
+                    item = this.points[index];
+                    pointY = (viewHeight - item.value / this.maxPoint * viewHeight + 2).toFixed(2);
+
+                    chartPoints[index] = item.x + "," + pointY;
+                }
+            }
+
+            _chartPoints = chartPoints.join(" ");
+
+            this.chart.setAttr("points", "0," + this.elemHeight + " " + _chartPoints + (" " + pointX + "," + this.elemHeight));
+            this.line.setAttr("points", _chartPoints + " " + this.elemWidth + "," + pointY);
+        }
+
+        this.open = function () {
+            this.chart.setAttr("points", "");
+            this.line.setAttr("points", "");
+            this.elem.setAttr("viewBox", "0 0 " + this.elemWidth + " " + this.elemHeight);
+            this.elem.removeClass("unseen");
+
+            this.draw = _TestConfig2.default.runTime > 16000 ? draw2 : draw1;
         };
     }
     function startInterval() {
@@ -2461,7 +2506,7 @@ function NetworkStage(props) {
                 speedRate = buffer.speed > speedRate ? buffer.speed : speedRate;
                 //speedRate = buffer.speed;
 
-                transfer.maxLen = Math.round(transfer.average.time / 100 * 2);
+                transfer.maxLen = Math.round(transfer.average.time / 100 * 1.5);
                 transfer.maxLen = Math.min(transfer.maxLen, 30);
                 transfer.maxLen = Math.max(transfer.maxLen, 1);
                 //transfer.maxLen = 30;
