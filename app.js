@@ -439,7 +439,7 @@ window.app = function (window, document) {
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4) {
                     if (xhr.status == 200) {
-                        if (xhr.getResponseHeader && xhr.getResponseHeader("Content-Type").search("application/json") > -1) {
+                        if (xhr.getResponseHeader && xhr.getResponseHeader("Content-Type") && xhr.getResponseHeader("Content-Type").search("application/json") > -1) {
                             var response = xhr.responseText,
                                 JSONParsed = false;
                             try {
