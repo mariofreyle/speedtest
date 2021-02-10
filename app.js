@@ -579,7 +579,7 @@ window.app = function (window, document) {
             return Date.now();
         },
         random: function random(a) {
-            return Math.random().toString().slice(-6) + Math.random().toString().slice(-6);
+            return ("0000000000" + Math.random().toString().slice(2)).slice(-12);
         },
         ucWords: function ucWords(string) {
             if (!string) return;
