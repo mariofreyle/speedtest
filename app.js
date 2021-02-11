@@ -736,9 +736,10 @@ function MainHeader() {
     }
 
     elem.logoIcon.handleClick = function () {
+        elem.logoIcon.toggleClass("active");
         elem.switchButton.toggle(false);
 
-        switchStage(2);
+        switchStage(elem.logoIcon.hasClass("active") ? 2 : 0);
     };
     elem.switchButton.toggle = function (toggle) {
         if (void 0 === toggle) {
