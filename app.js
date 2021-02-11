@@ -2691,9 +2691,9 @@ function NetworkStage(props) {
         interval = new _interval();
 
         if (urlMaster[0].indexOf("fna.fbcdn.net") > -1 && !measures.uploadMode) {
-            if (!measures.zeroMode && inputValue == "") {
-                urlMaster.push(_TestConfig2.default.networkVideoBasicUrl);
-            }
+            //            if(!measures.zeroMode && inputValue == ""){
+            //                urlMaster.push(test.networkVideoBasicUrl);
+            //            }
             urlMaster.forEach(function (itemMaster, indexMaster) {
                 urlSign.forEach(function (item) {
                     replacedUrl = urlMaster[indexMaster].split(".");
