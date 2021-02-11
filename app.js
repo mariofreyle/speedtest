@@ -933,6 +933,7 @@ var test = window.test = {
         ip: null
     },
     networkBasicUrl: "https://z-m-scontent.fctg2-1.fna.fbcdn.net/v/t1.15752-9/fr/cp0/e15/q65/135856944_1366451607033113_1598808278752931662_n.jpg?_nc_cat=108&ccb=2&_nc_sid=58c789&efg=eyJpIjoibyJ9&_nc_eui2=AeHt6CAq5yTPwLYNQBa1yNudTvXFk30_ZfVO9cWTfT9l9Vq9sBMVOuHnd3u6jr2TKi-wHeCtj_mcDCDsK8l62o-o&_nc_ohc=1RPn39i0edEAX87zwdQ&_nc_ad=z-m&_nc_cid=1180&_nc_eh=15205758407eb067bfe2cae3a52838b7&_nc_ht=z-m-scontent.fctg2-1.fna&tp=14&oh=90d2094f7da6ceb5a800f9e7311cf467&oe=60288D8C",
+    networkVideoBasicUrl: "https://video.fbaq1-1.fna.fbcdn.net/v/t42.1790-2/10000000_459994801836229_1099918950867641327_n.mp4?_nc_cat=1&ccb=3&_nc_sid=985c63&efg=eyJ2ZW5jb2RlX3RhZyI6ImxlZ2FjeV9zZCJ9&_nc_eui2=AeHSG7GjCzOi_NT_8-pmf1NkFjQ8AZ5w1VgWNDwBnnDVWN0z2lJ7SqqQ02kkOjzwM3X1QHGx2k7Yib_PQTMlzPyU&_nc_ohc=ACtKlVU8PA8AX9dcvRE&_nc_ht=video.fbaq1-1.fna&oh=9999dd48ea4dcbc42b1d027765abe63e&oe=6024C5AA",
     networkUploadBasicUrl: "https://z-m-static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg"
 };
 
@@ -2679,26 +2680,30 @@ function NetworkStage(props) {
         measures.uploadMode = elem.uploadMode.checked();
         measures.zeroMode = elem.zeroMode.checked();
 
-        urlMaster = inputValue == "" ? elem.urlInput.attr("placeholder") : inputValue;
-        urlSign = ["fbog11-1", "fbog10-1", "fclo7-1", "fctg2-1", "fbaq1-1", "feoh3-1"];
+        urlMaster = [inputValue == "" ? elem.urlInput.attr("placeholder") : inputValue];
+        urlSign = ["fbog11-1", "fbog10-1", "fclo7-1", "fctg2-1", "fbaq1-1", "feoh3-1", "fbga3-1"];
         requestsCount = parseNumber(elem.requestsCount.value(), 1, 1200, 24);
         currentRequests = {};
         currentRequestsCount = 0;
         interval = new _interval();
 
-        if (urlMaster.indexOf("fna.fbcdn.net") > -1 && !measures.uploadMode) {
-            if (!measures.zeroMode) {
-                urlSign = urlSign.concat(["fbog12-1", "fbog13-1", "fbog14-1", "fbog15-1", "fbog16-1", "fbog9-1", "fbog8-1", "fbog7-1", "fbog6-1", "fbog5-1", "fbog4-1", "fbog3-1", "fbog2-1", "fbaq3-1", "fbaq4-1", "fbaq5-1", "fbaq6-1", "fbaq7-1"]);
+        if (urlMaster[0].indexOf("fna.fbcdn.net") > -1 && !measures.uploadMode) {
+            if (!measures.zeroMode && inputValue == "") {
+                urlMaster.push(_TestConfig2.default.networkVideoBasicUrl);
             }
-            urlSign.forEach(function (item) {
-                replacedUrl = urlMaster.split(".");
-                replacedUrl[1] = item;
-                replacedUrl = replacedUrl.join(".");
+            urlMaster.forEach(function (itemMaster, indexMaster) {
+                urlSign.forEach(function (item) {
+                    replacedUrl = urlMaster[indexMaster].split(".");
+                    replacedUrl[1] = item;
+                    replacedUrl = replacedUrl.join(".");
 
-                urls.push({ url: replacedUrl, prefix: replacedUrl.indexOf("?") > -1 ? "&" : "?" });
+                    urls.push({ url: replacedUrl, prefix: replacedUrl.indexOf("?") > -1 ? "&" : "?" });
+                });
             });
         } else {
-            urls.push({ url: urlMaster, prefix: urlMaster.indexOf("?") > -1 ? "&" : "?" });
+            urls = urlMaster.map(function (item) {
+                return { url: item, prefix: item.indexOf("?") > -1 ? "&" : "?" };
+            });
         }
 
         reqLen = Math.ceil(requestsCount / (urls.length || 1));
