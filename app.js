@@ -1056,7 +1056,7 @@ function TestStage(props) {
         singleModeButton: (0, _App.createRef)("button"),
         gauge: 0
     },
-        timers = {
+        timer = {
         timeout: {},
         interval: {}
     },
@@ -1065,7 +1065,6 @@ function TestStage(props) {
         intervalStarted,
         globalLoadStartTime,
         intervalTime,
-        intervalHeartbeat,
         testConsole;
 
     testConsole = function () {
@@ -1150,7 +1149,7 @@ function TestStage(props) {
         }
     }
     function stopTest() {
-        clearInterval(intervalHeartbeat);
+        clearInterval(timer.interval.intervalHeartbeat);
         connections && connections.requests && connections.requests.forEach(function (req) {
             req.abort && req.abort();
         });
@@ -1172,7 +1171,7 @@ function TestStage(props) {
         elem.startWrapper.firstChild().replaceWith((0, _App.createElement)(_StartButton2.default, { textContent: "DE NUEVO", action: 2, againAnim: true }));
         elem.startWrapper.addClass("close-m6jHb");
         elem.startWrapper.addClass("tryAgain-EuG8d");
-        setTimeout(function () {
+        timer.timeout.closeGauge = setTimeout(function () {
             elem.startWrapper.removeClass("open-m6jHb", "close-m6jHb");
             elem.gauge.method("removeGauge");
         }, 1300);
@@ -1191,7 +1190,7 @@ function TestStage(props) {
         _App2.default.event("testStatus", { onprogress: false });
         elem.gauge.method("clear");
 
-        setTimeout(function () {
+        timer.timeout.progressEnd = setTimeout(function () {
             if (_TestConfig2.default.runType.download && _TestConfig2.default.mode == "1") {
                 _App2.default.event("runTest", { runType: "upload" });
                 elem.gauge.method("loadType", { type: "upload" });
@@ -1200,15 +1199,21 @@ function TestStage(props) {
             }
         }, 500);
     }
-    function breakTest() {
-        var id = setTimeout(function () {}, 0);
-        while (id--) {
-            clearTimeout(id);
+    function clearTimers() {
+        var key;
+        for (key in timer.timeout) {
+            clearTimeout(timer.timeout[key]);
         }
+        for (key in timer.interval) {
+            clearInterval(timer.interval[key]);
+        }
+    }
+    function breakTest() {
+        clearTimers();
         stopTest();
         graph && connections.outputSpeed && graph.draw(connections.outputSpeed, _TestConfig2.default.runTime, _App2.default.time(), true);
         testConsole.state("measures error");
-        setTimeout(progressEnd, 1300);
+        timer.timeout.breakTest = setTimeout(progressEnd, 1300);
     }
     function averageSpeed() {
         this.items = [];
@@ -1490,20 +1495,20 @@ function TestStage(props) {
 
             testConsole.state("total loaded: " + loadedData(connections.loaded) + ", max time: " + transfer.maxTime + "ms, avg time: " + Math.round(transfer.average.time) + "ms");
 
-            setTimeout(function () {
+            timer.timeout.stopInterval = setTimeout(function () {
                 _App2.default.event("testStatus", { onprogress: false });
                 elem.gauge.method("clear");
 
-                setTimeout(progressEnd, 500);
+                timer.timeout.$progressEnd = setTimeout(progressEnd, 500);
             }, 500);
         }
 
-        setTimeout(function () {
+        timer.timeout.startIntervalDelay = setTimeout(function () {
             intervalStartedTime = _App2.default.time();
             // start interval
-            intervalHeartbeat = setInterval(intervalCallback, _TestConfig2.default.hearbeatTime);
+            timer.interval.intervalHeartbeat = setInterval(intervalCallback, _TestConfig2.default.hearbeatTime);
 
-            setTimeout(function () {
+            timer.timeout.stopInterval = setTimeout(function () {
                 intervalCallback(true);
                 stopInterval();
             }, runTime);
@@ -1511,10 +1516,10 @@ function TestStage(props) {
             elem.gauge.method("listenSpeed");
         }, loadTime > 420 ? 1 : 420 - loadTime);
 
-        clearTimeout(timers.timeout.runInterval);
+        clearTimeout(timer.timeout.runInterval);
     }
     function runInterval() {
-        timers.timeout.runInterval = setTimeout(startInterval, 2000);
+        timer.timeout.runInterval = setTimeout(startInterval, 2000);
     }
     function requestConfig(req, url) {
         var target = _TestConfig2.default.runType.download ? req : req.upload,
@@ -1576,7 +1581,7 @@ function TestStage(props) {
 
             elem.startWrapper.append(gaugeNode).addClass("open-m6jHb");
 
-            setTimeout(function () {
+            timer.timeout.runTest = setTimeout(function () {
                 _App2.default.event("runTest", { runType: runType });
             }, 900);
 
@@ -1593,7 +1598,7 @@ function TestStage(props) {
         runTest: function runTest(e) {
             _TestConfig2.default.runType.set(e.runType);
 
-            //            setTimeout(function(){ app.event("closeTest"), closeGauge(); }, 2000);
+            //            timer.timeout.closeTest = setTimeout(function(){ app.event("closeTest"), closeGauge(); }, 2000);
             //            return;
 
             var uploadData = _TestConfig2.default.runType.download ? null : [_TestConfig2.default.uploadData30, _TestConfig2.default.uploadData100],
@@ -1697,11 +1702,7 @@ function TestStage(props) {
         elem.stageClose.isActive = true;
 
         stopTest();
-
-        var id = setTimeout(function () {}, 0);
-        while (id--) {
-            clearTimeout(id);
-        }
+        clearTimers();
 
         elem.testStage.style({ opacity: 0, pointerEvents: "none" });
 
