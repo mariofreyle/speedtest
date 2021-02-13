@@ -1639,7 +1639,7 @@ function TestStage(props) {
             _TestConfig2.default.runType.set(e.runType);
 
             //            timer.timeout.closeTest = setTimeout(function(){ app.event("closeTest"), closeGauge(); }, 2000);
-            return;
+            //            return;
 
             var uploadData = _TestConfig2.default.runType.download ? null : [_TestConfig2.default.uploadData30, _TestConfig2.default.uploadData100],
                 i;
