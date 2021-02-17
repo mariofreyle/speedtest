@@ -917,7 +917,7 @@ function MainContent() {
         }
     };
 
-    return (0, _App.createElement)("div", { className: "pageContent", events: this.events }, (0, _App.createElement)(container, { className: "container mainTest" }, (0, _App.createElement)(testWrapper, { className: className() }, stageElem, (0, _App.createElement)(_PingStage2.default), (0, _App.createElement)(_NetworkStage2.default)), (0, _App.createElement)("div", { className: "log valueNumber-vgKp", textContent: "0.123456789" })));
+    return (0, _App.createElement)("div", { className: "pageContent", events: this.events }, (0, _App.createElement)(container, { className: "container mainTest" }, (0, _App.createElement)(testWrapper, { className: className() }, stageElem, (0, _App.createElement)(_PingStage2.default), (0, _App.createElement)(_NetworkStage2.default)), (0, _App.createElement)("div", { className: "log valueNumber-vgKp", textContent: "0.123456789" }), (0, _App.createElement)("div", { className: "log icrementNumber-vgKp", textContent: "0.123456789" })));
 };
 
 exports.default = MainContent;
