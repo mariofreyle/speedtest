@@ -684,6 +684,9 @@ app.svgIcon = function (window, document, app) {
         menu: function menu() {
             return createElement("svg", { viewBox: "0 0 512 512", class: "svgIcon" }, createElement("path", { d: "M492,236H20c-11.046,0-20,8.954-20,20c0,11.046,8.954,20,20,20h472c11.046,0,20-8.954,20-20S503.046,236,492,236z" }), createElement("path", { d: "M492,76H20C8.954,76,0,84.954,0,96s8.954,20,20,20h472c11.046,0,20-8.954,20-20S503.046,76,492,76z" }), createElement("path", { d: "M492,396H20c-11.046,0-20,8.954-20,20c0,11.046,8.954,20,20,20h472c11.046,0,20-8.954,20-20 C512,404.954,503.046,396,492,396z" }));
         },
+        menu2: function menu2() {
+            return createElement("svg", { viewBox: "0 0 124 124", class: "svgIcon" }, createElement("path", { d: "M112,6H12C5.4,6,0,11.4,0,18s5.4,12,12,12h100c6.6,0,12-5.4,12-12S118.6,6,112,6z" }), createElement("path", { d: "M112,50H12C5.4,50,0,55.4,0,62c0,6.6,5.4,12,12,12h100c6.6,0,12-5.4,12-12C124,55.4,118.6,50,112,50z" }), createElement("path", { d: "M112,94H12c-6.6,0-12,5.4-12,12s5.4,12,12,12h100c6.6,0,12-5.4,12-12S118.6,94,112,94z" }));
+        },
         settings: function settings() {
             return createElement("svg", { viewBox: "0 0 512 512", class: "svgIcon" }, createElement("path", { d: "M500.6,212.6l-59.9-14.7c-3.3-10.5-7.5-20.7-12.6-30.6l30.6-51c3.6-6,2.7-13.5-2.1-18.3L414,55.4 c-4.8-4.8-12.3-5.7-18.3-2.1l-51,30.6c-9.9-5.1-20.1-9.3-30.6-12.6l-14.4-59.9C297.9,4.8,291.9,0,285,0h-60 c-6.9,0-12.9,4.8-14.7,11.4l-14.4,59.9c-10.5,3.3-20.7,7.5-30.6,12.6l-51-30.6c-6-3.6-13.5-2.7-18.3,2.1L53.4,98 c-4.8,4.8-5.7,12.3-2.1,18.3l30.6,51c-5.1,9.9-9.3,20.1-12.6,30.6l-57.9,14.7C4.8,214.1,0,220.1,0,227v60 c0,6.9,4.8,12.9,11.4,14.4l57.9,14.7c3.3,10.5,7.5,20.7,12.6,30.6l-30.6,51c-3.6,6-2.7,13.5,2.1,18.3L96,458.6 c4.8,4.8,12.3,5.7,18.3,2.1l51-30.6c9.9,5.1,20.1,9.3,30.6,12.6l14.4,57.9c1.8,6.6,7.8,11.4,14.7,11.4h60 c6.9,0,12.9-4.8,14.7-11.4l14.4-57.9c10.5-3.3,20.7-7.5,30.6-12.6l51,30.6c6,3.6,13.5,2.7,18.3-2.1l42.6-42.6 c4.8-4.8,5.7-12.3,2.1-18.3l-30.6-51c5.1-9.9,9.3-20.1,12.6-30.6l59.9-14.7c6.6-1.5,11.4-7.5,11.4-14.4v-60 C512,220.1,507.2,214.1,500.6,212.6z M255,332c-41.4,0-75-33.6-75-75c0-41.4,33.6-75,75-75c41.4,0,75,33.6,75,75 C330,298.4,296.4,332,255,332z" }));
         }
@@ -830,7 +833,7 @@ function MainHeader() {
         isLocal && location.reload();
     };
 
-    return (0, _App.createElement)("header", { className: "mainHeader", events: this.events, onMount: this.onMount }, (0, _App.createElement)("div", { className: "container" }, (0, _App.createElement)("div", { className: "headerContents" }, (0, _App.createElement)("div", { className: "logoWrapper" }, (0, _App.createElement)(elem.logoIcon, { className: "logoIcon", onclick: elem.logoIcon.handleClick }, (0, _App.createElement)("button", {}, (0, _App.svgIcon)("testLogo"))), (0, _App.createElement)("span", { className: "logoText", textContent: "SPEEDTEST", onclick: this.reload }), (0, _App.createElement)("span", { className: "divider-fGntc", textContent: "•" })), (0, _App.createElement)("div", { className: "nav-gAfej" }, (0, _App.createElement)(elem.switchButton, { className: "button-r8eYj", textContent: "Ping Test", onclick: elem.switchButton.handleClick }), (0, _App.createElement)("div", { className: "testNav-zMcl" }, (0, _App.createElement)(elem.toggleButton, { className: "consoleToggleButton", textContent: "Show console", onclick: elem.toggleButton.handleClick }), (0, _App.createElement)("div", { className: "testSettings-pwLy" }, (0, _App.createElement)(elem.settingsButton, { className: "settingsButton-rKfy", onclick: toggleSettingsMenu }, (0, _App.svgIcon)("settings")), (0, _App.createElement)(elem.settingsMenu, { className: "menu-Jrb2E", style: "display: none;" }, (0, _App.createElement)("div", { className: "menuInner-Jrb2E" }, (0, _App.createElement)(elem.testOptions, { className: "content-rtbh" }, (0, _App.createElement)("div", { className: "menuItem-Jrb2E" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Server: " }), (0, _App.createElement)(elem.testServer, {}, test.servers.map(function (item, index) {
+    return (0, _App.createElement)("header", { className: "mainHeader", events: this.events, onMount: this.onMount }, (0, _App.createElement)("div", { className: "container" }, (0, _App.createElement)("div", { className: "headerContents" }, (0, _App.createElement)("div", { className: "logoWrapper" }, (0, _App.createElement)(elem.logoIcon, { className: "logoIcon", onclick: elem.logoIcon.handleClick }, (0, _App.createElement)("button", {}, (0, _App.svgIcon)("testLogo"))), (0, _App.createElement)("span", { className: "logoText", textContent: "SPEEDTEST", onclick: this.reload }), (0, _App.createElement)("span", { className: "divider-fGntc", textContent: "•" })), (0, _App.createElement)("div", { className: "nav-gAfej" }, (0, _App.createElement)(elem.switchButton, { className: "button-r8eYj", textContent: "Ping Test", onclick: elem.switchButton.handleClick }), (0, _App.createElement)("div", { className: "testNav-zMcl" }, (0, _App.createElement)(elem.toggleButton, { className: "consoleToggleButton", textContent: "Show console", onclick: elem.toggleButton.handleClick }), (0, _App.createElement)("div", { className: "testSettings-pwLy" }, (0, _App.createElement)(elem.settingsButton, { className: "settingsButton-rKfy", onclick: toggleSettingsMenu }, (0, _App.svgIcon)("menu")), (0, _App.createElement)(elem.settingsMenu, { className: "menu-Jrb2E", style: "display: none;" }, (0, _App.createElement)("div", { className: "menuInner-Jrb2E" }, (0, _App.createElement)(elem.testOptions, { className: "content-rtbh" }, (0, _App.createElement)("div", { className: "menuItem-Jrb2E" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Server: " }), (0, _App.createElement)(elem.testServer, {}, test.servers.map(function (item, index) {
         return index > 0 || isLocal ? index != test.selectedServer ? (0, _App.createElement)("option", { value: index, textContent: item.name }) : (0, _App.createElement)("option", { value: index, selected: "", textContent: item.name }) : null;
     })))), (0, _App.createElement)("div", { className: "menuItem-Jrb2E" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Test time: " }), (0, _App.createElement)(elem.testTime, { type: "number", min: "1", value: test.runTime / 1000 }))), (0, _App.createElement)("div", { className: "menuItem-Jrb2E" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Connections: " }), (0, _App.createElement)(elem.testConnections, { type: "number", min: "1", value: test.connections.count }))), (0, _App.createElement)("div", { className: "menuItem-Jrb2E" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Enable buffer: " }), test.bufferEnabled ? (0, _App.createElement)(elem.testEnableBuffer, { type: "checkbox", checked: "" }) : (0, _App.createElement)(elem.testEnableBuffer, { type: "checkbox" }))), (0, _App.createElement)("div", { className: "menuItem-Jrb2E" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Output speed: " }), (0, _App.createElement)(elem.testOutputSpeed, {}, (0, _App.createElement)("option", { value: "instant", textContent: "Instant speed" }), (0, _App.createElement)("option", { value: "average", selected: "", textContent: "Average speed" })))), (0, _App.createElement)("div", { className: "menuItem-Jrb2E" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Test mode: " }), (0, _App.createElement)(elem.testMode, {}, (0, _App.createElement)("option", { value: "1", textContent: "Download - Upload" }), (0, _App.createElement)("option", { value: "2", textContent: "Only Download" }), (0, _App.createElement)("option", { value: "3", textContent: "Only Upload" })))), (0, _App.createElement)("div", { className: "menuItem-Jrb2E" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Show new speedtest interfaz: " }), test.viewInterfaz == 1 ? (0, _App.createElement)(elem.testViewInterfaz, { type: "checkbox", onclick: elem.testViewInterfaz.handleClick }) : (0, _App.createElement)(elem.testViewInterfaz, { type: "checkbox", checked: "", onclick: elem.testViewInterfaz.handleClick })))), (0, _App.createElement)("div", { className: "menuItem-Jrb2E" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Prevent page close: " }), (0, _App.createElement)(elem.preventPageClose, { type: "checkbox", onclick: elem.preventPageClose.handleClick })))), (0, _App.createElement)("div", { className: "menuOverlay-Jrb2E", onclick: toggleSettingsMenu }))))))));
 }
@@ -1220,9 +1223,8 @@ function TestStage(props) {
         (_TestConfig2.default.connections.count > 1 ? elem.multiModeButton : elem.singleModeButton).addClass("active");
     }
     function closeGauge() {
-        elem.startWrapper.firstChild().replaceWith((0, _App.createElement)(_StartButton2.default, { textContent: "DE NUEVO", action: 2, againAnim: true }));
-        elem.startWrapper.addClass("close-m6jHb");
-        elem.startWrapper.addClass("tryAgain-EuG8d");
+        elem.startWrapper.firstChild().replaceWith((0, _App.createElement)(_StartButton2.default, { textContent: "DE NUEVO", action: 2 }));
+        elem.startWrapper.addClass("close-m6jHb").addClass("tryAgain-EuG8d");
         timer.timeout.closeGauge = setTimeout(function () {
             elem.startWrapper.removeClass("open-m6jHb", "close-m6jHb");
             elem.gauge.method("removeGauge");
@@ -1640,7 +1642,7 @@ function TestStage(props) {
 
             timer.timeout.runTest = setTimeout(function () {
                 _App2.default.event("runTest", { runType: runType });
-            }, 900);
+            }, 1000);
 
             toggleConnectionsMode();
             _App2.default.event("testStatus", { opened: true, finished: false });
@@ -1648,8 +1650,8 @@ function TestStage(props) {
         runTest: function runTest(e) {
             _TestConfig2.default.runType.set(e.runType);
 
-            //            timer.timeout.closeTest = setTimeout(function(){ app.event("closeTest"), closeGauge(); }, 2000);
-            //            return;
+            //timer.timeout.closeTest = setTimeout(function(){ app.event("closeTest"), closeGauge(); }, 2000);
+            //return;
 
             var uploadData = _TestConfig2.default.runType.download ? null : [_TestConfig2.default.uploadData30, _TestConfig2.default.uploadData100],
                 i;
@@ -1812,13 +1814,8 @@ function StartButton(props) {
         action = true;
         _App2.default.event("initializeTest");
     };
-    this.onMount = function () {
-        props.againAnim && setTimeout(function () {
-            elem.startButton.removeClass("againAnim-EuG8d");
-        }, 1300);
-    };
 
-    return (0, _App.createElement)(elem.startButton, { className: "startButton" + (props.againAnim ? " againAnim-EuG8d" : ""), ariaLabel: props.textContent, onMount: this.onMount, onclick: this.handleClick }, (0, _App.createElement)(elem.buttonText, { className: "buttonText", textContent: props.textContent }), (0, _App.createElement)("div", { className: "buttonBorder" }), props.action == 1 ? (0, _App.createElement)("div", { className: "buttonAnimatedBorder" }) : null);
+    return (0, _App.createElement)(elem.startButton, { className: "startButton", ariaLabel: props.textContent, onclick: this.handleClick }, (0, _App.createElement)(elem.buttonText, { className: "buttonText", textContent: props.textContent }), (0, _App.createElement)("div", { className: "buttonBorder" }), props.action == 1 ? (0, _App.createElement)("div", { className: "buttonAnimatedBorder" }) : null);
 }
 
 exports.default = StartButton;
