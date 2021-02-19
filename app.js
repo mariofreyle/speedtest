@@ -2484,6 +2484,7 @@ function NetworkStage(props) {
     function _interval() {
         var time,
             loadTime,
+            loadProgress,
             transferred,
             speedRate,
             transfer = {
@@ -2491,7 +2492,6 @@ function NetworkStage(props) {
             lastTime: 0,
             average: {
                 items: [],
-                count: 0,
                 len: 0,
                 time: 0
             }
@@ -2505,72 +2505,84 @@ function NetworkStage(props) {
         },
             buffer = {
             items: [{ loaded: 0, loadTime: measures.loadStartTime }],
-            sizeTime: 10000,
+            sizeTime: 40000,
             startTime: measures.loadStartTime,
-            loaded: 0,
             size: 0,
             speed: 0
         },
             prev = {
             loaded: 0,
-            transferTime: 0
+            transferTime: 0,
+            rconsoleLoaded: 0
+        },
+            rconsole = {
+            loaded: 0,
+            transferred: 0
         },
             intervalId,
             timeoutId,
             index,
             len;
 
+        function consoleTime(time) {
+            return (time / 1000).toFixed(time < 10000 ? 2 : 1);
+        }
         function callback(nolog) {
             time = getTime();
             loadTime = time - measures.loadStartTime;
+            loadProgress = 1 - Math.min(Math.max(loadTime - 10000, 0), 20000) / 20000;
             transferred = measures.loaded - prev.loaded;
             transfer.lastTime = transferred > 0 ? time : transfer.lastTime;
             transfer.time = time - transfer.lastTime;
 
-            if (transferred > 0 && prev.transferTime > 0) {
-                transfer.average.items.push(prev.transferTime);
-                transfer.average.count += prev.transferTime;
-                transfer.average.len += 1;
-                if (transfer.average.items.length > 20) {
-                    transfer.average.count -= transfer.average.items[0];
-                    transfer.average.len--;
-                    transfer.average.items.splice(0, 1);
+            if (loadProgress > 0) {
+                if (transfer.average.len == 0) {
+                    transfer.average.items.push(loadTime);
+                    transfer.average.len += 1;
                 }
-                transfer.average.time = transfer.average.count / transfer.average.len;
+                if (transferred > 0) {
+                    transfer.average.items.push(loadTime);
+                    transfer.average.len += 1;
+                } else {
+                    transfer.average.items[transfer.average.len - 1] = loadTime;
+                }
+                if (transfer.average.items[transfer.average.len - 1] - transfer.average.items[1] > 3000) {
+                    transfer.average.items.splice(0, 1);
+                    transfer.average.len--;
+                }
+                transfer.average.time = (transfer.average.items[transfer.average.len - 1] - transfer.average.items[0]) / (transfer.average.len - 1);
             }
 
-            buffer.size += transferred;
-            buffer.loaded += transferred;
-
             if (measures.recordConsole) {
-                if (transferred && time - buffer.startTime > buffer.sizeTime) {
+                rconsole.transferred = measures.loaded - prev.rconsoleLoaded;
+                buffer.size += rconsole.transferred;
+
+                if (rconsole.transferred > 0 && time - buffer.startTime > buffer.sizeTime) {
                     buffer.speed = buffer.size / (time - buffer.startTime);
 
                     buffer.size = buffer.speed * buffer.sizeTime;
                     buffer.startTime = time - buffer.sizeTime;
-
-                    buffer.speed = buffer.size / (time - buffer.startTime);
-                    buffer.loaded = buffer.speed * loadTime;
                 }
-                if (transferred) {
-                    buffer.items.push({ loaded: measures.loaded, loadTime: time });
-                    if (buffer.items[buffer.items.length - 1].loadTime - buffer.items[1].loadTime > 60000) {
+                /*if(transferred){
+                    buffer.items.push({loaded: measures.loaded, loadTime: time});
+                    if(buffer.items[buffer.items.length - 1].loadTime - buffer.items[1].loadTime > 60000){
                         buffer.items.splice(0, 1);
                     }
                 }
                 buffer.speed1 = (buffer.items[buffer.items.length - 1].loaded - buffer.items[0].loaded) / ((time - buffer.items[0].loadTime) / 1000);
-                buffer.speed1 = buffer.speed1 / 125000;
+                buffer.speed1 = buffer.speed1 / 125000;*/
 
-                buffer.speed = buffer.size / ((time - buffer.startTime) / 1000);
-                //buffer.speed = buffer.loaded / (loadTime / 1000);
-                buffer.speed = buffer.speed / 125000;
+                buffer.speed = buffer.size / ((time - buffer.startTime) / 1000) / 125000;
 
-                speedRate = buffer.speed1;
+                //console.log("speed: " + buffer.speed.toFixed(2), "speed1: " + buffer.speed1.toFixed(2));
 
-                transfer.maxLen = Math.round(transfer.average.time / 100 * 1.5);
-                transfer.maxLen = Math.min(transfer.maxLen, 30);
+                speedRate = buffer.speed;
+
+                transfer.maxLen = Math.round((transfer.average.time - 100) / 100 * 2);
+                transfer.maxLen = Math.min(transfer.maxLen, 15);
                 transfer.maxLen = Math.max(transfer.maxLen, 1);
-                //transfer.maxLen = 30;
+                transfer.maxLen = Math.round(10 * loadProgress) + transfer.maxLen;
+
                 average.items.push(speedRate);
                 average.count += speedRate;
                 average.len++;
@@ -2582,13 +2594,15 @@ function NetworkStage(props) {
                     average.len -= len;
                     average.items.splice(0, len);
                 }
-                //console.log("average time: " + Math.round(transfer.average.time) + "ms", "maxLen: " + transfer.maxLen, "itemsLen: " + average.items.length);
                 average.speed = average.count / average.len;
+                //console.log("average time: " + Math.round(transfer.average.time) + "ms", "maxLen: " + transfer.maxLen, "itemsLen: " + average.items.length);
 
                 elem.gauge.method("update", { speedRate: average.speed, parsedSpeed: average.speed.toFixed(1) });
+                if (!nolog) mconsole.state("time: " + consoleTime(loadTime) + "s, loaded: " + loadedData(measures.loaded) + ", transferred: " + transferredData(transferred));
+
+                prev.rconsoleLoaded = measures.loaded;
             }
 
-            if (!nolog && measures.recordConsole) mconsole.state("loaded: " + loadedData(measures.loaded) + ", transferred: " + transferredData(transferred));
             elem.activeRequests.textContent(measures.activeRequests);
             elem.currentRequests.textContent(currentRequestsCount);
 
