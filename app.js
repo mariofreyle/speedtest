@@ -455,6 +455,7 @@ window.app = function (window, document) {
                     } else if (xhr.status == 404) {
                         fail();
                     }
+
                     config.done && config.done();
                 }
             };
@@ -1033,6 +1034,12 @@ test.uploadData30 = function () {
     return formData30;
 }();
 
+test.fixNumber = function (number, len, index) {
+    number = number.toString();
+    number += (number.indexOf(".") == -1 ? "." : "") + "00000";
+    index = number.indexOf(".");
+    return number.slice(0, index + 1 + parseInt(len));
+};
 test.runType = {
     download: false,
     upload: false,
@@ -1118,6 +1125,7 @@ function TestStage(props) {
         timeout: {},
         interval: {}
     },
+        fixNumber = _TestConfig2.default.fixNumber,
         graph,
         connections,
         intervalStarted,
@@ -1186,17 +1194,16 @@ function TestStage(props) {
         return count;
     }
     function speedRateMbps(rate) {
-        rate = rate / 125000;
-        return rate.toFixed(rate > 100 ? 1 : 2); // convert bytes per second to megabits per second
+        return rate / 125000; // convert bytes per second to megabits per second
     }
     function transferredData(value) {
         if (value == 0) return "0KB";
         value = value / 1000;
-        return value.toFixed(value < 100 ? 2 : 1) + "KB";
+        return fixNumber(value, value < 100 ? 2 : 1) + "KB";
     }
     function loadedData(value) {
         value = value / 1000000;
-        return value.toFixed(value < 10 ? 3 : 2) + "MB";
+        return fixNumber(value, value < 10 ? 3 : 2) + "MB";
     }
     function showUserProvider(isp, ip) {
         _TestConfig2.default.user.isp = isp;
@@ -1208,9 +1215,11 @@ function TestStage(props) {
     }
     function stopTest() {
         clearInterval(timer.interval.intervalHeartbeat);
+        connections.requests.isAborted = true;
         connections && connections.requests && connections.requests.forEach(function (req) {
             req.abort && req.abort();
         });
+        connections.preconnect.isAborted = true;
         connections && connections.preconnect && connections.preconnect.requests.forEach(function (req) {
             req.abort && req.abort();
         });
@@ -1401,6 +1410,7 @@ function TestStage(props) {
 
         var speedNumberElem = _TestConfig2.default.runType.download ? elem.speedDownloadNumber : elem.speedUploadNumber,
             runTime = _TestConfig2.default.runTime,
+            resultsPrecision = _TestConfig2.default.resultsPrecision,
 
 
         // Iterval vars
@@ -1451,10 +1461,8 @@ function TestStage(props) {
             speed: 0,
             calc: new averageSpeed()
         },
-            averageSpeed1,
             outputSpeed,
             speedRate,
-            parsedSpeed,
             took;
 
         loadTime = time - globalLoadStartTime;
@@ -1468,13 +1476,7 @@ function TestStage(props) {
         function consoleSpeed(speed) {
             speed = speed / 125000;
             if (speed >= 10 && !took) took = true;
-            return speed.toFixed(took && speed < 10 ? 3 : 2);
-        }
-        function parseValue(val) {
-            if (_TestConfig2.default.resultsPrecision > 1) return val;
-            var str = val.toString(),
-                i = str.indexOf(".");
-            return str.substr(0, val >= 1 ? i + 2 : i + 3);
+            return fixNumber(speed, took && speed < 10 ? 3 : 2);
         }
         function intervalCallback(closeInterval) {
             time = _App2.default.time();
@@ -1529,9 +1531,8 @@ function TestStage(props) {
             outputSpeed = _TestConfig2.default.outputSpeed == "average" ? average.speed : instant.speed;
             speedRate = speedRateMbps(outputSpeed);
 
-            parsedSpeed = parseValue(speedRate);
-            speedNumberElem.textContent(parsedSpeed);
-            elem.gauge.method("updateNumber", { speedRate: speedRate, parsedSpeed: parsedSpeed });
+            speedNumberElem.textContent(fixNumber(speedRate, resultsPrecision));
+            elem.gauge.method("updateNumber", { speedRate: speedRate });
             graph.draw(outputSpeed, intervalTime, time, closeInterval);
 
             testConsole.state("instant: " + consoleSpeed(instant.speed) + "mbps, average: " + consoleSpeed(average.speed) + "mbps, time: " + consoleTime(loadTime) + "s, loaded: " + loadedData(loaded) + ", transf: " + transferredData(transfer.transferred));
@@ -1552,7 +1553,7 @@ function TestStage(props) {
                 testConsole.state("request " + req.id + " loaded: " + loadedData(req.loaded) + ", max time: " + req.maxTransferTime + "ms" + (req.firstProgressTime ? ", avg time: " + Math.round((req.lastProgressTime - req.firstProgressTime) / (req.progressCount - 1 || 1)) + "ms" : "") + (req.id > connections.count ? " (added)" : ""));
             });
 
-            testConsole.state("final speed: " + (loaded / (loadTime / 1000) / 125000).toFixed(2) + "mbps, buffer 1: " + (buffers[0].speed / 125000).toFixed(2) + "mbps (" + (time - buffers[0].startTime) + "), buffer 2: " + (buffers[1].speed / 125000).toFixed(2) + "mbps (" + (time - buffers[1].startTime) + ")");
+            testConsole.state("final speed: " + fixNumber(loaded / (loadTime / 1000) / 125000, 2) + "mbps, buffer 1: " + fixNumber(buffers[0].speed / 125000, 2) + "mbps (" + (time - buffers[0].startTime) + "), buffer 2: " + fixNumber(buffers[1].speed / 125000, 2) + "mbps (" + (time - buffers[1].startTime) + ")");
 
             testConsole.state("total loaded: " + loadedData(connections.loaded) + ", max time: " + transfer.maxTime + "ms, avg time: " + Math.round(transfer.average.time) + "ms");
 
@@ -1727,6 +1728,7 @@ function TestStage(props) {
                             get: { v: _App2.default.random() },
                             type: preconnectUrl ? "GET" : "HEAD",
                             done: function done() {
+                                if (connections.preconnect.isAborted) return;
                                 connections.preconnect.success += 1;
                                 if (connections.preconnect.success == connections.count) {
                                     setTimeout(function () {
@@ -1876,7 +1878,9 @@ function GaugeContainer(props) {
         gaugePercent,
         circleOffset,
         needleRotate,
-        listenInterval = null;
+        listenInterval = null,
+        fixNumber = _TestConfig2.default.fixNumber,
+        resultsPrecision = _TestConfig2.default.resultsPrecision;
 
     function calcGaugePercent(speedRate) {
         var index,
@@ -1902,10 +1906,10 @@ function GaugeContainer(props) {
         return percent;
     }
 
-    function updateSpeed(speedRate, parsedSpeed) {
+    function updateSpeed(speedRate) {
         currentSpeed = speedRate;
 
-        elem.speedDetailsNumber.textContent(parsedSpeed);
+        elem.speedDetailsNumber.textContent(fixNumber(speedRate, resultsPrecision));
     }
     function updateGauge() {
         if (prevSpeed != currentSpeed) {
@@ -1942,17 +1946,17 @@ function GaugeContainer(props) {
             listenInterval = setInterval(updateGauge, 120);
         },
         updateNumber: function updateNumber(e) {
-            updateSpeed(e.speedRate, e.parsedSpeed);
+            updateSpeed(e.speedRate);
         },
         update: function update(e) {
-            updateSpeed(e.speedRate, e.parsedSpeed);
+            updateSpeed(e.speedRate);
             updateGauge();
         },
         clear: function clear() {
             elem.gaugeContainer.addClass("clear-QvMr");
 
             clearInterval(listenInterval);
-            updateSpeed("0.0", "0.0");
+            updateSpeed("0.0");
             updateGauge();
 
             setTimeout(function () {
@@ -2051,7 +2055,8 @@ function PingItem(props) {
         mousePosX,
         timeout = {
         ping: null
-    };
+    },
+        abs = Math.abs;
 
     function minValue(val, min) {
         return val < min ? min : val;
@@ -2120,7 +2125,7 @@ function PingItem(props) {
         if (len > 1) {
             for (index = 0; index < len; index++) {
                 if (index != len - 1) {
-                    count += Math.abs(values[index].value - values[index + 1].value);
+                    count += abs(values[index].value - values[index + 1].value);
                     countLen++;
                 }
             }
@@ -2399,6 +2404,7 @@ function NetworkStage(props) {
         mconsole,
         getTime = Date.now,
         random = Math.random,
+        fixNumber = _TestConfig2.default.fixNumber,
         reqId = 0,
         currentRequests = {},
         interval;
@@ -2483,13 +2489,14 @@ function NetworkStage(props) {
     }
     function _interval() {
         var time,
+            intervalStart,
+            intervalTime,
+            intervalProgress,
             loadTime,
             loadProgress,
             transferred,
             speedRate,
             transfer = {
-            time: 0,
-            lastTime: 0,
             average: {
                 items: [],
                 len: 0,
@@ -2529,11 +2536,11 @@ function NetworkStage(props) {
         }
         function callback(nolog) {
             time = getTime();
+            intervalTime = time - intervalStart;
+            intervalProgress = Math.min(intervalTime + 200, 800) / 800;
             loadTime = time - measures.loadStartTime;
             loadProgress = 1 - Math.min(Math.max(loadTime - 10000, 0), 20000) / 20000;
             transferred = measures.loaded - prev.loaded;
-            transfer.lastTime = transferred > 0 ? time : transfer.lastTime;
-            transfer.time = time - transfer.lastTime;
 
             if (loadProgress > 0) {
                 if (transfer.average.len == 0) {
@@ -2576,15 +2583,13 @@ function NetworkStage(props) {
 
                 //console.log("speed: " + buffer.speed.toFixed(2), "speed1: " + buffer.speed1.toFixed(2));
 
-                speedRate = buffer.speed;
-
                 transfer.maxLen = Math.round((transfer.average.time - 100) / 100 * 2);
                 transfer.maxLen = Math.min(transfer.maxLen, 15);
                 transfer.maxLen = Math.max(transfer.maxLen, 1);
                 transfer.maxLen = Math.round(10 * loadProgress) + transfer.maxLen;
 
-                average.items.push(speedRate);
-                average.count += speedRate;
+                average.items.push(buffer.speed);
+                average.count += buffer.speed;
                 average.len++;
                 if (average.items.length > transfer.maxLen) {
                     len = average.items.length - transfer.maxLen;
@@ -2595,9 +2600,11 @@ function NetworkStage(props) {
                     average.items.splice(0, len);
                 }
                 average.speed = average.count / average.len;
-                //console.log("average time: " + Math.round(transfer.average.time) + "ms", "maxLen: " + transfer.maxLen, "itemsLen: " + average.items.length);
+                console.log("average time: " + Math.round(transfer.average.time) + "ms", "maxLen: " + transfer.maxLen, "itemsLen: " + average.items.length);
 
-                elem.gauge.method("update", { speedRate: average.speed, parsedSpeed: average.speed.toFixed(1) });
+                speedRate = average.speed * intervalProgress;
+
+                elem.gauge.method("update", { speedRate: speedRate });
                 if (!nolog) mconsole.state("time: " + consoleTime(loadTime) + "s, loaded: " + loadedData(measures.loaded) + ", transferred: " + transferredData(transferred));
 
                 prev.rconsoleLoaded = measures.loaded;
@@ -2607,12 +2614,12 @@ function NetworkStage(props) {
             elem.currentRequests.textContent(currentRequestsCount);
 
             prev.loaded = measures.loaded;
-            prev.transferTime = transfer.time;
         }
         function start() {
             buffer.startTime = measures.loadStartTime;
             buffer.items[0].loadTime = measures.loadStartTime;
             timeoutId = setTimeout(function () {
+                intervalStart = getTime();
                 intervalId = setInterval(callback, 100);
             }, 1000);
         }
