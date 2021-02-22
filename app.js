@@ -2537,7 +2537,7 @@ function NetworkStage(props) {
         function callback(nolog) {
             time = getTime();
             intervalTime = time - intervalStart;
-            intervalProgress = Math.min(intervalTime + 200, 800) / 800;
+            intervalProgress = Math.min(intervalTime, 500) / 500;
             loadTime = time - measures.loadStartTime;
             loadProgress = 1 - Math.min(Math.max(loadTime - 10000, 0), 20000) / 20000;
             transferred = measures.loaded - prev.loaded;
