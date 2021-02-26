@@ -371,6 +371,17 @@ window.app = function (window, document) {
 
             _element.mountAll(_render);
         },
+        empty: function empty(elem) {
+            elem = this.node;
+
+            _element.dismountAll(elem.children);
+
+            while (elem.firstChild) {
+                elem.removeChild(elem.firstChild);
+            }
+
+            return this;
+        },
         replaceWith: function replaceWith(replace) {
             if (!replace) return;
 
@@ -690,6 +701,12 @@ app.svgIcon = function (window, document, app) {
         },
         settings: function settings() {
             return createElement("svg", { viewBox: "0 0 512 512", class: "svgIcon" }, createElement("path", { d: "M500.6,212.6l-59.9-14.7c-3.3-10.5-7.5-20.7-12.6-30.6l30.6-51c3.6-6,2.7-13.5-2.1-18.3L414,55.4 c-4.8-4.8-12.3-5.7-18.3-2.1l-51,30.6c-9.9-5.1-20.1-9.3-30.6-12.6l-14.4-59.9C297.9,4.8,291.9,0,285,0h-60 c-6.9,0-12.9,4.8-14.7,11.4l-14.4,59.9c-10.5,3.3-20.7,7.5-30.6,12.6l-51-30.6c-6-3.6-13.5-2.7-18.3,2.1L53.4,98 c-4.8,4.8-5.7,12.3-2.1,18.3l30.6,51c-5.1,9.9-9.3,20.1-12.6,30.6l-57.9,14.7C4.8,214.1,0,220.1,0,227v60 c0,6.9,4.8,12.9,11.4,14.4l57.9,14.7c3.3,10.5,7.5,20.7,12.6,30.6l-30.6,51c-3.6,6-2.7,13.5,2.1,18.3L96,458.6 c4.8,4.8,12.3,5.7,18.3,2.1l51-30.6c9.9,5.1,20.1,9.3,30.6,12.6l14.4,57.9c1.8,6.6,7.8,11.4,14.7,11.4h60 c6.9,0,12.9-4.8,14.7-11.4l14.4-57.9c10.5-3.3,20.7-7.5,30.6-12.6l51,30.6c6,3.6,13.5,2.7,18.3-2.1l42.6-42.6 c4.8-4.8,5.7-12.3,2.1-18.3l-30.6-51c5.1-9.9,9.3-20.1,12.6-30.6l59.9-14.7c6.6-1.5,11.4-7.5,11.4-14.4v-60 C512,220.1,507.2,214.1,500.6,212.6z M255,332c-41.4,0-75-33.6-75-75c0-41.4,33.6-75,75-75c41.4,0,75,33.6,75,75 C330,298.4,296.4,332,255,332z" }));
+        },
+        arrowDown: function arrowDown() {
+            return createElement("svg", { viewBox: "0 0 293 293", class: "svgIcon" }, createElement("path", { d: "M286.935,69.377c-3.614-3.617-7.898-5.424-12.848-5.424H18.274c-4.952,0-9.233,1.807-12.85,5.424 C1.807,72.998,0,77.279,0,82.228c0,4.948,1.807,9.229,5.424,12.847l127.907,127.907c3.621,3.617,7.902,5.428,12.85,5.428 s9.233-1.811,12.847-5.428L286.935,95.074c3.613-3.617,5.427-7.898,5.427-12.847C292.362,77.279,290.548,72.998,286.935,69.377z" }));
+        },
+        checked: function checked() {
+            return createElement("svg", { viewBox: "0 0 405 405", class: "svgIcon" }, createElement("path", { d: "M393.401,124.425L179.603,338.208c-15.832,15.835-41.514,15.835-57.361,0L11.878,227.836 c-15.838-15.835-15.838-41.52,0-57.358c15.841-15.841,41.521-15.841,57.355-0.006l81.698,81.699L336.037,67.064 c15.841-15.841,41.523-15.829,57.358,0C409.23,82.902,409.23,108.578,393.401,124.425z" }));
         }
     };
 
@@ -733,6 +750,7 @@ function MainHeader() {
     var elem = {
         logoIcon: (0, _App.createRef)("span"),
         switchButton: (0, _App.createRef)("button"),
+        testNav: (0, _App.createRef)("div"),
         toggleButton: (0, _App.createRef)("button"),
         settingsButton: (0, _App.createRef)("button"),
         settingsMenu: (0, _App.createRef)("div"),
@@ -744,8 +762,7 @@ function MainHeader() {
         testOutputSpeed: (0, _App.createRef)("select"),
         testMode: (0, _App.createRef)("select"),
         testPrecision: (0, _App.createRef)("select"),
-        testViewInterfaz: (0, _App.createRef)("input"),
-        preventPageClose: (0, _App.createRef)("input")
+        testViewInterfaz: (0, _App.createRef)("input")
     },
         consoleOpened = false,
         currentStage = 0;
@@ -755,11 +772,9 @@ function MainHeader() {
         _App2.default.event("switchStage", { switch: target });
 
         if (target == 0) {
-            elem.toggleButton.removeClass("unseen-u");
-            elem.testOptions.attr("style", "");
+            elem.testNav.removeClass("unseen-u");
         } else {
-            elem.toggleButton.addClass("unseen-u");
-            elem.testOptions.style({ display: "none" });
+            elem.testNav.addClass("unseen-u");
         }
     }
     function toggleSettingsMenu() {
@@ -794,12 +809,6 @@ function MainHeader() {
     elem.testViewInterfaz.handleClick = function () {
         test.viewInterfaz = elem.testViewInterfaz.checked() ? 2 : 1;
         _App2.default.event("speedTestViewInterfaz");
-    };
-    elem.preventPageClose.handleClick = function () {
-        function prevent() {
-            return "Dude, are you sure you want to leave? Think of the kittens!";
-        }
-        window.onbeforeunload = elem.preventPageClose.checked() ? prevent : null;
     };
 
     this.events = {
@@ -836,9 +845,9 @@ function MainHeader() {
         isLocal && location.reload();
     };
 
-    return (0, _App.createElement)("header", { className: "mainHeader", events: this.events, onMount: this.onMount }, (0, _App.createElement)("div", { className: "container" }, (0, _App.createElement)("div", { className: "headerContents" }, (0, _App.createElement)("div", { className: "logoWrapper" }, (0, _App.createElement)(elem.logoIcon, { className: "logoIcon", onclick: elem.logoIcon.handleClick }, (0, _App.createElement)("button", {}, (0, _App.svgIcon)("testLogo"))), (0, _App.createElement)("span", { className: "logoText", textContent: "SPEEDTEST", onclick: this.reload }), (0, _App.createElement)("span", { className: "divider-fGntc", textContent: "•" })), (0, _App.createElement)("div", { className: "nav-gAfej" }, (0, _App.createElement)(elem.switchButton, { className: "button-r8eYj", textContent: "Ping Test", onclick: elem.switchButton.handleClick }), (0, _App.createElement)("div", { className: "testNav-zMcl" }, (0, _App.createElement)(elem.toggleButton, { className: "consoleToggleButton", textContent: "Show console", onclick: elem.toggleButton.handleClick }), (0, _App.createElement)("div", { className: "testSettings-pwLy" }, (0, _App.createElement)(elem.settingsButton, { className: "settingsButton-rKfy", onclick: toggleSettingsMenu }, (0, _App.svgIcon)("menu")), (0, _App.createElement)(elem.settingsMenu, { className: "menu-Jrb2E", style: "display: none;" }, (0, _App.createElement)("div", { className: "menuInner-Jrb2E" }, (0, _App.createElement)(elem.testOptions, { className: "content-rtbh" }, (0, _App.createElement)("div", { className: "menuItem-Jrb2E" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Server: " }), (0, _App.createElement)(elem.testServer, {}, test.servers.map(function (item, index) {
+    return (0, _App.createElement)("header", { className: "mainHeader", events: this.events, onMount: this.onMount }, (0, _App.createElement)("div", { className: "container" }, (0, _App.createElement)("div", { className: "headerContents" }, (0, _App.createElement)("div", { className: "logoWrapper" }, (0, _App.createElement)(elem.logoIcon, { className: "logoIcon", onclick: elem.logoIcon.handleClick }, (0, _App.createElement)("button", {}, (0, _App.svgIcon)("testLogo"))), (0, _App.createElement)("span", { className: "logoText", textContent: "SPEEDTEST", onclick: this.reload }), (0, _App.createElement)("span", { className: "divider-fGntc", textContent: "•" })), (0, _App.createElement)("div", { className: "nav-gAfej" }, (0, _App.createElement)(elem.switchButton, { className: "button-r8eYj", textContent: "Ping Test", onclick: elem.switchButton.handleClick }), (0, _App.createElement)(elem.testNav, { className: "testNav-zMcl" }, (0, _App.createElement)(elem.toggleButton, { className: "consoleToggleButton", textContent: "Show console", onclick: elem.toggleButton.handleClick }), (0, _App.createElement)("div", { className: "testSettings-pwLy" }, (0, _App.createElement)(elem.settingsButton, { className: "settingsButton-rKfy", onclick: toggleSettingsMenu }, (0, _App.svgIcon)("menu")), (0, _App.createElement)(elem.settingsMenu, { className: "menu-jrbk", style: "display: none;" }, (0, _App.createElement)("div", { className: "menuInner-jrbk" }, (0, _App.createElement)(elem.testOptions, { className: "content-rtbh" }, (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Server: " }), (0, _App.createElement)(elem.testServer, {}, test.servers.map(function (item, index) {
         return index > 0 || isLocal ? index != test.selectedServer ? (0, _App.createElement)("option", { value: index, textContent: item.name }) : (0, _App.createElement)("option", { value: index, selected: "", textContent: item.name }) : null;
-    })))), (0, _App.createElement)("div", { className: "menuItem-Jrb2E" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Test time: " }), (0, _App.createElement)(elem.testTime, { type: "number", min: "1", value: test.runTime / 1000 }))), (0, _App.createElement)("div", { className: "menuItem-Jrb2E" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Connections: " }), (0, _App.createElement)(elem.testConnections, { type: "number", min: "1", value: test.connections.count }))), (0, _App.createElement)("div", { className: "menuItem-Jrb2E" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Enable buffer: " }), test.bufferEnabled ? (0, _App.createElement)(elem.testEnableBuffer, { type: "checkbox", checked: "" }) : (0, _App.createElement)(elem.testEnableBuffer, { type: "checkbox" }))), (0, _App.createElement)("div", { className: "menuItem-Jrb2E" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Output speed: " }), (0, _App.createElement)(elem.testOutputSpeed, {}, (0, _App.createElement)("option", { value: "instant", textContent: "Instant speed" }), (0, _App.createElement)("option", { value: "average", selected: "", textContent: "Average speed" })))), (0, _App.createElement)("div", { className: "menuItem-Jrb2E" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Test mode: " }), (0, _App.createElement)(elem.testMode, {}, (0, _App.createElement)("option", { value: "1", textContent: "Download - Upload" }), (0, _App.createElement)("option", { value: "2", textContent: "Only Download" }), (0, _App.createElement)("option", { value: "3", textContent: "Only Upload" })))), (0, _App.createElement)("div", { className: "menuItem-Jrb2E" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Results precision: " }), (0, _App.createElement)(elem.testPrecision, {}, (0, _App.createElement)("option", { value: "1", textContent: "1", checked: "" }), (0, _App.createElement)("option", { value: "2", textContent: "2" })))), (0, _App.createElement)("div", { className: "menuItem-Jrb2E" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Show new speedtest interfaz: " }), test.viewInterfaz == 1 ? (0, _App.createElement)(elem.testViewInterfaz, { type: "checkbox", onclick: elem.testViewInterfaz.handleClick }) : (0, _App.createElement)(elem.testViewInterfaz, { type: "checkbox", checked: "", onclick: elem.testViewInterfaz.handleClick })))), (0, _App.createElement)("div", { className: "menuItem-Jrb2E" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Prevent page close: " }), (0, _App.createElement)(elem.preventPageClose, { type: "checkbox", onclick: elem.preventPageClose.handleClick })))), (0, _App.createElement)("div", { className: "menuOverlay-Jrb2E", onclick: toggleSettingsMenu }))))))));
+    })))), (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Test time: " }), (0, _App.createElement)(elem.testTime, { type: "number", min: "1", value: test.runTime / 1000 }))), (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Connections: " }), (0, _App.createElement)(elem.testConnections, { type: "number", min: "1", value: test.connections.count }))), (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Enable buffer: " }), test.bufferEnabled ? (0, _App.createElement)(elem.testEnableBuffer, { type: "checkbox", checked: "" }) : (0, _App.createElement)(elem.testEnableBuffer, { type: "checkbox" }))), (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Output speed: " }), (0, _App.createElement)(elem.testOutputSpeed, {}, (0, _App.createElement)("option", { value: "instant", textContent: "Instant speed" }), (0, _App.createElement)("option", { value: "average", selected: "", textContent: "Average speed" })))), (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Test mode: " }), (0, _App.createElement)(elem.testMode, {}, (0, _App.createElement)("option", { value: "1", textContent: "Download - Upload" }), (0, _App.createElement)("option", { value: "2", textContent: "Only Download" }), (0, _App.createElement)("option", { value: "3", textContent: "Only Upload" })))), (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Results precision: " }), (0, _App.createElement)(elem.testPrecision, {}, (0, _App.createElement)("option", { value: "1", textContent: "1", checked: "" }), (0, _App.createElement)("option", { value: "2", textContent: "2" })))), (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Show new speedtest interfaz: " }), test.viewInterfaz == 1 ? (0, _App.createElement)(elem.testViewInterfaz, { type: "checkbox", onclick: elem.testViewInterfaz.handleClick }) : (0, _App.createElement)(elem.testViewInterfaz, { type: "checkbox", checked: "", onclick: elem.testViewInterfaz.handleClick }))))), (0, _App.createElement)("div", { className: "menuOverlay-jrbk", onclick: toggleSettingsMenu }))))))));
 }
 
 exports.default = MainHeader;
@@ -945,7 +954,7 @@ var test = window.test = {
     opened: false,
     finished: false,
     onprogress: false, // true = progress, false = waiting
-    increments: [0, 2, 4, 6, 8, 10, 12, 14, 16],
+    increments: [0, 1, 5, 10, 20, 30, 50, 75, 100],
     viewInterfaz: 1,
     runTime: isLocal ? 1000 * 10 : 15000,
     hearbeatTime: 80,
@@ -999,13 +1008,11 @@ var test = window.test = {
         ip: null
     },
     networkBasicUrl: "https://z-m-scontent.fbaq1-1.fna.fbcdn.net/v/t1.15752-9/fr/cp0/e15/q65/135856944_1366451607033113_1598808278752931662_n.jpg?_nc_cat=108&ccb=3&_nc_sid=58c789&efg=eyJpIjoibyJ9&_nc_eui2=AeHt6CAq5yTPwLYNQBa1yNudTvXFk30_ZfVO9cWTfT9l9Vq9sBMVOuHnd3u6jr2TKi-wHeCtj_mcDCDsK8l62o-o&_nc_ohc=J-N8yaytIh8AX-xYJUO&tn=FLSKfGZfGQ6p3p_i&_nc_ad=z-m&_nc_cid=1180&_nc_eh=7fd986fefbec5a7415120e47fc6cf163&_nc_rml=0&_nc_ht=z-m-scontent.fbaq1-1.fna&tp=14&oh=db91ce2af268290bacf7b35f0e826473&oe=60501A8C",
-    networkVideoBasicUrl: "https://video.fbog10-1.fna.fbcdn.net/v/t42.1790-2/10000000_459994801836229_1099918950867641327_n.mp4?_nc_cat=1&ccb=3&_nc_sid=985c63&efg=eyJ2ZW5jb2RlX3RhZyI6ImxlZ2FjeV9zZCJ9&_nc_eui2=AeHSG7GjCzOi_NT_8-pmf1NkFjQ8AZ5w1VgWNDwBnnDVWN0z2lJ7SqqQ02kkOjzwM3X1QHGx2k7Yib_PQTMlzPyU&_nc_ohc=ACtKlVU8PA8AX9dcvRE&_nc_ht=video.fbaq1-1.fna&oh=9999dd48ea4dcbc42b1d027765abe63e&oe=6024C5AA",
     networkUploadBasicUrl: "https://z-m-static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg"
 };
 
 test.selectedServer = isLocal ? 0 : 2;
 test.selectedServer = 2;
-test.increments = [0, 1, 5, 10, 20, 30, 50, 75, 100];
 
 test.gaugeCircleOffsetRef = test.gaugeCircleStrokeMax - test.gaugeCircleStrokeMin;
 test.gaugeNeedleRotateRef = test.gaugeNeedleRotateMax - test.gaugeNeedleRotateMin; // in deg
@@ -1050,27 +1057,68 @@ test.runType = {
     }
 };
 
-test.ping = {
-    results: 100,
-    completeAll: false,
-    servers: [{ name: "Local", url: URL_BASE + "/download/download.file", connectType: 1, progress: URL_BASE + "/download/download.file" }, { name: "Cachefly.net", url: "https://open.cachefly.net/downloading", connectType: 1, progress: "https://open.cachefly.net/downloading" }, { name: "New York - Librespeed.org", url: "https://ny2.us.backend.librespeed.org/garbage.php?cors=true&ckSize=0", connectType: 1, progress: "https://ny2.us.backend.librespeed.org/garbage.php?cors=true&ckSize=100" }, { name: "New Jersey - Vultr.com", url: "https://nj-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Chicago - Vultr.com", url: "https://il-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://il-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Atlanta - Vultr.com", url: "https://ga-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://ga-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Dallas - Vultr.com", url: "https://tx-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://tx-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Miami - Vultr.com", url: "https://fl-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Tigo", url: "https://tigo.5886662453.com", connectType: 1 },
-    /*{name: "Facebook Static", url: "https://z-m-static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg", connectType: 1, progress: test.networkBasicUrl},*/
-    { name: "Facebook", url: test.networkBasicUrl, connectType: 1, progress: test.networkBasicUrl }, { name: "Washington - Fireprobe.net", url: "https://s12-je1rw.fireinfra.net/?action=download&size=0", connectType: 1, progress: "https://s12-je1rw.fireinfra.net/?action=download&size=100" }, { name: "Sydney - Fireprobe.net", url: "https://s87-lggif.fireinfra.net/?action=download&size=0", connectType: 1, progress: "https://s87-lggif.fireinfra.net/?action=download&size=100" }, { name: "Madrid - Movispeed.es", url: "https://m0011.movispeed.es/apolo/data/a1b.dat", connectType: 1, progress: "https://m0012.movispeed.es/apolo/data/a100m.dat" }, { name: "Singapore - Fireprobe.net", url: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0", connectType: 1, progress: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100" }],
-    runTime: 10000,
-    graphItemsLen: 100
-};
-
-test.ping.server = test.ping.servers[1];
-
-test.ping.graphItems = function () {
-    var arr = [],
-        len = test.ping.graphItemsLen;
-    for (var index = 0; index < len; index++) {
-        arr.push(index);
+test.network = function () {
+    var fnaBasicUrl = "https://z-m-scontent.fbaq1-1.fna.fbcdn.net/v/t1.15752-9/fr/cp0/e15/q65/135856944_1366451607033113_1598808278752931662_n.jpg?_nc_cat=108&ccb=3&_nc_sid=58c789&efg=eyJpIjoibyJ9&_nc_eui2=AeHt6CAq5yTPwLYNQBa1yNudTvXFk30_ZfVO9cWTfT9l9Vq9sBMVOuHnd3u6jr2TKi-wHeCtj_mcDCDsK8l62o-o&_nc_ohc=J-N8yaytIh8AX-xYJUO&tn=FLSKfGZfGQ6p3p_i&_nc_ad=z-m&_nc_cid=1180&_nc_eh=7fd986fefbec5a7415120e47fc6cf163&_nc_rml=0&_nc_ht=z-m-scontent.fbaq1-1.fna&tp=14&oh=db91ce2af268290bacf7b35f0e826473&oe=60501A8C",
+        uploadBasicUrl = "https://z-m-static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg",
+        urls = [{
+        name: "Facebook - JPG",
+        url: fnaBasicUrl.replace("//z-m-scontent", "//scontent"),
+        selected: false,
+        requestsCount: 14
+    }, {
+        name: "Facebook Zero - JPG",
+        url: fnaBasicUrl,
+        selected: true,
+        requestsCount: 14
+    }, {
+        name: "Zdassets Static - JS",
+        url: "https://static.zdassets.com/hc/assets/hc_enduser-9515a2be2d46bfece89668d9057908ea.js",
+        selected: true,
+        requestsCount: 6
+    }, {
+        name: "API - JSON",
+        url: "https://ayuda.tigo.com.co/api/v2/help_center/es/articles.json?per_page=100",
+        selected: true,
+        requestsCount: 15
+    }, {
+        name: "Mi Tigo - JS",
+        url: "https://mi.tigo.com.co/main.2e0d8b7303628b84b1c1.js",
+        selected: true,
+        requestsCount: 10
+    }, {
+        name: "Facebook Static - JS",
+        url: "https://z-m-static.xx.fbcdn.net/rsrc.php/v3iUSS4/y3/l/es_LA/GUUaaCuowqo7X4eo6yE-9I8hLLtjZ8OG-NvXPppKfEJHkKKwog6tO_QfOSQgI7DvfNUI2U32NhGrpb7ct-kmWsiKmuFQe5BWvjxPOoqrOlBAc9K1Pg8liyyvhWD1C5bzwVyUynU_cyfu2WrkfrPRl7RyVf.js?_nc_x=oKaJbgQx21R&_nc_eui2=AeEuWIA-BDltcGuhsAythiMSPLKUA5_cIUw8spQDn9whTKB0BXHpNttc9kmniQIHkdmxLed7PYBSRMNzDFf-Uwve",
+        selected: true,
+        requestsCount: 2
+    }];
+    return {
+        fnaBasicUrl: fnaBasicUrl,
+        uploadBasicUrl: uploadBasicUrl,
+        urls: urls
+    };
+}();
+test.ping = function () {
+    var graphItems = [],
+        graphItemsLen = 100,
+        index,
+        servers;
+    for (index = 0; index < graphItemsLen; index++) {
+        graphItems.push(index);
     }
-    return arr;
-}(test.ping);
-test.ping.graphVisibleItems = [0, 2, 4, 6, 8, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49, 52, 55, 58, 61, 64, 67, 70, 73, 76, 79, 82, 85, 88, 91, 94, 97];
+    servers = [{ name: "Local", url: URL_BASE + "/download/download.file", connectType: 1, progress: URL_BASE + "/download/download.file" }, { name: "Cachefly.net", url: "https://open.cachefly.net/downloading", connectType: 1, progress: "https://open.cachefly.net/downloading" }, { name: "New York - Librespeed.org", url: "https://ny2.us.backend.librespeed.org/garbage.php?cors=true&ckSize=0", connectType: 1, progress: "https://ny2.us.backend.librespeed.org/garbage.php?cors=true&ckSize=100" }, { name: "New Jersey - Vultr.com", url: "https://nj-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Chicago - Vultr.com", url: "https://il-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://il-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Atlanta - Vultr.com", url: "https://ga-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://ga-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Dallas - Vultr.com", url: "https://tx-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://tx-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Miami - Vultr.com", url: "https://fl-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Tigo", url: "https://tigo.5886662453.com", connectType: 1 },
+    /*{name: "Facebook Static", url: "https://z-m-static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg", connectType: 1, progress: test.network.fnaBasicUrl},*/
+    { name: "Facebook", url: test.network.fnaBasicUrl, connectType: 1, progress: test.network.fnaBasicUrl }, { name: "Washington - Fireprobe.net", url: "https://s12-je1rw.fireinfra.net/?action=download&size=0", connectType: 1, progress: "https://s12-je1rw.fireinfra.net/?action=download&size=100" }, { name: "Sydney - Fireprobe.net", url: "https://s87-lggif.fireinfra.net/?action=download&size=0", connectType: 1, progress: "https://s87-lggif.fireinfra.net/?action=download&size=100" }, { name: "Madrid - Movispeed.es", url: "https://m0011.movispeed.es/apolo/data/a1b.dat", connectType: 1, progress: "https://m0012.movispeed.es/apolo/data/a100m.dat" }, { name: "Singapore - Fireprobe.net", url: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0", connectType: 1, progress: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100" }];
+    return {
+        results: 100,
+        completeAll: false,
+        servers: servers,
+        server: servers[1],
+        runTime: 10000,
+        graphItemsLen: graphItemsLen,
+        graphVisibleItems: [0, 2, 4, 6, 8, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49, 52, 55, 58, 61, 64, 67, 70, 73, 76, 79, 82, 85, 88, 91, 94, 97],
+        graphItems: graphItems
+    };
+}();
 
 exports.default = test;
 
@@ -2348,7 +2396,7 @@ function PingStage() {
     return (0, _App.createElement)("div", { className: "stage-Kbsc8 pingStage", events: this.events, onMount: this.onMount }, (0, _App.createElement)(elem.start, { className: "start-inBnq" }, (0, _App.createElement)("div", { className: "contents-vr4n" }, (0, _App.createElement)(elem.startButton, { className: "startButton-twMcg", textContent: "start", onclick: startTest }), (0, _App.createElement)("div", { className: "selectedServer-xncHv" }, (0, _App.createElement)(elem.serverDetails, { className: "serverDetails-xncHv", textContent: _TestConfig2.default.ping.server.name }), (0, _App.createElement)("div", { className: "testSettings-qRnpi" }, (0, _App.createElement)("div", { className: "changeServer-xncHv" }, (0, _App.createElement)(elem.selectServer, { className: "select-fquMx", onchange: changeServer }, _TestConfig2.default.ping.servers.map(function (item, index) {
         if (!isLocal && index == 0) return null;
         return item.name == _TestConfig2.default.ping.server.name ? (0, _App.createElement)("option", { value: index, textContent: item.name, selected: "selected" }) : (0, _App.createElement)("option", { value: index, textContent: item.name });
-    })), (0, _App.createElement)("button", { className: "changeButton-xncHv", textContent: "Change server" })), (0, _App.createElement)("div", { className: "buttonWrapper-xvYef" }, (0, _App.createElement)(elem.settingsButton, { className: "button-xvYef", title: "Test settings", onclick: toggleSettingsMenu }, (0, _App.svgIcon)("settings")), (0, _App.createElement)(elem.settingsMenu, { className: "menu-Jrb2E", style: "display: none;" }, (0, _App.createElement)("div", { className: "menuInner-Jrb2E" }, (0, _App.createElement)("div", { className: "menuItem-Jrb2E" }, (0, _App.createElement)("span", { textContent: "Complete all:" }), (0, _App.createElement)(elem.completeAll, { type: "checkbox" })), (0, _App.createElement)("div", { className: "menuItem-Jrb2E" }, (0, _App.createElement)("span", { textContent: "Results:" }), (0, _App.createElement)(elem.resultsCount, {}, (0, _App.createElement)("option", { value: "100", textContent: "100", selected: "" }), (0, _App.createElement)("option", { value: "190", textContent: "190" }), (0, _App.createElement)("option", { value: "280", textContent: "280" }), (0, _App.createElement)("option", { value: "460", textContent: "460" }), (0, _App.createElement)("option", { value: "920", textContent: "920" }))), (0, _App.createElement)("div", { className: "menuItem-Jrb2E" }, (0, _App.createElement)("span", { textContent: "Progress mode:" }), (0, _App.createElement)(elem.progressMode, { type: "checkbox", onclick: elem.progressMode.handleClick }))), (0, _App.createElement)("div", { className: "menuOverlay-Jrb2E", onclick: toggleSettingsMenu }))))))), (0, _App.createElement)(elem.pingItems, { className: "pingItems-id3Lk" }));
+    })), (0, _App.createElement)("button", { className: "changeButton-xncHv", textContent: "Change server" })), (0, _App.createElement)("div", { className: "buttonWrapper-xvYef" }, (0, _App.createElement)(elem.settingsButton, { className: "button-xvYef", title: "Test settings", onclick: toggleSettingsMenu }, (0, _App.svgIcon)("settings")), (0, _App.createElement)(elem.settingsMenu, { className: "menu-jrbk", style: "display: none;" }, (0, _App.createElement)("div", { className: "menuInner-jrbk" }, (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("span", { textContent: "Complete all:" }), (0, _App.createElement)(elem.completeAll, { type: "checkbox" })), (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("span", { textContent: "Results:" }), (0, _App.createElement)(elem.resultsCount, {}, (0, _App.createElement)("option", { value: "100", textContent: "100", selected: "" }), (0, _App.createElement)("option", { value: "190", textContent: "190" }), (0, _App.createElement)("option", { value: "280", textContent: "280" }), (0, _App.createElement)("option", { value: "460", textContent: "460" }), (0, _App.createElement)("option", { value: "920", textContent: "920" }))), (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("span", { textContent: "Progress mode:" }), (0, _App.createElement)(elem.progressMode, { type: "checkbox", onclick: elem.progressMode.handleClick }))), (0, _App.createElement)("div", { className: "menuOverlay-jrbk", onclick: toggleSettingsMenu }))))))), (0, _App.createElement)(elem.pingItems, { className: "pingItems-id3Lk" }));
 };
 
 exports.default = PingStage;
@@ -2379,20 +2427,24 @@ var _GaugeContainer2 = _interopRequireDefault(_GaugeContainer);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function NetworkStage(props) {
-    var gaugeNode = (0, _App.createElement)(_GaugeContainer2.default),
-        elem = {
+    var elem = {
         networkStage: (0, _App.createRef)("div"),
         startButton: (0, _App.createRef)("button"),
         urlInput: (0, _App.createRef)("input"),
+        selectUrlButton: (0, _App.createRef)("button"),
+        selectUrlMenu: (0, _App.createRef)("div"),
         requestsCount: (0, _App.createRef)("input"),
         persistentMode: (0, _App.createRef)("input"),
-        zeroMode: (0, _App.createRef)("input"),
+        preventClose: (0, _App.createRef)("input"),
         uploadMode: (0, _App.createRef)("input"),
         content: (0, _App.createRef)("div"),
-        gauge: (0, _App.element)(gaugeNode),
+        gauge: (0, _App.$)((0, _App.createElement)(_GaugeContainer2.default)),
         recordButton: (0, _App.createRef)("a"),
         console: (0, _App.createRef)("textarea"),
+        doneRequestsButton: (0, _App.createRef)("button"),
         doneRequests: (0, _App.createRef)("span"),
+        doneRequestsMenu: (0, _App.createRef)("div"),
+        doneRequestsItems: (0, _App.createRef)("div"),
         currentRequests: (0, _App.createRef)("span"),
         activeRequests: (0, _App.createRef)("span")
     },
@@ -2635,12 +2687,14 @@ function NetworkStage(props) {
             stop: stop
         };
     }
-    function preconnectRequest(urls, callback) {
+    function preconnectRequest(urls, callback, prefix) {
         var done = 0;
         urls.forEach(function (item) {
             var xhr = new XMLHttpRequest();
 
-            xhr.open("HEAD", item.url + item.prefix + "vr=" + random(), true);
+            prefix = item.url.indexOf("?") > -1 ? "&" : "?";
+
+            xhr.open("HEAD", item.url + prefix + "vr=" + random(), true);
 
             xhr.onloadend = function () {
                 done += 1;
@@ -2677,6 +2731,8 @@ function NetworkStage(props) {
 
             elem.doneRequests.textContent(measures.doneRequests);
 
+            elem.doneRequestsItems.child(props.id).child(1).textContent(measures.urls[props.id].done += 1);
+
             target.onloadend = null;
             xhr.abort();
 
@@ -2702,6 +2758,15 @@ function NetworkStage(props) {
 
         return xhr;
     }
+    function countSelectedRequests(count) {
+        count = 0;
+        _TestConfig2.default.network.urls.forEach(function (item, rCount) {
+            if (!item.selected) return;
+            rCount = parseInt(item.requestsCount);
+            count += isNaN(rCount) ? 0 : rCount;
+        });
+        return count;
+    }
     function startMeasures() {
         if (measures.actionTime && getTime() - measures.actionTime < 500) {
             return;
@@ -2713,87 +2778,112 @@ function NetworkStage(props) {
             return stopMeasures();
         }
 
-        var index,
-            urlMaster,
+        var urlMaster,
             urlSign,
             req,
             urls = [],
             replacedUrl,
             requestsCount,
-            reqLen,
-            inputValue = elem.urlInput.value().trim();
-
-        mconsole.log("Starting measures...");
-        elem.networkStage.addClass("started-P5Hym");
-        elem.doneRequests.textContent("0");
-        elem.currentRequests.textContent("0");
+            inputValue = elem.urlInput.value().trim(),
+            requestsCountValue = elem.requestsCount.value().trim();
 
         measures.started = true;
         measures.loaded = 0;
-        measures.requestsCount = requestsCount;
         measures.doneRequests = 0;
         measures.preconnectRequests = [];
         measures.activeRequests = 0;
         measures.persistentMode = elem.persistentMode.node.checked;
         measures.uploadMode = elem.uploadMode.checked();
-        measures.zeroMode = elem.zeroMode.checked();
 
-        urlMaster = [inputValue == "" ? elem.urlInput.attr("placeholder") : inputValue];
+        urlMaster = inputValue;
         urlSign = ["fbog11-1", "fbog10-1", "fclo7-1", "fctg2-1", "fbaq1-1", "feoh3-1", "fbga3-1"];
-        requestsCount = _App2.default.parseNumber({ value: elem.requestsCount.value(), min: 1, max: 1200, default: 21 });
+        requestsCount = _App2.default.parseNumber({ value: requestsCountValue, min: 1, max: 1200, default: requestsCountValue == "" && !measures.uploadMode ? countSelectedRequests() : 20 });
         currentRequests = {};
         currentRequestsCount = 0;
         interval = new _interval();
 
-        if (urlMaster[0].indexOf("fna.fbcdn.net") > -1 && !measures.uploadMode) {
-            //            if(!measures.zeroMode && inputValue == ""){
-            //                urlMaster.push(test.networkVideoBasicUrl);
-            //            }
-            urlMaster.forEach(function (itemMaster, indexMaster) {
-                urlSign.forEach(function (item) {
-                    replacedUrl = urlMaster[indexMaster].split(".");
-                    replacedUrl[1] = item;
-                    replacedUrl = replacedUrl.join(".");
-
-                    urls.push({ url: replacedUrl, prefix: replacedUrl.indexOf("?") > -1 ? "&" : "?" });
-                });
-            });
+        if (measures.uploadMode) {
+            urls.push({ url: _TestConfig2.default.network.uploadBasicUrl, requestsCount: 20, done: 0 });
         } else {
-            urls = urlMaster.map(function (item) {
-                return { url: item, prefix: item.indexOf("?") > -1 ? "&" : "?" };
+            if (urlMaster != "") {
+                urls.push({ url: urlMaster, requestsCount: 1, done: 0 });
+            }
+            _TestConfig2.default.network.urls.forEach(function (item, index, count) {
+                if (!item.selected) {
+                    return;
+                } else if (item.url.indexOf("fna.fbcdn.net") > -1) {
+                    urlSign.forEach(function (sign) {
+                        replacedUrl = item.url.split(".");
+                        replacedUrl[1] = sign;
+                        replacedUrl = replacedUrl.join(".");
+
+                        urls.push({ url: replacedUrl, requestsCount: 1, done: 0 });
+                    });
+                } else {
+                    count = parseInt(item.requestsCount);
+                    urls.push({ url: item.url, requestsCount: isNaN(count) ? 1 : count, done: 0 });
+                }
             });
         }
 
-        reqLen = Math.ceil(requestsCount / (urls.length || 1));
-
-        if (urls.length > requestsCount) {
+        if (urls.length == 0) {
+            return;
+        } else if (urls.length > requestsCount) {
             urls.splice(0, urls.length - requestsCount);
         }
 
+        mconsole.log("Starting measures...");
+        elem.networkStage.addClass("started-P5Hym");
+        elem.doneRequests.textContent("0");
+        elem.currentRequests.textContent("0");
+        measures.urls = urls;
+
         preconnectRequest(urls, function () {
-            urls.forEach(function (item) {
-                for (index = 0; index < reqLen; index++) {
-                    if (currentRequestsCount == requestsCount) {
-                        return;
+            var itemIndex = 0,
+                urlsLen = urls.length,
+                index,
+                item;
+
+            if (requestsCountValue == "" && !measures.uploadMode) {
+                urls.forEach(function (item, itemIndex) {
+                    urlsLen = item.requestsCount;
+                    for (index = 0; index < urlsLen; index++) {
+                        req = request({ url: item.url, prefix: item.url.indexOf("?") > -1 ? "&" : "?", id: itemIndex, done: 0 });
                     }
-                    req = request({ url: item.url, prefix: item.url.indexOf("?") > -1 ? "&" : "?" });
+                });
+            } else {
+                for (index = 0; index < requestsCount; index++) {
+                    item = urls[itemIndex];
+                    req = request({ url: item.url, prefix: item.url.indexOf("?") > -1 ? "&" : "?", id: itemIndex, done: 0 });
+                    itemIndex = itemIndex == urlsLen - 1 ? 0 : itemIndex + 1;
                 }
-            });
+            }
 
             for (req in currentRequests) {
                 currentRequests[req].sendRequest();
             }
 
+            mconsole.state("Load start...");
             measures.loadStartTime = getTime();
-
             interval.start();
         });
+
+        elem.doneRequestsItems.empty();
+        urls.forEach(function (item) {
+            elem.doneRequestsItems.append((0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("div", { className: "textUrl-fjwq", textContent: item.url }), (0, _App.createElement)("div", { textContent: "0" })));
+        });
     }
-    function zeroUrl(value) {
-        var checked = elem.zeroMode.checked();
-        value = value.replace(checked ? "//static" : "//z-m-static", checked ? "//z-m-static" : "//static");
-        value = value.replace(checked ? "//scontent" : "//z-m-scontent", checked ? "//z-m-scontent" : "//scontent");
-        return value;
+    function toggleUrlMenu() {
+        elem.selectUrlMenu.style({ display: elem.selectUrlMenu.style("display") == "none" ? "block" : "none" });
+    }
+    function toggleDoneRequestsMenu() {
+        elem.doneRequestsMenu.style({ display: elem.doneRequestsMenu.style("display") == "none" ? "block" : "none" });
+    }
+    function selectUrl(index, elem, selected) {
+        elem = (0, _App.$)(elem), selected = _TestConfig2.default.network.urls[index].selected;
+
+        _TestConfig2.default.network.urls[index].selected = selected ? false : true;
+        elem.find("selectedIcon-wrpb")[selected ? "removeClass" : "addClass"]("selected");
     }
 
     elem.recordButton.handleClick = function () {
@@ -2802,14 +2892,20 @@ function NetworkStage(props) {
     };
     elem.uploadMode.handleClick = function () {
         var checked = elem.uploadMode.checked();
-        elem.urlInput.attr("placeholder", zeroUrl(checked ? _TestConfig2.default.networkUploadBasicUrl : _TestConfig2.default.networkBasicUrl));
         elem.gauge.method("loadType", { type: checked ? "upload" : "download" });
     };
-    elem.zeroMode.handleClick = function () {
-        elem.urlInput.attr("placeholder", zeroUrl(elem.urlInput.attr("placeholder")));
+    elem.preventClose.handleClick = function () {
+        function prevent() {
+            return "Dude, are you sure you want to leave? Think of the kittens!";
+        }
+        window.onbeforeunload = elem.preventClose.checked() ? prevent : null;
     };
 
-    return (0, _App.createElement)(elem.networkStage, { className: "stage-Kbsc8 networkStage" }, (0, _App.createElement)("div", { className: "start-BgYmU" }, (0, _App.createElement)("div", { className: "buttonWrapper-jM8zj" }, (0, _App.createElement)(elem.startButton, { className: "startButton-x4Jsv", onclick: startMeasures }, (0, _App.createElement)("span", { textContent: "start" }), (0, _App.createElement)("span", { textContent: "stop" }))), (0, _App.createElement)("div", { className: "configOptions-cs8qH" }, (0, _App.createElement)("div", { className: "group-bjFqx" }, (0, _App.createElement)("div", { className: "item-Z9hxm url-RD6hW" }, (0, _App.createElement)(elem.urlInput, { type: "text", name: "__url", value: "", placeholder: _TestConfig2.default.networkBasicUrl })), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)(elem.requestsCount, { className: "inputNumber-neXQ6", type: "number", value: "21" }))), (0, _App.createElement)("div", { className: "group-bjFqx" }, (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.persistentMode, { className: "input-dU4km", type: "checkbox", checked: "" }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Persistent measures" }))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.zeroMode, { className: "input-dU4km", type: "checkbox", checked: "", onclick: elem.zeroMode.handleClick }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Facebook Zero" }))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.uploadMode, { className: "input-dU4km", type: "checkbox", onclick: elem.uploadMode.handleClick }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Upload mode" })))))), (0, _App.createElement)(elem.content, { className: "content-LJepA" }, (0, _App.createElement)("div", { className: "engine-d3WGk " }, (0, _App.createElement)("div", { className: "header-cSqe2" }, (0, _App.createElement)("div", { className: "measuresDetails-Cs7YH" }, (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Done requests: " }, (0, _App.createElement)(elem.doneRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Current requests: " }, (0, _App.createElement)(elem.currentRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Active requests: " }, (0, _App.createElement)(elem.activeRequests, { textContent: 0 }))), (0, _App.createElement)("div", { className: "options-jRr7U" }, (0, _App.createElement)(elem.recordButton, { className: "item-nEaZk button-t2qKV", onclick: elem.recordButton.handleClick }))), (0, _App.createElement)("div", { className: "consoleWrapper-rWFEZ console-e2Lfg" }, (0, _App.createElement)("button", { className: "consoleButton-mHsq", onclick: mconsole.scroll }), (0, _App.createElement)(elem.console, { className: "console-r4XGp console-Sq3NP", readonly: "" }))), (0, _App.createElement)("div", { className: "wrapper-tKbg" }, (0, _App.createElement)("div", { className: "gauge-dJ3hc size-ghjk disableTransition-hyKt" }, (0, _App.createElement)(elem.gauge)))));
+    return (0, _App.createElement)(elem.networkStage, { className: "stage-Kbsc8 networkStage" }, (0, _App.createElement)("div", { className: "start-BgYmU" }, (0, _App.createElement)("div", { className: "buttonWrapper-jM8zj" }, (0, _App.createElement)(elem.startButton, { className: "startButton-x4Jsv", onclick: startMeasures }, (0, _App.createElement)("span", { textContent: "start" }), (0, _App.createElement)("span", { textContent: "stop" }))), (0, _App.createElement)("div", { className: "configOptions-cs8qH" }, (0, _App.createElement)("div", { className: "group-bjFqx" }, (0, _App.createElement)("div", { className: "item-Z9hxm url-RD6hW" }, (0, _App.createElement)(elem.urlInput, { type: "text", name: "__url", value: "", placeholder: "Enter aditional url..." }), (0, _App.createElement)(elem.selectUrlButton, { className: "urlSelectButton-zGsn", onclick: toggleUrlMenu }, (0, _App.svgIcon)("arrowDown")), (0, _App.createElement)(elem.selectUrlMenu, { className: "menu-jrbk", style: "display: none;" }, (0, _App.createElement)("div", { className: "menuInner-jrbk" }, _TestConfig2.default.network.urls.map(function (item, index) {
+        return (0, _App.createElement)("div", { className: "menuItem-jrbk", onclick: function onclick() {
+                selectUrl(index, this);
+            } }, (0, _App.createElement)("div", { className: "itemInner-ghrt" }, (0, _App.createElement)("button", { className: "selectedIcon-wrpb" + (item.selected ? " selected" : "") }, (0, _App.svgIcon)("checked")), (0, _App.createElement)("div", { className: "textUrl-sdsf", textContent: item.url })));
+    })), (0, _App.createElement)("div", { className: "menuOverlay-jrbk", onclick: toggleUrlMenu }))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)(elem.requestsCount, { className: "inputNumber-neXQ6", type: "number", value: "", placeholder: "20", min: "1", max: "1200" }))), (0, _App.createElement)("div", { className: "group-bjFqx" }, (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.persistentMode, { className: "input-dU4km", type: "checkbox", checked: "" }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Persistent measures" }))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.uploadMode, { className: "input-dU4km", type: "checkbox", onclick: elem.uploadMode.handleClick }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Upload mode" }))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.preventClose, { className: "input-dU4km", type: "checkbox", onclick: elem.preventClose.handleClick }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Prevent page close" })))))), (0, _App.createElement)(elem.content, { className: "content-LJepA" }, (0, _App.createElement)("div", { className: "engine-d3WGk " }, (0, _App.createElement)("div", { className: "header-cSqe2" }, (0, _App.createElement)("div", { className: "measuresDetails-Cs7YH" }, (0, _App.createElement)(elem.doneRequestsMenu, { className: "menu-jrbk doneRequestsMenu-rsgl", style: "display: none;" }, (0, _App.createElement)(elem.doneRequestsItems, { className: "menuInner-jrbk" }, (0, _App.createElement)("div", { className: "menuItem-jrbk" })), (0, _App.createElement)("div", { className: "menuOverlay-jrbk", onclick: toggleDoneRequestsMenu })), (0, _App.createElement)(elem.doneRequestsButton, { className: "item-Cs7YH", textContent: "Done requests: ", onclick: toggleDoneRequestsMenu }, (0, _App.createElement)(elem.doneRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Current requests: " }, (0, _App.createElement)(elem.currentRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Active requests: " }, (0, _App.createElement)(elem.activeRequests, { textContent: 0 }))), (0, _App.createElement)("div", { className: "options-jRr7U" }, (0, _App.createElement)(elem.recordButton, { className: "item-nEaZk button-t2qKV", onclick: elem.recordButton.handleClick }))), (0, _App.createElement)("div", { className: "consoleWrapper-rWFEZ console-e2Lfg" }, (0, _App.createElement)("button", { className: "consoleButton-mHsq", onclick: mconsole.scroll }), (0, _App.createElement)(elem.console, { className: "console-r4XGp console-Sq3NP", readonly: "" }))), (0, _App.createElement)("div", { className: "wrapper-tKbg" }, (0, _App.createElement)("div", { className: "gauge-dJ3hc size-ghjk disableTransition-hyKt" }, (0, _App.createElement)(elem.gauge)))));
 }
 
 exports.default = NetworkStage;
