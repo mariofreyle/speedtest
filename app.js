@@ -2652,7 +2652,7 @@ function NetworkStage(props) {
                     average.items.splice(0, len);
                 }
                 average.speed = average.count / average.len;
-                console.log("average time: " + Math.round(transfer.average.time) + "ms", "maxLen: " + transfer.maxLen, "itemsLen: " + average.items.length);
+                //console.log("average time: " + Math.round(transfer.average.time) + "ms", "maxLen: " + transfer.maxLen, "itemsLen: " + average.items.length);
 
                 speedRate = average.speed * intervalProgress;
 
