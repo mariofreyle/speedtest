@@ -2785,7 +2785,8 @@ function NetworkStage(props) {
             replacedUrl,
             requestsCount,
             inputValue = elem.urlInput.value().trim(),
-            requestsCountValue = elem.requestsCount.value().trim();
+            requestsCountValue = elem.requestsCount.value().trim(),
+            selectedRequestsCount = countSelectedRequests();
 
         measures.started = true;
         measures.loaded = 0;
@@ -2797,7 +2798,12 @@ function NetworkStage(props) {
 
         urlMaster = inputValue;
         urlSign = ["fbog11-1", "fbog10-1", "fclo7-1", "fctg2-1", "fbaq1-1", "feoh3-1", "fbga3-1"];
-        requestsCount = _App2.default.parseNumber({ value: requestsCountValue, min: 1, max: 1200, default: requestsCountValue == "" && !measures.uploadMode ? countSelectedRequests() : 20 });
+        requestsCount = _App2.default.parseNumber({
+            value: requestsCountValue,
+            min: 1,
+            max: 1200,
+            default: requestsCountValue == "" && !measures.uploadMode && selectedRequestsCount > 20 ? selectedRequestsCount : 20
+        });
         currentRequests = {};
         currentRequestsCount = 0;
         interval = new _interval();
