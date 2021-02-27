@@ -1071,15 +1071,20 @@ test.network = function () {
         selected: true,
         requestsCount: 14
     }, {
+        name: "API - JSON",
+        url: "https://ayuda.tigo.com.co/api/v2/help_center/es/articles.json?per_page=100",
+        selected: true,
+        requestsCount: 15
+    }, {
         name: "Zdassets Static - JS",
         url: "https://static.zdassets.com/hc/assets/hc_enduser-9515a2be2d46bfece89668d9057908ea.js",
         selected: true,
         requestsCount: 6
     }, {
-        name: "API - JSON",
-        url: "https://ayuda.tigo.com.co/api/v2/help_center/es/articles.json?per_page=100",
+        name: "Mi Cuenta Tigo - CSS",
+        url: "https://micuenta.tigo.com.co/sites/tigoselfcareregional.co/files/css/css_TfZmanse90OtW98FdwxK3piXS3wBN_7tCRPvOOrbWdo.css",
         selected: true,
-        requestsCount: 15
+        requestsCount: 9
     }, {
         name: "Mi Tigo - JS",
         url: "https://mi.tigo.com.co/main.2e0d8b7303628b84b1c1.js",
@@ -1088,7 +1093,7 @@ test.network = function () {
     }, {
         name: "Facebook Static - JS",
         url: "https://z-m-static.xx.fbcdn.net/rsrc.php/v3iUSS4/y3/l/es_LA/GUUaaCuowqo7X4eo6yE-9I8hLLtjZ8OG-NvXPppKfEJHkKKwog6tO_QfOSQgI7DvfNUI2U32NhGrpb7ct-kmWsiKmuFQe5BWvjxPOoqrOlBAc9K1Pg8liyyvhWD1C5bzwVyUynU_cyfu2WrkfrPRl7RyVf.js?_nc_x=oKaJbgQx21R&_nc_eui2=AeEuWIA-BDltcGuhsAythiMSPLKUA5_cIUw8spQDn9whTKB0BXHpNttc9kmniQIHkdmxLed7PYBSRMNzDFf-Uwve",
-        selected: true,
+        selected: false,
         requestsCount: 2
     }];
     return {
@@ -2786,7 +2791,8 @@ function NetworkStage(props) {
             requestsCount,
             inputValue = elem.urlInput.value().trim(),
             requestsCountValue = elem.requestsCount.value().trim(),
-            selectedRequestsCount = countSelectedRequests();
+            selectedRequestsCount = countSelectedRequests(),
+            defaultRequestCount = 20;
 
         measures.started = true;
         measures.loaded = 0;
@@ -2802,14 +2808,14 @@ function NetworkStage(props) {
             value: requestsCountValue,
             min: 1,
             max: 1200,
-            default: requestsCountValue == "" && !measures.uploadMode && selectedRequestsCount > 20 ? selectedRequestsCount : 20
+            default: requestsCountValue == "" && !measures.uploadMode && selectedRequestsCount > defaultRequestCount ? selectedRequestsCount : defaultRequestCount
         });
         currentRequests = {};
         currentRequestsCount = 0;
         interval = new _interval();
 
         if (measures.uploadMode) {
-            urls.push({ url: _TestConfig2.default.network.uploadBasicUrl, requestsCount: 20, done: 0 });
+            urls.push({ url: _TestConfig2.default.network.uploadBasicUrl, requestsCount: defaultRequestCount, done: 0 });
         } else {
             if (urlMaster != "") {
                 urls.push({ url: urlMaster, requestsCount: 1, done: 0 });
@@ -2850,7 +2856,7 @@ function NetworkStage(props) {
                 index,
                 item;
 
-            if (requestsCountValue == "" && !measures.uploadMode) {
+            if (requestsCountValue == "" && !measures.uploadMode && selectedRequestsCount > defaultRequestCount) {
                 urls.forEach(function (item, itemIndex) {
                     urlsLen = item.requestsCount;
                     for (index = 0; index < urlsLen; index++) {
