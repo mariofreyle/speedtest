@@ -1076,15 +1076,15 @@ test.network = function () {
         selected: true,
         requestsCount: 15
     }, {
-        name: "Zdassets Static - JS",
-        url: "https://static.zdassets.com/hc/assets/hc_enduser-9515a2be2d46bfece89668d9057908ea.js",
-        selected: true,
-        requestsCount: 6
-    }, {
         name: "Mi Cuenta Tigo - CSS",
         url: "https://micuenta.tigo.com.co/sites/tigoselfcareregional.co/files/css/css_TfZmanse90OtW98FdwxK3piXS3wBN_7tCRPvOOrbWdo.css",
         selected: true,
         requestsCount: 9
+    }, {
+        name: "Zdassets Static - JS",
+        url: "https://static.zdassets.com/hc/assets/hc_enduser-9515a2be2d46bfece89668d9057908ea.js",
+        selected: true,
+        requestsCount: 6
     }, {
         name: "Mi Tigo - JS",
         url: "https://mi.tigo.com.co/main.2e0d8b7303628b84b1c1.js",
