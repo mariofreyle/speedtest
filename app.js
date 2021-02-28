@@ -159,6 +159,13 @@ window.app = function (window, document) {
     function convertToArray(elem) {
         return "length" in elem ? elem : [elem];
     }
+    function parseNumber(props, parseFn) {
+        props.value = parseFn(props.value);
+        props.value = props.value < props.min ? props.min : props.value;
+        props.value = props.value > props.max ? props.max : props.value;
+        props.value = typeof props.default == "number" && isNaN(props.value) ? props.default : props.value;
+        return props.value;
+    }
 
     _element.listenEvents = function (elem) {
         var events = elem[elementPrefix + "events"],
@@ -231,12 +238,9 @@ window.app = function (window, document) {
     };
     // SET ELEMENT PROPERTYS
     _element.init.prototype = {
-        each: function each(arr, callback) {
-            var len = arr.length;
-            if (len == 1) {
-                return callback(arr[0]);
-            }
-            for (var key = 0; key < len; key++) {
+        each: function each(arr, callback, len, key) {
+            len = arr.length;
+            for (key = 0; key < len; key++) {
                 callback(arr[key]);
             }
         },
@@ -573,13 +577,16 @@ window.app = function (window, document) {
             _element.mountAll(render);
         },
         /* ----------- Utils ----------- */
-        each: function each(arr, callback) {
-            var type = isArray(arr),
-                index;
-            if (type) {} else {
-                for (var key in arr) {
+        each: function each(arr, callback, key, len) {
+            if (isArray(arr)) {
+                len = arr.length;
+                for (key = 0; key < len; key++) {
                     callback(arr[key], key);
                 }
+                return;
+            }
+            for (key in arr) {
+                callback(arr[key], key);
             }
         },
         trim: function trim(value, _trim) {
@@ -608,13 +615,32 @@ window.app = function (window, document) {
             return returnString;
         },
 
-        parseNumber: function parseNumber(props) {
-            props.value = parseInt(props.value);
-            props.value = props.value < props.min ? props.min : props.value;
-            props.value = props.value > props.max ? props.max : props.value;
-            props.value = props.default && isNaN(props.value) ? props.default : props.value;
-            return props.value;
-        }
+        parseInt: function (_parseInt) {
+            function parseInt(_x) {
+                return _parseInt.apply(this, arguments);
+            }
+
+            parseInt.toString = function () {
+                return _parseInt.toString();
+            };
+
+            return parseInt;
+        }(function (props) {
+            return parseNumber(props, parseInt);
+        }),
+        parseFloat: function (_parseFloat) {
+            function parseFloat(_x2) {
+                return _parseFloat.apply(this, arguments);
+            }
+
+            parseFloat.toString = function () {
+                return _parseFloat.toString();
+            };
+
+            return parseFloat;
+        }(function (props) {
+            return parseNumber(props, parseFloat);
+        })
     };
 
     app.n = function () {
@@ -813,8 +839,8 @@ function MainHeader() {
 
     this.events = {
         speedTestSettings: function speedTestSettings() {
-            test.runTime = _App2.default.parseNumber({ value: elem.testTime.value(), min: 1, max: 1800, default: 15 }) * 1000;
-            test.connections.count = _App2.default.parseNumber({ value: elem.testConnections.value(), min: 1, max: 20, default: test.connections.default });
+            test.runTime = _App2.default.parseInt({ value: elem.testTime.value(), min: 1, max: 1800, default: 15 }) * 1000;
+            test.connections.count = _App2.default.parseInt({ value: elem.testConnections.value(), min: 1, max: 20, default: test.connections.default });
             test.selectedServer = parseInt(elem.testServer.value());
             test.bufferEnabled = elem.testEnableBuffer.checked();
             test.outputSpeed = elem.testOutputSpeed.value();
@@ -1064,32 +1090,36 @@ test.network = function () {
         name: "Facebook - JPG",
         url: fnaBasicUrl.replace("//z-m-scontent", "//scontent"),
         selected: false,
-        requestsCount: 14
+        requestsCount: 1
     }, {
         name: "Facebook Zero - JPG",
         url: fnaBasicUrl,
         selected: true,
-        requestsCount: 14
+        requestsCount: 1
     }, {
         name: "API - JSON",
         url: "https://ayuda.tigo.com.co/api/v2/help_center/es/articles.json?per_page=100",
         selected: true,
-        requestsCount: 15
+        preconnectCount: 10,
+        requestsCount: 10
     }, {
         name: "Mi Cuenta Tigo - CSS",
         url: "https://micuenta.tigo.com.co/sites/tigoselfcareregional.co/files/css/css_TfZmanse90OtW98FdwxK3piXS3wBN_7tCRPvOOrbWdo.css",
         selected: true,
+        preconnectCount: 6,
         requestsCount: 9
     }, {
         name: "Zdassets Static - JS",
         url: "https://static.zdassets.com/hc/assets/hc_enduser-9515a2be2d46bfece89668d9057908ea.js",
         selected: true,
+        preconnectCount: 6,
         requestsCount: 6
     }, {
         name: "Mi Tigo - JS",
         url: "https://mi.tigo.com.co/main.2e0d8b7303628b84b1c1.js",
         selected: true,
-        requestsCount: 10
+        preconnectCount: 6,
+        requestsCount: 9
     }, {
         name: "Facebook Static - JS",
         url: "https://z-m-static.xx.fbcdn.net/rsrc.php/v3iUSS4/y3/l/es_LA/GUUaaCuowqo7X4eo6yE-9I8hLLtjZ8OG-NvXPppKfEJHkKKwog6tO_QfOSQgI7DvfNUI2U32NhGrpb7ct-kmWsiKmuFQe5BWvjxPOoqrOlBAc9K1Pg8liyyvhWD1C5bzwVyUynU_cyfu2WrkfrPRl7RyVf.js?_nc_x=oKaJbgQx21R&_nc_eui2=AeEuWIA-BDltcGuhsAythiMSPLKUA5_cIUw8spQDn9whTKB0BXHpNttc9kmniQIHkdmxLed7PYBSRMNzDFf-Uwve",
@@ -1584,7 +1614,7 @@ function TestStage(props) {
             outputSpeed = _TestConfig2.default.outputSpeed == "average" ? average.speed : instant.speed;
             speedRate = speedRateMbps(outputSpeed);
 
-            speedNumberElem.textContent(fixNumber(speedRate, resultsPrecision));
+            speedNumberElem.textContent(fixNumber(speedRate, speedRate < 1 && resultsPrecision < 2 ? 2 : resultsPrecision));
             elem.gauge.method("updateNumber", { speedRate: speedRate });
             graph.draw(outputSpeed, intervalTime, time, closeInterval);
 
@@ -1673,13 +1703,6 @@ function TestStage(props) {
         target.addEventListener("load", function () {
             connections.addRequest(true, url, true);
         });
-    }
-    function parseNumber(props) {
-        props.value = parseInt(props.value);
-        props.value = props.value < props.min ? props.min : props.value;
-        props.value = props.value > props.max ? props.max : props.value;
-        props.value = props.default && isNaN(props.value) ? props.default : props.value;
-        return props.value;
     }
 
     this.events = {
@@ -1959,10 +1982,10 @@ function GaugeContainer(props) {
         return percent;
     }
 
-    function updateSpeed(speedRate) {
+    function updateSpeed(speedRate, noparse) {
         currentSpeed = speedRate;
 
-        elem.speedDetailsNumber.textContent(fixNumber(speedRate, resultsPrecision));
+        elem.speedDetailsNumber.textContent(noparse ? speedRate : fixNumber(speedRate, speedRate < 1 && resultsPrecision < 2 ? 2 : resultsPrecision));
     }
     function updateGauge() {
         if (prevSpeed != currentSpeed) {
@@ -2009,7 +2032,7 @@ function GaugeContainer(props) {
             elem.gaugeContainer.addClass("clear-QvMr");
 
             clearInterval(listenInterval);
-            updateSpeed("0.0");
+            updateSpeed("0.0", true);
             updateGauge();
 
             setTimeout(function () {
@@ -2343,7 +2366,7 @@ function PingStage() {
 
         testStarted = true;
         _TestConfig2.default.ping.completeAll = elem.completeAll.checked();
-        if (elem.resultsCount.value() != "") _TestConfig2.default.ping.results = _App2.default.parseNumber({ value: elem.resultsCount.value(), min: 50, max: 1000, default: 100 });
+        if (elem.resultsCount.value() != "") _TestConfig2.default.ping.results = _App2.default.parseInt({ value: elem.resultsCount.value(), min: 50, max: 1000, default: 100 });
 
         itemId += 1;
 
@@ -2456,6 +2479,7 @@ function NetworkStage(props) {
         currentRequestsCount,
         measures = {
         loaded: 0,
+        speedRate: 0,
         recordConsole: true
     },
         mconsole,
@@ -2541,6 +2565,8 @@ function NetworkStage(props) {
             interval.stop();
             elem.gauge.method("clear");
             elem.networkStage.removeClass("started-P5Hym");
+            console.log(measures.speedRate);
+            mconsole.state("final speed: " + fixNumber(measures.speedRate, 2) + "mbps");
             mconsole.log("Finished measures.");
         }
     }
@@ -2552,7 +2578,7 @@ function NetworkStage(props) {
             loadTime,
             loadProgress,
             transferred,
-            speedRate,
+            speedRate = 0,
             transfer = {
             average: {
                 items: [],
@@ -2640,7 +2666,7 @@ function NetworkStage(props) {
 
                 //console.log("speed: " + buffer.speed.toFixed(2), "speed1: " + buffer.speed1.toFixed(2));
 
-                transfer.maxLen = Math.round((transfer.average.time - 100) / 100 * 2);
+                transfer.maxLen = Math.round((transfer.average.time - 100) / 100 * 3);
                 transfer.maxLen = Math.min(transfer.maxLen, 15);
                 transfer.maxLen = Math.max(transfer.maxLen, 1);
                 transfer.maxLen = Math.round(10 * loadProgress) + transfer.maxLen;
@@ -2670,6 +2696,7 @@ function NetworkStage(props) {
             elem.activeRequests.textContent(measures.activeRequests);
             elem.currentRequests.textContent(currentRequestsCount);
 
+            measures.speedRate = speedRate;
             prev.loaded = measures.loaded;
         }
         function start() {
@@ -2678,12 +2705,13 @@ function NetworkStage(props) {
             timeoutId = setTimeout(function () {
                 intervalStart = getTime();
                 intervalId = setInterval(callback, 100);
-            }, 1000);
+                callback();
+            }, 1100);
         }
         function stop() {
             clearTimeout(timeoutId);
             clearInterval(intervalId);
-            callback(true);
+            if (intervalStart) callback(true);
         }
 
         return {
@@ -2695,20 +2723,22 @@ function NetworkStage(props) {
     function preconnectRequest(urls, callback, prefix) {
         var done = 0;
         urls.forEach(function (item) {
-            var xhr = new XMLHttpRequest();
+            _App2.default.each(new Array(_App2.default.parseInt({ value: item.preconnectCount, min: 1, default: 1 })), function () {
+                var xhr = new XMLHttpRequest();
 
-            prefix = item.url.indexOf("?") > -1 ? "&" : "?";
+                prefix = item.url.indexOf("?") > -1 ? "&" : "?";
 
-            xhr.open("HEAD", item.url + prefix + "vr=" + random(), true);
+                xhr.open("HEAD", item.url + prefix + "vr=" + random(), true);
 
-            xhr.onloadend = function () {
-                done += 1;
-                if (done == urls.length) callback();
-            };
+                xhr.onloadend = function () {
+                    done += 1;
+                    if (done == urls.length) callback();
+                };
 
-            xhr.send();
+                xhr.send();
 
-            measures.preconnectRequests.push(xhr);
+                measures.preconnectRequests.push(xhr);
+            });
         });
     }
     function request(props) {
@@ -2796,6 +2826,7 @@ function NetworkStage(props) {
 
         measures.started = true;
         measures.loaded = 0;
+        measures.speedRate = 0;
         measures.doneRequests = 0;
         measures.preconnectRequests = [];
         measures.activeRequests = 0;
@@ -2804,7 +2835,7 @@ function NetworkStage(props) {
 
         urlMaster = inputValue;
         urlSign = ["fbog11-1", "fbog10-1", "fclo7-1", "fctg2-1", "fbaq1-1", "feoh3-1", "fbga3-1"];
-        requestsCount = _App2.default.parseNumber({
+        requestsCount = _App2.default.parseInt({
             value: requestsCountValue,
             min: 1,
             max: 1200,
@@ -2815,12 +2846,12 @@ function NetworkStage(props) {
         interval = new _interval();
 
         if (measures.uploadMode) {
-            urls.push({ url: _TestConfig2.default.network.uploadBasicUrl, requestsCount: defaultRequestCount, done: 0 });
+            urls.push({ url: _TestConfig2.default.network.uploadBasicUrl, preconnectCount: 1, requestsCount: defaultRequestCount, done: 0 });
         } else {
             if (urlMaster != "") {
-                urls.push({ url: urlMaster, requestsCount: 1, done: 0 });
+                urls.push({ url: urlMaster, preconnectCount: 1, requestsCount: 1, done: 0 });
             }
-            _TestConfig2.default.network.urls.forEach(function (item, index, count) {
+            _TestConfig2.default.network.urls.forEach(function (item, index) {
                 if (!item.selected) {
                     return;
                 } else if (item.url.indexOf("fna.fbcdn.net") > -1) {
@@ -2829,11 +2860,10 @@ function NetworkStage(props) {
                         replacedUrl[1] = sign;
                         replacedUrl = replacedUrl.join(".");
 
-                        urls.push({ url: replacedUrl, requestsCount: 1, done: 0 });
+                        urls.push({ url: replacedUrl, preconnectCount: item.preconnectCount, requestsCount: item.requestsCount, done: 0 });
                     });
                 } else {
-                    count = parseInt(item.requestsCount);
-                    urls.push({ url: item.url, requestsCount: isNaN(count) ? 1 : count, done: 0 });
+                    urls.push({ url: item.url, preconnectCount: item.preconnectCount, requestsCount: _App2.default.parseInt({ value: item.requestsCount, min: 1, default: 1 }), done: 0 });
                 }
             });
         }
