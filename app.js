@@ -1089,35 +1089,35 @@ test.network = function () {
         urls = [{
         name: "Facebook - JPG",
         url: fnaBasicUrl.replace("//z-m-scontent", "//scontent"),
-        selected: false,
+        selected: true,
         requestsCount: 1
     }, {
         name: "Facebook Zero - JPG",
         url: fnaBasicUrl,
-        selected: true,
+        selected: false,
         requestsCount: 1
     }, {
         name: "API - JSON",
         url: "https://ayuda.tigo.com.co/api/v2/help_center/es/articles.json?per_page=100",
-        selected: true,
-        preconnectCount: 10,
-        requestsCount: 10
+        selected: false,
+        preconnectCount: 9,
+        requestsCount: 9
     }, {
         name: "Mi Cuenta Tigo - CSS",
         url: "https://micuenta.tigo.com.co/sites/tigoselfcareregional.co/files/css/css_TfZmanse90OtW98FdwxK3piXS3wBN_7tCRPvOOrbWdo.css",
-        selected: true,
+        selected: false,
         preconnectCount: 6,
         requestsCount: 9
     }, {
         name: "Zdassets Static - JS",
         url: "https://static.zdassets.com/hc/assets/hc_enduser-9515a2be2d46bfece89668d9057908ea.js",
-        selected: true,
+        selected: false,
         preconnectCount: 6,
-        requestsCount: 6
+        requestsCount: 9
     }, {
         name: "Mi Tigo - JS",
         url: "https://mi.tigo.com.co/main.2e0d8b7303628b84b1c1.js",
-        selected: true,
+        selected: false,
         preconnectCount: 6,
         requestsCount: 9
     }, {
@@ -1945,8 +1945,7 @@ function GaugeContainer(props) {
         gaugeNeedle: (0, _App.createRef)("div"),
         gaugeIcon: (0, _App.createRef)("div"),
         gaugeCircleSpeed: 0,
-        speedDatils: (0, _App.createRef)("div"),
-        connectingText: (0, _App.createRef)("div")
+        speedDatils: (0, _App.createRef)("div")
     },
         currentSpeed,
         prevSpeed,
@@ -2016,10 +2015,7 @@ function GaugeContainer(props) {
             elem.gaugeContainer.removeClass("download-QvMr", "upload-QvMr").addClass(e.type + "-QvMr");
         },
         listenSpeed: function listenSpeed() {
-            elem.speedDatils.removeClass("unseen");
-            elem.connectingText.addClass("unseen");
-
-            listenInterval = setInterval(updateGauge, 120);
+            listenInterval = setInterval(updateGauge, 200);
         },
         updateNumber: function updateNumber(e) {
             updateSpeed(e.speedRate);
@@ -2566,7 +2562,7 @@ function NetworkStage(props) {
             elem.gauge.method("clear");
             elem.networkStage.removeClass("started-P5Hym");
             console.log(measures.speedRate);
-            mconsole.state("final speed: " + fixNumber(measures.speedRate, 2) + "mbps");
+            if (typeof measures.speedRate == "number" && measures.speedRate > 0) mconsole.state("final speed: " + fixNumber(measures.speedRate, 2) + "mbps");
             mconsole.log("Finished measures.");
         }
     }
@@ -2685,9 +2681,9 @@ function NetworkStage(props) {
                 average.speed = average.count / average.len;
                 //console.log("average time: " + Math.round(transfer.average.time) + "ms", "maxLen: " + transfer.maxLen, "itemsLen: " + average.items.length);
 
-                speedRate = average.speed * intervalProgress;
+                speedRate = average.speed;
 
-                elem.gauge.method("update", { speedRate: speedRate });
+                elem.gauge.method("updateNumber", { speedRate: speedRate });
                 if (!nolog) mconsole.state("time: " + consoleTime(loadTime) + "s, loaded: " + loadedData(measures.loaded) + ", transferred: " + transferredData(transferred));
 
                 prev.rconsoleLoaded = measures.loaded;
@@ -2703,9 +2699,9 @@ function NetworkStage(props) {
             buffer.startTime = measures.loadStartTime;
             buffer.items[0].loadTime = measures.loadStartTime;
             timeoutId = setTimeout(function () {
+                elem.gauge.method("listenSpeed");
                 intervalStart = getTime();
                 intervalId = setInterval(callback, 100);
-                callback();
             }, 1100);
         }
         function stop() {
@@ -2845,16 +2841,18 @@ function NetworkStage(props) {
         currentRequestsCount = 0;
         interval = new _interval();
 
-        if (measures.uploadMode) {
-            urls.push({ url: _TestConfig2.default.network.uploadBasicUrl, preconnectCount: 1, requestsCount: defaultRequestCount, done: 0 });
-        } else {
-            if (urlMaster != "") {
-                urls.push({ url: urlMaster, preconnectCount: 1, requestsCount: 1, done: 0 });
-            }
+        if (urlMaster != "" || measures.uploadMode) {
+            urls.push({ url: measures.uploadMode ? _TestConfig2.default.network.uploadBasicUrl : urlMaster, preconnectCount: 1, requestsCount: 1, done: 0 });
+        }
+        if (!measures.uploadMode) {
             _TestConfig2.default.network.urls.forEach(function (item, index) {
                 if (!item.selected) {
                     return;
-                } else if (item.url.indexOf("fna.fbcdn.net") > -1) {
+                }
+                if (item.url.indexOf("//scontent") > -1 && item.url.indexOf("fna.fbcdn.net") > -1) {
+                    urlSign = urlSign.concat(["fbaq7-1", "fbaq6-1", "fbaq5-1", "fbog13-1", "fbog12-1", "fbog9-1", "fbog8-1", "fbog7-1", "fbog6-1", "fbog5-1", "fbog4-1", "fbog3-1", "fbog2-1"]);
+                }
+                if (item.url.indexOf("fna.fbcdn.net") > -1) {
                     urlSign.forEach(function (sign) {
                         replacedUrl = item.url.split(".");
                         replacedUrl[1] = sign;
@@ -2947,7 +2945,7 @@ function NetworkStage(props) {
         return (0, _App.createElement)("div", { className: "menuItem-jrbk", onclick: function onclick() {
                 selectUrl(index, this);
             } }, (0, _App.createElement)("div", { className: "itemInner-ghrt" }, (0, _App.createElement)("button", { className: "selectedIcon-wrpb" + (item.selected ? " selected" : "") }, (0, _App.svgIcon)("checked")), (0, _App.createElement)("div", { className: "textUrl-sdsf", textContent: item.url })));
-    })), (0, _App.createElement)("div", { className: "menuOverlay-jrbk", onclick: toggleUrlMenu }))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)(elem.requestsCount, { className: "inputNumber-neXQ6", type: "number", value: "", placeholder: "20", min: "1", max: "1200" }))), (0, _App.createElement)("div", { className: "group-bjFqx" }, (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.persistentMode, { className: "input-dU4km", type: "checkbox", checked: "" }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Persistent measures" }))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.uploadMode, { className: "input-dU4km", type: "checkbox", onclick: elem.uploadMode.handleClick }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Upload mode" }))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.preventClose, { className: "input-dU4km", type: "checkbox", onclick: elem.preventClose.handleClick }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Prevent close" })))))), (0, _App.createElement)(elem.content, { className: "content-LJepA" }, (0, _App.createElement)("div", { className: "engine-d3WGk " }, (0, _App.createElement)("div", { className: "header-cSqe2" }, (0, _App.createElement)("div", { className: "measuresDetails-Cs7YH" }, (0, _App.createElement)(elem.doneRequestsMenu, { className: "menu-jrbk doneRequestsMenu-rsgl", style: "display: none;" }, (0, _App.createElement)(elem.doneRequestsItems, { className: "menuInner-jrbk" }, (0, _App.createElement)("div", { className: "menuItem-jrbk" })), (0, _App.createElement)("div", { className: "menuOverlay-jrbk", onclick: toggleDoneRequestsMenu })), (0, _App.createElement)(elem.doneRequestsButton, { className: "item-Cs7YH", textContent: "Done requests: ", onclick: toggleDoneRequestsMenu }, (0, _App.createElement)(elem.doneRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Current requests: " }, (0, _App.createElement)(elem.currentRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Active requests: " }, (0, _App.createElement)(elem.activeRequests, { textContent: 0 }))), (0, _App.createElement)("div", { className: "options-jRr7U" }, (0, _App.createElement)(elem.recordButton, { className: "item-nEaZk button-t2qKV", onclick: elem.recordButton.handleClick }))), (0, _App.createElement)("div", { className: "consoleWrapper-rWFEZ console-e2Lfg" }, (0, _App.createElement)("button", { className: "consoleButton-mHsq", onclick: mconsole.scroll }), (0, _App.createElement)(elem.console, { className: "console-r4XGp console-Sq3NP", readonly: "" }))), (0, _App.createElement)("div", { className: "wrapper-tKbg" }, (0, _App.createElement)("div", { className: "gauge-dJ3hc size-ghjk disableTransition-hyKt" }, (0, _App.createElement)(elem.gauge)))));
+    })), (0, _App.createElement)("div", { className: "menuOverlay-jrbk", onclick: toggleUrlMenu }))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)(elem.requestsCount, { className: "inputNumber-neXQ6", type: "number", value: "", placeholder: "20", min: "1", max: "1200" }))), (0, _App.createElement)("div", { className: "group-bjFqx" }, (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.persistentMode, { className: "input-dU4km", type: "checkbox", checked: "" }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Persistent measures" }))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.uploadMode, { className: "input-dU4km", type: "checkbox", onclick: elem.uploadMode.handleClick }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Upload mode" }))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.preventClose, { className: "input-dU4km", type: "checkbox", onclick: elem.preventClose.handleClick }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Prevent close" })))))), (0, _App.createElement)(elem.content, { className: "content-LJepA" }, (0, _App.createElement)("div", { className: "engine-d3WGk " }, (0, _App.createElement)("div", { className: "header-cSqe2" }, (0, _App.createElement)("div", { className: "measuresDetails-Cs7YH" }, (0, _App.createElement)(elem.doneRequestsMenu, { className: "menu-jrbk doneRequestsMenu-rsgl", style: "display: none;" }, (0, _App.createElement)(elem.doneRequestsItems, { className: "menuInner-jrbk" }, (0, _App.createElement)("div", { className: "menuItem-jrbk" })), (0, _App.createElement)("div", { className: "menuOverlay-jrbk", onclick: toggleDoneRequestsMenu })), (0, _App.createElement)(elem.doneRequestsButton, { className: "item-Cs7YH", textContent: "Done requests: ", onclick: toggleDoneRequestsMenu }, (0, _App.createElement)(elem.doneRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Current requests: " }, (0, _App.createElement)(elem.currentRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Active requests: " }, (0, _App.createElement)(elem.activeRequests, { textContent: 0 }))), (0, _App.createElement)("div", { className: "options-jRr7U" }, (0, _App.createElement)(elem.recordButton, { className: "item-nEaZk button-t2qKV", onclick: elem.recordButton.handleClick }))), (0, _App.createElement)("div", { className: "consoleWrapper-rWFEZ console-e2Lfg" }, (0, _App.createElement)("button", { className: "consoleButton-mHsq", onclick: mconsole.scroll }), (0, _App.createElement)(elem.console, { className: "console-r4XGp console-Sq3NP", readonly: "" }))), (0, _App.createElement)("div", { className: "wrapper-tKbg" }, (0, _App.createElement)("div", { className: "gauge-dJ3hc size-ghjk" }, (0, _App.createElement)(elem.gauge)))));
 }
 
 exports.default = NetworkStage;
