@@ -1136,13 +1136,15 @@ test.ping = function () {
     var graphItems = [],
         graphItemsLen = 100,
         index,
-        servers;
+        servers,
+        fnaServers;
     for (index = 0; index < graphItemsLen; index++) {
         graphItems.push(index);
     }
     servers = [{ name: "Local", url: URL_BASE + "/download/download.file", connectType: 1, progress: URL_BASE + "/download/download.file" }, { name: "Cachefly.net", url: "https://open.cachefly.net/downloading", connectType: 1, progress: "https://open.cachefly.net/downloading" }, { name: "New York - Librespeed.org", url: "https://ny2.us.backend.librespeed.org/garbage.php?cors=true&ckSize=0", connectType: 1, progress: "https://ny2.us.backend.librespeed.org/garbage.php?cors=true&ckSize=100" }, { name: "New Jersey - Vultr.com", url: "https://nj-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Chicago - Vultr.com", url: "https://il-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://il-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Atlanta - Vultr.com", url: "https://ga-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://ga-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Dallas - Vultr.com", url: "https://tx-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://tx-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Miami - Vultr.com", url: "https://fl-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Tigo", url: "https://tigo.5886662453.com", connectType: 1 },
     /*{name: "Facebook Static", url: "https://z-m-static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg", connectType: 1, progress: test.network.fnaBasicUrl},*/
     { name: "Facebook", url: test.network.fnaBasicUrl, connectType: 1, progress: test.network.fnaBasicUrl }, { name: "Washington - Fireprobe.net", url: "https://s12-je1rw.fireinfra.net/?action=download&size=0", connectType: 1, progress: "https://s12-je1rw.fireinfra.net/?action=download&size=100" }, { name: "Sydney - Fireprobe.net", url: "https://s87-lggif.fireinfra.net/?action=download&size=0", connectType: 1, progress: "https://s87-lggif.fireinfra.net/?action=download&size=100" }, { name: "Madrid - Movispeed.es", url: "https://m0011.movispeed.es/apolo/data/a1b.dat", connectType: 1, progress: "https://m0012.movispeed.es/apolo/data/a100m.dat" }, { name: "Singapore - Fireprobe.net", url: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0", connectType: 1, progress: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100" }];
+    fnaServers = [{ name: "New York", url: "https://scontent.fmia1-1.fna.fbcdn.net/favicon.ico" }];
     return {
         results: 100,
         completeAll: false,
@@ -2128,11 +2130,9 @@ function PingItem(props) {
         timeout = {
         ping: null
     },
-        abs = Math.abs;
+        abs = Math.abs,
+        hasPerformance = "performance" in window && performance.getEntriesByType && performance.getEntriesByType("resource");
 
-    function minValue(val, min) {
-        return val < min ? min : val;
-    }
     function finishTest() {
         clearTimeout(timeout.ping);
         measures.connection && measures.connection.abort();
@@ -2249,7 +2249,9 @@ function PingItem(props) {
     function ping() {
         var xhr = new XMLHttpRequest(),
             progress = 0,
-            time;
+            time,
+            ping0 = Infinity,
+            ping1 = Infinity;
 
         xhr.open(measures.connectionType, measures.connectionUrl + measures.connectionPrefix + "v=" + _App2.default.random(), true);
 
@@ -2273,13 +2275,24 @@ function PingItem(props) {
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 2) {
                     if (xhr.status == 200) {
-                        measures.ping.time = _App2.default.time() - measures.ping.start;
+                        ping0 = _App2.default.time() - measures.ping.start;
 
-                        if (measures.sendCount > 1) {
-                            timeout.ping = setTimeout(handlePing, minValue(50 - measures.ping.time, 0));
-                        } else {
-                            ping(startedTime = _App2.default.time());
+                        if (hasPerformance) {
+                            var performances = performance.getEntriesByType("resource");
+                            if (performances.length > 0) {
+                                var last = performances[performances.length - 1];
+
+                                ping1 = parseInt(last.responseEnd - last.fetchStart);
+
+                                if (typeof performance.clearResourceTimings == "function") {
+                                    performance.clearResourceTimings();
+                                }
+                            }
                         }
+
+                        measures.ping.time = Math.min(ping0, ping1);
+
+                        timeout.ping = setTimeout(handlePing, Math.max(60 - measures.ping.time, 0));
                     } else {
                         finishTest();
                     }
