@@ -2282,16 +2282,18 @@ function PingItem(props) {
                             if (performances.length > 0) {
                                 var last = performances[performances.length - 1];
 
-                                ping1 = parseInt(last.responseEnd - last.fetchStart);
+                                ping1 = parseInt(last.responseEnd - (last.requestStart > 0 ? last.requestStart : last.fetchStart));
 
                                 if (typeof performance.clearResourceTimings == "function") {
                                     performance.clearResourceTimings();
                                 }
                             }
                         }
-
                         measures.ping.time = Math.min(ping0, ping1);
 
+                        if (measures.sendCount == 1) {
+                            return ping();
+                        }
                         timeout.ping = setTimeout(handlePing, Math.max(60 - measures.ping.time, 0));
                     } else {
                         finishTest();
