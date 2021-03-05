@@ -2680,7 +2680,7 @@ function NetworkStage(props) {
                 transfer.maxLen = Math.round((transfer.average.time - 100) / 100 * 3);
                 transfer.maxLen = Math.min(transfer.maxLen, 15);
                 transfer.maxLen = Math.max(transfer.maxLen, 1);
-                transfer.maxLen = Math.round(10 * loadProgress) + transfer.maxLen;
+                transfer.maxLen = Math.round((measures.uploadMode ? 10 : 0) * loadProgress) + transfer.maxLen;
 
                 average.items.push(buffer.speed);
                 average.count += buffer.speed;
