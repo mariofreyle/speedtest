@@ -2633,7 +2633,7 @@ function NetworkStage(props) {
             intervalTime = time - intervalStart;
             intervalProgress = Math.min(intervalTime, 500) / 500;
             loadTime = time - measures.loadStartTime;
-            loadProgress = 1 - Math.min(Math.max(loadTime - 10000, 0), 20000) / 20000;
+            loadProgress = 1 - Math.min(Math.max(intervalTime - 1000, 0), 20000) / 20000;
             transferred = measures.loaded - prev.loaded;
 
             if (loadProgress > 0) {
@@ -2680,7 +2680,7 @@ function NetworkStage(props) {
                 transfer.maxLen = Math.round((transfer.average.time - 100) / 100 * 3);
                 transfer.maxLen = Math.min(transfer.maxLen, 15);
                 transfer.maxLen = Math.max(transfer.maxLen, 1);
-                transfer.maxLen = Math.round((measures.uploadMode ? 10 : 0) * loadProgress) + transfer.maxLen;
+                transfer.maxLen = Math.round((measures.uploadMode ? 10 : 5) * loadProgress) + transfer.maxLen;
 
                 average.items.push(buffer.speed);
                 average.count += buffer.speed;
