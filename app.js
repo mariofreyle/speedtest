@@ -2278,11 +2278,11 @@ function PingItem(props) {
                         ping0 = _App2.default.time() - measures.ping.start;
 
                         if (hasPerformance) {
-                            var performances = performance.getEntriesByType("resource");
-                            if (performances.length > 0) {
-                                var last = performances[performances.length - 1];
+                            var entries = performance.getEntriesByType("resource");
+                            if (entries.length > 0) {
+                                var timing = entries[entries.length - 1];
 
-                                ping1 = parseInt(last.responseEnd - (last.requestStart > 0 ? last.requestStart : last.fetchStart));
+                                ping1 = parseInt((timing.responseStart || timing.responseEnd) - (timing.requestStart || timing.fetchStart));
 
                                 if (typeof performance.clearResourceTimings == "function") {
                                     performance.clearResourceTimings();
@@ -2290,7 +2290,7 @@ function PingItem(props) {
                             }
                         }
                         measures.ping.time = Math.min(ping0, ping1);
-
+                        //console.log("ping 0:", ping0 + "ms", " ping 1:", ping1 + "ms");
                         if (measures.sendCount == 1) {
                             return ping();
                         }
@@ -2576,7 +2576,6 @@ function NetworkStage(props) {
             interval.stop();
             elem.gauge.method("clear");
             elem.networkStage.removeClass("started-P5Hym");
-            console.log(measures.speedRate);
             if (typeof measures.speedRate == "number" && measures.speedRate > 0) mconsole.state("final speed: " + fixNumber(measures.speedRate, 2) + "mbps");
             mconsole.log("Finished measures.");
         }
