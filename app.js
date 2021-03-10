@@ -1353,11 +1353,11 @@ function TestStage(props) {
     function clearTimers() {
         var key;
         for (key in timer.timeout) {
-            console.log(key, timer.timeout[key]);
+            //console.log(key, timer.timeout[key]);
             clearTimeout(timer.timeout[key]);
         }
         for (key in timer.interval) {
-            console.log(key, timer.interval[key]);
+            //console.log(key, timer.interval[key]);
             clearInterval(timer.interval[key]);
         }
     }
@@ -2274,7 +2274,7 @@ function PingItem(props) {
         } else {
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 2) {
-                    if (xhr.status == 200) {
+                    if (xhr.status == 200 || xhr.status == 204) {
                         ping0 = _App2.default.time() - measures.ping.start;
 
                         if (hasPerformance) {
