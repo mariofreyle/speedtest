@@ -1001,7 +1001,7 @@ var test = window.test = {
         upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true"
     }, {
         name: "United States (East) - Multi Server",
-        multi: [{ download: "https://il-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://ga-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://tx-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://tor-ca-ping.vultr.com/vultr.com.100MB.bin" }],
+        multi: [{ download: "https://il-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://ga-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://tx-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://tor-ca-ping.vultr.com/vultr.com.100MB.bin" }],
         download: "",
         upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true"
     }, {
@@ -1084,9 +1084,20 @@ test.runType = {
 };
 
 test.network = function () {
-    var fnaBasicUrl = "https://z-m-scontent.fbaq1-1.fna.fbcdn.net/v/t1.15752-9/fr/cp0/e15/q65/135856944_1366451607033113_1598808278752931662_n.jpg?_nc_cat=108&ccb=3&_nc_sid=58c789&efg=eyJpIjoibyJ9&_nc_eui2=AeHt6CAq5yTPwLYNQBa1yNudTvXFk30_ZfVO9cWTfT9l9Vq9sBMVOuHnd3u6jr2TKi-wHeCtj_mcDCDsK8l62o-o&_nc_ohc=J-N8yaytIh8AX-xYJUO&tn=FLSKfGZfGQ6p3p_i&_nc_ad=z-m&_nc_cid=1180&_nc_eh=7fd986fefbec5a7415120e47fc6cf163&_nc_rml=0&_nc_ht=z-m-scontent.fbaq1-1.fna&tp=14&oh=db91ce2af268290bacf7b35f0e826473&oe=60501A8C",
+    var fnaBasicUrl = "https://z-m-scontent.fbog10-1.fna.fbcdn.net/v/t1.15752-9/fr/cp0/e15/q65/135856944_1366451607033113_1598808278752931662_n.jpg?_nc_cat=108&ccb=1-3&_nc_sid=58c789&efg=eyJpIjoibyJ9&_nc_eui2=AeHt6CAq5yTPwLYNQBa1yNudTvXFk30_ZfVO9cWTfT9l9Vq9sBMVOuHnd3u6jr2TKi-wHeCtj_mcDCDsK8l62o-o&_nc_ohc=zB_2FdSxjlQAX8MnMqj&_nc_ad=z-m&_nc_cid=1180&_nc_eh=39b651c6d9cde254ab0daed694bdf54b&_nc_rml=0&_nc_ht=z-m-scontent.fbaq1-1.fna&tp=14&oh=657cb5f9073a9650082eac2756c4f194&oe=6073B30C",
         uploadBasicUrl = "https://z-m-static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg",
-        urls = [{
+        urls = [
+    /*{
+        name: "New York - Multi",
+        multi: [
+            {url: "https://il-us-ping.vultr.com/vultr.com.100MB.bin"},
+            {url: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin"},
+            {url: "https://ga-us-ping.vultr.com/vultr.com.100MB.bin"},
+            {url: "https://tx-us-ping.vultr.com/vultr.com.100MB.bin"},
+        ],
+        selected: true,
+    },*/
+    {
         name: "Facebook - JPG",
         url: fnaBasicUrl.replace("//z-m-scontent", "//scontent"),
         selected: true,
@@ -2859,14 +2870,14 @@ function NetworkStage(props) {
             urls.push({ url: measures.uploadMode ? _TestConfig2.default.network.uploadBasicUrl : urlMaster, preconnectCount: 1, requestsCount: 1, done: 0 });
         }
         if (!measures.uploadMode) {
-            _TestConfig2.default.network.urls.forEach(function (item, index) {
+            _TestConfig2.default.network.urls.forEach(function (item, index, nameUrls) {
                 if (!item.selected) {
                     return;
                 }
-                if (item.url.indexOf("//scontent") > -1 && item.url.indexOf("fna.fbcdn.net") > -1) {
+                if (item.url && item.url.indexOf("//scontent") > -1 && item.url.indexOf("fna.fbcdn.net") > -1) {
                     urlSign = urlSign.concat(["fbaq7-1", "fbaq6-1", "fbaq5-1", "fbog13-1", "fbog12-1", "fbog9-1", "fbog8-1", "fbog7-1", "fbog6-1", "fbog5-1", "fbog4-1", "fbog3-1", "fbog2-1"]);
                 }
-                if (item.url.indexOf("fna.fbcdn.net") > -1) {
+                if (item.url && item.url.indexOf("fna.fbcdn.net") > -1) {
                     urlSign.forEach(function (sign) {
                         replacedUrl = item.url.split(".");
                         replacedUrl[1] = sign;
@@ -2875,7 +2886,10 @@ function NetworkStage(props) {
                         urls.push({ url: replacedUrl, preconnectCount: item.preconnectCount, requestsCount: item.requestsCount, done: 0 });
                     });
                 } else {
-                    urls.push({ url: item.url, preconnectCount: item.preconnectCount, requestsCount: _App2.default.parseInt({ value: item.requestsCount, min: 1, default: 1 }), done: 0 });
+                    nameUrls = item.multi ? item.multi : [item];
+                    nameUrls.forEach(function (item) {
+                        urls.push({ url: item.url, preconnectCount: item.preconnectCount, requestsCount: _App2.default.parseInt({ value: item.requestsCount, min: 1, default: 1 }), done: 0 });
+                    });
                 }
             });
         }
@@ -2958,7 +2972,7 @@ function NetworkStage(props) {
     return (0, _App.createElement)(elem.networkStage, { className: "stage-Kbsc8 networkStage" }, (0, _App.createElement)("div", { className: "start-BgYmU" }, (0, _App.createElement)("div", { className: "buttonWrapper-jM8zj" }, (0, _App.createElement)(elem.startButton, { className: "startButton-x4Jsv", onclick: startMeasures }, (0, _App.createElement)("span", { textContent: "start" }), (0, _App.createElement)("span", { textContent: "stop" }))), (0, _App.createElement)("div", { className: "configOptions-cs8qH" }, (0, _App.createElement)("div", { className: "group-bjFqx" }, (0, _App.createElement)("div", { className: "item-Z9hxm url-RD6hW" }, (0, _App.createElement)(elem.urlInput, { type: "text", name: "__url", value: "", placeholder: "Enter aditional url..." }), (0, _App.createElement)(elem.selectUrlButton, { className: "urlSelectButton-zGsn", onclick: toggleUrlMenu }, (0, _App.svgIcon)("arrowDown")), (0, _App.createElement)(elem.selectUrlMenu, { className: "menu-jrbk", style: "display: none;" }, (0, _App.createElement)("div", { className: "menuInner-jrbk" }, _TestConfig2.default.network.urls.map(function (item, index) {
         return (0, _App.createElement)("div", { className: "menuItem-jrbk", onclick: function onclick() {
                 selectUrl(index, this);
-            } }, (0, _App.createElement)("div", { className: "itemInner-ghrt" }, (0, _App.createElement)("button", { className: "selectedIcon-wrpb" + (item.selected ? " selected" : "") }, (0, _App.svgIcon)("checked")), (0, _App.createElement)("div", { className: "textUrl-sdsf", textContent: item.url })));
+            } }, (0, _App.createElement)("div", { className: "itemInner-ghrt" }, (0, _App.createElement)("button", { className: "selectedIcon-wrpb" + (item.selected ? " selected" : "") }, (0, _App.svgIcon)("checked")), (0, _App.createElement)("div", { className: "textUrl-sdsf", textContent: item.url || item.name })));
     })), (0, _App.createElement)("div", { className: "menuOverlay-jrbk", onclick: toggleUrlMenu }))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)(elem.requestsCount, { className: "inputNumber-neXQ6", type: "number", value: "", placeholder: "20", min: "1", max: "1200" }))), (0, _App.createElement)("div", { className: "group-bjFqx" }, (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.persistentMode, { className: "input-dU4km", type: "checkbox", checked: "" }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Persistent measures" }))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.uploadMode, { className: "input-dU4km", type: "checkbox", onclick: elem.uploadMode.handleClick }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Upload mode" }))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.preventClose, { className: "input-dU4km", type: "checkbox", onclick: elem.preventClose.handleClick }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Prevent close" })))))), (0, _App.createElement)(elem.content, { className: "content-LJepA" }, (0, _App.createElement)("div", { className: "engine-d3WGk " }, (0, _App.createElement)("div", { className: "header-cSqe2" }, (0, _App.createElement)("div", { className: "measuresDetails-Cs7YH" }, (0, _App.createElement)(elem.doneRequestsMenu, { className: "menu-jrbk doneRequestsMenu-rsgl", style: "display: none;" }, (0, _App.createElement)(elem.doneRequestsItems, { className: "menuInner-jrbk" }, (0, _App.createElement)("div", { className: "menuItem-jrbk" })), (0, _App.createElement)("div", { className: "menuOverlay-jrbk", onclick: toggleDoneRequestsMenu })), (0, _App.createElement)(elem.doneRequestsButton, { className: "item-Cs7YH", textContent: "Done requests: ", onclick: toggleDoneRequestsMenu }, (0, _App.createElement)(elem.doneRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Current requests: " }, (0, _App.createElement)(elem.currentRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Active requests: " }, (0, _App.createElement)(elem.activeRequests, { textContent: 0 }))), (0, _App.createElement)("div", { className: "options-jRr7U" }, (0, _App.createElement)(elem.recordButton, { className: "item-nEaZk button-t2qKV", onclick: elem.recordButton.handleClick }))), (0, _App.createElement)("div", { className: "consoleWrapper-rWFEZ console-e2Lfg" }, (0, _App.createElement)("button", { className: "consoleButton-mHsq", onclick: mconsole.scroll }), (0, _App.createElement)(elem.console, { className: "console-r4XGp console-Sq3NP", readonly: "" }))), (0, _App.createElement)("div", { className: "wrapper-tKbg" }, (0, _App.createElement)("div", { className: "gauge-dJ3hc size-ghjk" }, (0, _App.createElement)(elem.gauge)))));
 }
 
