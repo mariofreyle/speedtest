@@ -993,7 +993,7 @@ var test = window.test = {
     resultsPrecision: 1,
     servers: [{
         name: "Local",
-        download: URL_BASE + "/download/download.file",
+        download: URL_BASE + "/xx-download.file",
         upload: URL_BASE
     }, {
         name: "Cachefly.net",
@@ -1086,21 +1086,14 @@ test.runType = {
 test.network = function () {
     var fnaBasicUrl = "https://z-m-scontent.fbog10-1.fna.fbcdn.net/v/t1.15752-9/fr/cp0/e15/q65/135856944_1366451607033113_1598808278752931662_n.jpg?_nc_cat=108&ccb=1-3&_nc_sid=58c789&efg=eyJpIjoibyJ9&_nc_eui2=AeHt6CAq5yTPwLYNQBa1yNudTvXFk30_ZfVO9cWTfT9l9Vq9sBMVOuHnd3u6jr2TKi-wHeCtj_mcDCDsK8l62o-o&_nc_ohc=zB_2FdSxjlQAX8MnMqj&_nc_ad=z-m&_nc_cid=1180&_nc_eh=39b651c6d9cde254ab0daed694bdf54b&_nc_rml=0&_nc_ht=z-m-scontent.fbaq1-1.fna&tp=14&oh=657cb5f9073a9650082eac2756c4f194&oe=6073B30C",
         uploadBasicUrl = "https://z-m-static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg",
-        urls = [
-    /*{
-        name: "New York - Multi",
-        multi: [
-            {url: "https://il-us-ping.vultr.com/vultr.com.100MB.bin"},
-            {url: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin"},
-            {url: "https://ga-us-ping.vultr.com/vultr.com.100MB.bin"},
-            {url: "https://tx-us-ping.vultr.com/vultr.com.100MB.bin"},
-        ],
-        selected: true,
-    },*/
-    {
+        urls = [{
+        name: "Vultr.com - Multi Location",
+        multi: [{ url: "https://il-us-ping.vultr.com/vultr.com.100MB.bin", http: true, preconnectCount: 5 }, { url: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin", http: true, preconnectCount: 5 }, { url: "https://ga-us-ping.vultr.com/vultr.com.100MB.bin", http: true, preconnectCount: 5 }, { url: "https://tx-us-ping.vultr.com/vultr.com.100MB.bin", http: true, preconnectCount: 5 }],
+        selected: true
+    }, {
         name: "Facebook - JPG",
         url: fnaBasicUrl.replace("//z-m-scontent", "//scontent"),
-        selected: true,
+        selected: false,
         requestsCount: 1
     }, {
         name: "Facebook Zero - JPG",
@@ -1152,7 +1145,7 @@ test.ping = function () {
     for (index = 0; index < graphItemsLen; index++) {
         graphItems.push(index);
     }
-    servers = [{ name: "Local", url: URL_BASE + "/download/download.file", connectType: 1, progress: URL_BASE + "/download/download.file" }, { name: "Cachefly.net", url: "https://open.cachefly.net/downloading", connectType: 1, progress: "https://open.cachefly.net/downloading" }, { name: "New York - Librespeed.org", url: "https://ny2.us.backend.librespeed.org/garbage.php?cors=true&ckSize=0", connectType: 1, progress: "https://ny2.us.backend.librespeed.org/garbage.php?cors=true&ckSize=100" }, { name: "New Jersey - Vultr.com", url: "https://nj-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Chicago - Vultr.com", url: "https://il-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://il-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Atlanta - Vultr.com", url: "https://ga-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://ga-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Dallas - Vultr.com", url: "https://tx-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://tx-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Miami - Vultr.com", url: "https://fl-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Tigo", url: "https://tigo.5886662453.com", connectType: 1 },
+    servers = [{ name: "Local", url: URL_BASE + "/xx-download.file", connectType: 1, progress: URL_BASE + "/xx-download.file" }, { name: "Cachefly.net", url: "https://open.cachefly.net/downloading", connectType: 1, progress: "https://open.cachefly.net/downloading" }, { name: "New York - Librespeed.org", url: "https://ny2.us.backend.librespeed.org/garbage.php?cors=true&ckSize=0", connectType: 1, progress: "https://ny2.us.backend.librespeed.org/garbage.php?cors=true&ckSize=100" }, { name: "New Jersey - Vultr.com", url: "https://nj-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Chicago - Vultr.com", url: "https://il-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://il-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Atlanta - Vultr.com", url: "https://ga-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://ga-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Dallas - Vultr.com", url: "https://tx-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://tx-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Miami - Vultr.com", url: "https://fl-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Tigo", url: "https://tigo.5886662453.com", connectType: 1 },
     /*{name: "Facebook Static", url: "https://z-m-static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg", connectType: 1, progress: test.network.fnaBasicUrl},*/
     { name: "Facebook", url: test.network.fnaBasicUrl, connectType: 1, progress: test.network.fnaBasicUrl }, { name: "Washington - Fireprobe.net", url: "https://s12-je1rw.fireinfra.net/?action=download&size=0", connectType: 1, progress: "https://s12-je1rw.fireinfra.net/?action=download&size=100" }, { name: "Sydney - Fireprobe.net", url: "https://s87-lggif.fireinfra.net/?action=download&size=0", connectType: 1, progress: "https://s87-lggif.fireinfra.net/?action=download&size=100" }, { name: "Madrid - Movispeed.es", url: "https://m0011.movispeed.es/apolo/data/a1b.dat", connectType: 1, progress: "https://m0012.movispeed.es/apolo/data/a100m.dat" }, { name: "Singapore - Fireprobe.net", url: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0", connectType: 1, progress: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100" }];
     fnaServers = [{ name: "New York", url: "https://scontent.fmia1-1.fna.fbcdn.net/favicon.ico" }];
@@ -1864,10 +1857,11 @@ function TestStage(props) {
     };
     this.onMount = function () {
         if (!_TestConfig2.default.user.ip) {
+            var http = window.location.protocol == "http:";
             _App2.default.fetch({
-                url: isLocal ? "http://ip-api.com/json/" : "https://ipapi.co/json/",
+                url: http ? "http://ip-api.com/json/" : "https://ipapi.co/json/",
                 success: function success(fetch) {
-                    showUserProvider(_App2.default.ucWords(isLocal ? fetch.isp : fetch.org), isLocal ? fetch.query : fetch.ip);
+                    showUserProvider(_App2.default.ucWords(http ? fetch.isp : fetch.org), http ? fetch.query : fetch.ip);
                 }
             });
         }
@@ -2510,7 +2504,8 @@ function NetworkStage(props) {
         fixNumber = _TestConfig2.default.fixNumber,
         reqId = 0,
         currentRequests = {},
-        interval;
+        interval,
+        preconnectTimeout = null;
 
     mconsole = function () {
         var consoleLines = [],
@@ -2584,6 +2579,7 @@ function NetworkStage(props) {
             }
             measures.activeRequests = 0;
             currentRequestsCount = 0;
+            clearTimeout(preconnectTimeout);
             interval.stop();
             elem.gauge.method("clear");
             elem.networkStage.removeClass("started-P5Hym");
@@ -2630,8 +2626,8 @@ function NetworkStage(props) {
             loaded: 0,
             transferred: 0
         },
-            intervalId,
-            timeoutId,
+            intervalId = null,
+            timeoutId = null,
             index,
             len;
 
@@ -2727,7 +2723,7 @@ function NetworkStage(props) {
                 elem.gauge.method("listenSpeed");
                 intervalStart = getTime();
                 intervalId = setInterval(callback, 100);
-            }, 1100);
+            }, measures.uploadMode ? 1100 : 600);
         }
         function stop() {
             clearTimeout(timeoutId);
@@ -2741,25 +2737,24 @@ function NetworkStage(props) {
             stop: stop
         };
     }
-    function preconnectRequest(urls, callback, prefix) {
-        var done = 0;
-        urls.forEach(function (item) {
-            _App2.default.each(new Array(_App2.default.parseInt({ value: item.preconnectCount, min: 1, default: 1 })), function () {
-                var xhr = new XMLHttpRequest();
+    function preconnectRequest(urls, callback) {
+        var done = 0,
+            prefix;
+        urls.forEach(function (url) {
+            var xhr = new XMLHttpRequest();
 
-                prefix = item.url.indexOf("?") > -1 ? "&" : "?";
+            prefix = url.indexOf("?") > -1 ? "&" : "?";
 
-                xhr.open("HEAD", item.url + prefix + "vr=" + random(), true);
+            xhr.open("HEAD", url + prefix + "vr=" + random(), true);
 
-                xhr.onloadend = function () {
-                    done += 1;
-                    if (done == urls.length) callback();
-                };
+            xhr.onloadend = function () {
+                done += 1;
+                if (done == urls.length) preconnectTimeout = setTimeout(callback, 100);
+            };
 
-                xhr.send();
+            xhr.send();
 
-                measures.preconnectRequests.push(xhr);
-            });
+            measures.preconnectRequests.push(xhr);
         });
     }
     function request(props) {
@@ -2843,7 +2838,9 @@ function NetworkStage(props) {
             inputValue = elem.urlInput.value().trim(),
             requestsCountValue = elem.requestsCount.value().trim(),
             selectedRequestsCount = countSelectedRequests(),
-            defaultRequestCount = 20;
+            defaultRequestCount = 20,
+            httpProtocol = window.location.protocol == "http:",
+            requestsUrl = [];
 
         measures.started = true;
         measures.loaded = 0;
@@ -2887,8 +2884,12 @@ function NetworkStage(props) {
                     });
                 } else {
                     nameUrls = item.multi ? item.multi : [item];
-                    nameUrls.forEach(function (item) {
-                        urls.push({ url: item.url, preconnectCount: item.preconnectCount, requestsCount: _App2.default.parseInt({ value: item.requestsCount, min: 1, default: 1 }), done: 0 });
+                    nameUrls.forEach(function (item, url) {
+                        url = item.url;
+                        if (item.http && httpProtocol) {
+                            url = url.replace("https://", "http://");
+                        }
+                        urls.push({ url: url, preconnectCount: item.preconnectCount, requestsCount: _App2.default.parseInt({ value: item.requestsCount, min: 1, default: 1 }), done: 0 });
                     });
                 }
             });
@@ -2906,27 +2907,29 @@ function NetworkStage(props) {
         elem.currentRequests.textContent("0");
         measures.urls = urls;
 
-        preconnectRequest(urls, function () {
-            var itemIndex = 0,
-                urlsLen = urls.length,
-                index,
-                item;
+        var itemIndex = 0,
+            urlsLen = urls.length,
+            index,
+            item;
 
-            if (requestsCountValue == "" && !measures.uploadMode && selectedRequestsCount > defaultRequestCount) {
-                urls.forEach(function (item, itemIndex) {
-                    urlsLen = item.requestsCount;
-                    for (index = 0; index < urlsLen; index++) {
-                        req = request({ url: item.url, prefix: item.url.indexOf("?") > -1 ? "&" : "?", id: itemIndex, done: 0 });
-                    }
-                });
-            } else {
-                for (index = 0; index < requestsCount; index++) {
-                    item = urls[itemIndex];
+        if (requestsCountValue == "" && !measures.uploadMode && selectedRequestsCount > defaultRequestCount) {
+            urls.forEach(function (item, itemIndex) {
+                urlsLen = item.requestsCount;
+                for (index = 0; index < urlsLen; index++) {
                     req = request({ url: item.url, prefix: item.url.indexOf("?") > -1 ? "&" : "?", id: itemIndex, done: 0 });
-                    itemIndex = itemIndex == urlsLen - 1 ? 0 : itemIndex + 1;
+                    requestsUrl.push(item.url);
                 }
+            });
+        } else {
+            for (index = 0; index < requestsCount; index++) {
+                item = urls[itemIndex];
+                req = request({ url: item.url, prefix: item.url.indexOf("?") > -1 ? "&" : "?", id: itemIndex, done: 0 });
+                requestsUrl.push(item.url);
+                itemIndex = itemIndex == urlsLen - 1 ? 0 : itemIndex + 1;
             }
+        }
 
+        function sendRequests() {
             for (req in currentRequests) {
                 currentRequests[req].sendRequest();
             }
@@ -2934,7 +2937,9 @@ function NetworkStage(props) {
             mconsole.state("Load start...");
             measures.loadStartTime = getTime();
             interval.start();
-        });
+        }
+
+        preconnectRequest(requestsUrl, sendRequests);
 
         elem.doneRequestsItems.empty();
         urls.forEach(function (item) {
