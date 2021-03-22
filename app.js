@@ -1005,6 +1005,14 @@ var test = window.test = {
         download: "",
         upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true"
     }, {
+        name: "New York - Librespeed.org",
+        download: "https://nyc.speedtest.clouvider.net/backend/garbage.php?cors=true&ckSize=100",
+        upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true"
+    }, {
+        name: "New Jersey - Vultr.com",
+        download: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin",
+        upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true"
+    }, {
         name: "Miami - Vultr.com",
         download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin",
         upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true"
@@ -1100,6 +1108,11 @@ test.network = function () {
         nodes: [{ url: "https://il-us-ping.vultr.com/vultr.com.100MB.bin", http: true }, { url: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin", http: true }, { url: "https://ga-us-ping.vultr.com/vultr.com.100MB.bin", http: true }, { url: "https://tx-us-ping.vultr.com/vultr.com.100MB.bin", http: true }],
         selected: true
     }, {
+        name: "Cachefly.net",
+        showName: true,
+        nodes: [{ url: "https://open.cachefly.net/downloading", http: true }],
+        selected: false
+    }, {
         name: "Facebook - JPG",
         nodes: fnaSign1.map(function (sign) {
             return { url: replaceFnaSign(fnaBasicUrl.replace("//z-m-scontent", "//scontent"), sign) };
@@ -1108,7 +1121,7 @@ test.network = function () {
     }, {
         name: "Facebook Zero - JPG",
         nodes: fnaSign0.map(function (sign) {
-            return { url: replaceFnaSign(fnaBasicUrl, sign) };
+            return { url: replaceFnaSign(fnaBasicUrl, sign), preconnectCount: 1 };
         }),
         selected: false
     }, {
@@ -1147,7 +1160,7 @@ test.ping = function () {
     for (index = 0; index < graphItemsLen; index++) {
         graphItems.push(index);
     }
-    servers = [{ name: "Local", url: URL_BASE + "/xx-download.file", connectType: 1, progress: URL_BASE + "/xx-download.file" }, { name: "Cachefly.net", url: "https://open.cachefly.net/downloading", connectType: 1, progress: "https://open.cachefly.net/downloading" }, { name: "New York - Librespeed.org", url: "https://ny2.us.backend.librespeed.org/garbage.php?cors=true&ckSize=0", connectType: 1, progress: "https://ny2.us.backend.librespeed.org/garbage.php?cors=true&ckSize=100" }, { name: "New Jersey - Vultr.com", url: "https://nj-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Chicago - Vultr.com", url: "https://il-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://il-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Atlanta - Vultr.com", url: "https://ga-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://ga-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Dallas - Vultr.com", url: "https://tx-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://tx-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Miami - Vultr.com", url: "https://fl-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Tigo", url: "https://tigo.5886662453.com", connectType: 1 },
+    servers = [{ name: "Local", url: URL_BASE + "/xx-download.file", connectType: 1, progress: URL_BASE + "/xx-download.file" }, { name: "Cachefly.net", url: "https://open.cachefly.net/downloading", connectType: 1, progress: "https://open.cachefly.net/downloading" }, { name: "New York - Librespeed.org", url: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true", connectType: 1, progress: "https://nyc.speedtest.clouvider.net/backend/garbage.php?cors=true&ckSize=100" }, { name: "New Jersey - Vultr.com", url: "https://nj-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Chicago - Vultr.com", url: "https://il-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://il-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Atlanta - Vultr.com", url: "https://ga-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://ga-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Dallas - Vultr.com", url: "https://tx-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://tx-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Miami - Vultr.com", url: "https://fl-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Tigo", url: "https://tigo.5886662453.com", connectType: 1 },
     /*{name: "Facebook Static", url: "https://z-m-static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg", connectType: 1, progress: test.network.fnaBasicUrl},*/
     { name: "Facebook", url: test.network.fnaBasicUrl, connectType: 1, progress: test.network.fnaBasicUrl }, { name: "Washington - Fireprobe.net", url: "https://s12-je1rw.fireinfra.net/?action=download&size=0", connectType: 1, progress: "https://s12-je1rw.fireinfra.net/?action=download&size=100" }, { name: "Sydney - Fireprobe.net", url: "https://s87-lggif.fireinfra.net/?action=download&size=0", connectType: 1, progress: "https://s87-lggif.fireinfra.net/?action=download&size=100" }, { name: "Madrid - Movispeed.es", url: "https://m0011.movispeed.es/apolo/data/a1b.dat", connectType: 1, progress: "https://m0012.movispeed.es/apolo/data/a100m.dat" }, { name: "Singapore - Fireprobe.net", url: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0", connectType: 1, progress: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100" }];
     fnaServers = [{ name: "New York", url: "https://scontent.fmia1-1.fna.fbcdn.net/favicon.ico" }];
@@ -1554,7 +1567,8 @@ function TestStage(props) {
         },
             outputSpeed,
             speedRate,
-            took;
+            took,
+            it = 0;
 
         loadTime = time - globalLoadStartTime;
 
@@ -1622,16 +1636,21 @@ function TestStage(props) {
             outputSpeed = _TestConfig2.default.outputSpeed == "average" ? average.speed : instant.speed;
             speedRate = speedRateMbps(outputSpeed);
 
+            testConsole.state("instant: " + consoleSpeed(instant.speed) + "mbps, average: " + consoleSpeed(average.speed) + "mbps, time: " + consoleTime(loadTime) + "s, loaded: " + loadedData(loaded) + ", transf: " + transferredData(transfer.transferred));
+
             speedNumberElem.textContent(fixNumber(speedRate, speedRate < 1 && resultsPrecision < 2 ? 2 : resultsPrecision));
             elem.gauge.method("updateNumber", { speedRate: speedRate });
             graph.draw(outputSpeed, intervalTime, time, closeInterval);
 
-            testConsole.state("instant: " + consoleSpeed(instant.speed) + "mbps, average: " + consoleSpeed(average.speed) + "mbps, time: " + consoleTime(loadTime) + "s, loaded: " + loadedData(loaded) + ", transf: " + transferredData(transfer.transferred));
+            if (it % 3 == 0) {
+                elem.gauge.method("updateIcon");
+            }
 
             prev.loaded = loaded;
             prev.transferTime = transfer.time;
             connections.outputSpeed = outputSpeed;
             connections.speedRate = speedRate;
+            it++;
         }
         function stopInterval() {
             stopTest();
@@ -1666,7 +1685,7 @@ function TestStage(props) {
                 stopInterval();
             }, runTime);
 
-            elem.gauge.method("listenSpeed");
+            //elem.gauge.method("listenSpeed");
         }, loadTime > 420 ? 1 : 420 - loadTime);
 
         clearTimeout(timer.timeout.runInterval);
@@ -1736,7 +1755,7 @@ function TestStage(props) {
 
             timer.timeout.runTest = setTimeout(function () {
                 _App2.default.event("runTest", { runType: runType });
-            }, 1000);
+            }, 1050);
 
             _App2.default.event("testStatus", { opened: true, finished: false });
         },
@@ -2320,6 +2339,8 @@ function PingItem(props) {
         measures.sendCount += 1;
         measures.connection = xhr;
         measures.ping.start = _App2.default.time();
+
+        if (measures.sendCount <= 2) startedTime = _App2.default.time();
     }
     function graphMouseMove(e) {
         elem.graphTooltip.removeClass("unseen-u");
@@ -2756,17 +2777,28 @@ function NetworkStage(props) {
     }
     function preconnectRequest(urls, callback) {
         var done = 0,
+            requestsCount = {},
+            requests = [],
             prefix;
+
         urls.forEach(function (url) {
+            if (requestsCount[url.id] === void 0) requestsCount[url.id] = 0;
+            if (requestsCount[url.id] < url.preconnectCount) {
+                requests.push(url);
+                requestsCount[url.id] += 1;
+            }
+        });
+        requests.forEach(function (item) {
             var xhr = new XMLHttpRequest();
 
-            prefix = url.indexOf("?") > -1 ? "&" : "?";
+            prefix = item.url.indexOf("?") > -1 ? "&" : "?";
 
-            xhr.open("HEAD", url + prefix + "vr=" + random(), true);
+            xhr.open("HEAD", item.url + prefix + "vr=" + random(), true);
 
             xhr.onloadend = function () {
+                if (xhr.status == 0) return stopMeasures();
                 done += 1;
-                if (done == urls.length) preconnectTimeout = setTimeout(callback, 100);
+                if (done == requests.length) preconnectTimeout = setTimeout(callback, 50);
             };
 
             xhr.send();
@@ -2845,17 +2877,6 @@ function NetworkStage(props) {
             return stopMeasures();
         }
 
-        var req,
-            urls = [],
-            requestsCount,
-            urlMaster = elem.urlInput.value().trim(),
-            requestsCountValue = elem.requestsCount.value().trim(),
-            selectedRequestsCount = countSelectedRequests(),
-            defaultRequestCount = 20,
-            httpProtocol = window.location.protocol == "http:",
-            requestsUrl = [];
-
-        measures.started = true;
         measures.loaded = 0;
         measures.speedRate = 0;
         measures.doneRequests = 0;
@@ -2863,6 +2884,16 @@ function NetworkStage(props) {
         measures.activeRequests = 0;
         measures.persistentMode = elem.persistentMode.node.checked;
         measures.uploadMode = elem.uploadMode.checked();
+
+        var urls = [],
+            requestsCount,
+            urlMaster = measures.uploadMode ? _TestConfig2.default.network.uploadBasicUrl : elem.urlInput.value().trim(),
+            requestsCountValue = elem.requestsCount.value().trim(),
+            selectedRequestsCount = countSelectedRequests(),
+            defaultRequestCount = 20,
+            httpProtocol = window.location.protocol == "http:",
+            requestsUrl = [],
+            urlId = -1;
 
         requestsCount = _App2.default.parseInt({
             value: requestsCountValue,
@@ -2874,10 +2905,12 @@ function NetworkStage(props) {
         currentRequestsCount = 0;
         interval = new _interval();
 
-        if (urlMaster != "" || measures.uploadMode) {
+        if (urlMaster != "") {
             urls.push({
-                url: measures.uploadMode ? _TestConfig2.default.network.uploadBasicUrl : urlMaster,
-                preconnectCount: 1,
+                url: urlMaster,
+                id: urlId += 1,
+                prefix: urlMaster.indexOf("?") > -1 ? "&" : "?",
+                preconnectCount: measures.uploadMode ? 1 : 6,
                 requestsCount: 1,
                 done: 0,
                 loaded: 0
@@ -2890,7 +2923,9 @@ function NetworkStage(props) {
                         nodeUrl = node.http && httpProtocol ? node.url.replace("https://", "http://") : node.url;
                         urls.push({
                             url: nodeUrl,
-                            preconnectCount: node.preconnectCount,
+                            id: urlId += 1,
+                            prefix: nodeUrl.indexOf("?") > -1 ? "&" : "?",
+                            preconnectCount: _App2.default.parseInt({ value: node.preconnectCount, min: 1, default: 6 }),
                             requestsCount: _App2.default.parseInt({ value: node.requestsCount, min: 1, default: 1 }),
                             done: 0,
                             loaded: 0
@@ -2906,6 +2941,8 @@ function NetworkStage(props) {
             urls.splice(0, urls.length - requestsCount);
         }
 
+        measures.started = true;
+
         mconsole.log("Starting measures...");
         elem.networkStage.addClass("started-P5Hym");
         elem.doneRequests.textContent("0");
@@ -2917,26 +2954,26 @@ function NetworkStage(props) {
             index,
             item;
 
-        if (requestsCountValue == "" && !measures.uploadMode && selectedRequestsCount > defaultRequestCount) {
+        if (requestsCountValue == "" && !measures.uploadMode && selectedRequestsCount > defaultRequestCount && 0) {
             urls.forEach(function (item, itemIndex) {
                 urlsLen = item.requestsCount;
                 for (index = 0; index < urlsLen; index++) {
-                    req = request({ url: item.url, prefix: item.url.indexOf("?") > -1 ? "&" : "?", id: itemIndex, done: 0, loaded: 0 });
-                    requestsUrl.push(item.url);
+                    request(item);
+                    requestsUrl.push(item);
                 }
             });
         } else {
             for (index = 0; index < requestsCount; index++) {
                 item = urls[itemIndex];
-                req = request({ url: item.url, prefix: item.url.indexOf("?") > -1 ? "&" : "?", id: itemIndex, done: 0, loaded: 0 });
-                requestsUrl.push(item.url);
+                request(item);
+                requestsUrl.push(item);
                 itemIndex = itemIndex == urlsLen - 1 ? 0 : itemIndex + 1;
             }
         }
 
         function sendRequests() {
-            for (req in currentRequests) {
-                currentRequests[req].sendRequest();
+            for (item in currentRequests) {
+                currentRequests[item].sendRequest();
             }
 
             mconsole.state("Load start...");
@@ -2944,7 +2981,7 @@ function NetworkStage(props) {
             interval.start();
         }
 
-        preconnectRequest(measures.uploadMode ? [requestsUrl[0]] : requestsUrl, sendRequests);
+        preconnectRequest(requestsUrl, sendRequests);
 
         elem.doneRequestsItems.empty();
         elem.doneRequestsItemsLoaded.value("");
