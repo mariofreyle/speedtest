@@ -1195,6 +1195,11 @@ var test = window.test = function () {
             nodes: [{ url: servers[2].download }],
             selected: false
         }, {
+            name: servers[4].name,
+            showName: true,
+            nodes: [{ url: servers[4].download }],
+            selected: false
+        }, {
             name: "Facebook - JPG",
             nodes: fnaSign1.map(function (sign) {
                 return { url: replaceFnaSign(fnaBasicUrl.replace("//z-m-scontent", "//scontent"), sign) };
