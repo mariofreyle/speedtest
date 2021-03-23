@@ -640,7 +640,13 @@ window.app = function (window, document) {
             return parseFloat;
         }(function (props) {
             return parseNumber(props, parseFloat);
-        })
+        }),
+        fixNumber: function fixNumber(number, len, index) {
+            number = number.toString();
+            number += (number.indexOf(".") == -1 ? "." : "") + "00000";
+            index = number.indexOf(".");
+            return number.slice(0, index + 1 + parseInt(len));
+        }
     };
 
     app.n = function () {
@@ -975,205 +981,282 @@ var _App2 = _interopRequireDefault(_App);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var test = window.test = {
-    started: false, // false = stop - finished, true = started
-    opened: false,
-    finished: false,
-    onprogress: false, // true = progress, false = waiting
-    increments: [0, 1, 5, 10, 20, 30, 50, 75, 100],
-    viewInterfaz: 1,
-    runTime: isLocal ? 1000 * 10 : 15000,
-    hearbeatTime: 80,
-    connections: {
-        default: 4,
-        count: 4
-    },
-    mode: "1",
-    bufferEnabled: true,
-    resultsPrecision: 1,
-    servers: [{
-        name: "Local",
-        download: URL_BASE + "/xx-download.file",
-        upload: URL_BASE
-    }, {
-        name: "Cachefly.net",
-        download: "https://open.cachefly.net/downloading",
-        upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true"
-    }, {
-        name: "United States (East) - Multi Server",
-        multi: [{ download: "https://il-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://ga-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://tx-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin" }, { download: "https://tor-ca-ping.vultr.com/vultr.com.100MB.bin" }],
-        download: "",
-        upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true"
-    }, {
-        name: "New York - Librespeed.org",
-        download: "https://nyc.speedtest.clouvider.net/backend/garbage.php?cors=true&ckSize=100",
-        upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true"
-    }, {
-        name: "New Jersey - Vultr.com",
-        download: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin",
-        upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true"
-    }, {
-        name: "Miami - Vultr.com",
-        download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin",
-        upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true"
-    }, {
-        name: "Washington - Fireprobe.net",
-        preconnectDownload: "https://s12-je1rw.fireinfra.net/?action=download&size=0", preconnectUpload: "https://s12-je1rw.fireinfra.net/?action=download&size=0", download: "https://s12-je1rw.fireinfra.net/?action=download&size=100",
-        upload: "https://s12-je1rw.fireinfra.net/?action=xupload"
-    }, {
-        name: "Madrid - Movispeed.es",
-        download: "https://m0012.movispeed.es/apolo/data/a100m.dat",
-        upload: "https://m0012.movispeed.es/apolo/subida.php"
-    }, {
-        name: "Sydney - Fireprobe.net",
-        preconnectDownload: "https://s87-lggif.fireinfra.net/?action=download&size=0", preconnectUpload: "https://s87-lggif.fireinfra.net/?action=download&size=0", download: "https://s87-lggif.fireinfra.net/?action=download&size=100",
-        upload: "https://s87-lggif.fireinfra.net/?action=xupload"
-    }, {
-        name: "Singapore - Fireprobe.net",
-        preconnectDownload: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0",
-        preconnectUpload: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0", download: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100", upload: "https://s281-tnorz.fireinfra.net:9114/?action=xupload"
-    }],
-    gaugeCircleStrokeMin: 404,
-    gaugeCircleStrokeMax: 194,
-    gaugeNeedleRotateMin: 49, // in deg
-    gaugeNeedleRotateMax: 310, // in deg
-    user: {
-        isp: null,
-        ip: null
-    },
-    networkBasicUrl: "https://z-m-scontent.fbaq1-1.fna.fbcdn.net/v/t1.15752-9/fr/cp0/e15/q65/135856944_1366451607033113_1598808278752931662_n.jpg?_nc_cat=108&ccb=3&_nc_sid=58c789&efg=eyJpIjoibyJ9&_nc_eui2=AeHt6CAq5yTPwLYNQBa1yNudTvXFk30_ZfVO9cWTfT9l9Vq9sBMVOuHnd3u6jr2TKi-wHeCtj_mcDCDsK8l62o-o&_nc_ohc=J-N8yaytIh8AX-xYJUO&tn=FLSKfGZfGQ6p3p_i&_nc_ad=z-m&_nc_cid=1180&_nc_eh=7fd986fefbec5a7415120e47fc6cf163&_nc_rml=0&_nc_ht=z-m-scontent.fbaq1-1.fna&tp=14&oh=db91ce2af268290bacf7b35f0e826473&oe=60501A8C",
-    networkUploadBasicUrl: "https://z-m-static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg"
-};
+var test = window.test = function () {
+    var test,
+        fnaBasicUrl,
+        uploadBasicUrl,
+        httpProtocol = window.location.protocol == "http:",
+        servers;
 
-test.selectedServer = isLocal ? 0 : 2;
-test.selectedServer = 2;
-
-test.gaugeCircleOffsetRef = test.gaugeCircleStrokeMax - test.gaugeCircleStrokeMin;
-test.gaugeNeedleRotateRef = test.gaugeNeedleRotateMax - test.gaugeNeedleRotateMin; // in deg
-test.uploadData30 = function () {
-    var str = "111111111111111",
-        size = 21,
-        formData30 = new FormData(),
-        formData100 = new FormData(),
-        dup,
-        blob;
-
-    for (dup = 0; dup < size; dup++) {
-        str += str;
-    }
-
-    blob = new Blob([str], { type: "plain/text" });
-
-    formData30.append("x-file-1", blob);
-
-    formData100.append("x-file-1", blob);
-    formData100.append("x-file-2", blob);
-    formData100.append("x-file-3", blob);
-
-    test.uploadData100 = formData100;
-
-    return formData30;
-}();
-
-test.fixNumber = function (number, len, index) {
-    number = number.toString();
-    number += (number.indexOf(".") == -1 ? "." : "") + "00000";
-    index = number.indexOf(".");
-    return number.slice(0, index + 1 + parseInt(len));
-};
-test.runType = {
-    download: false,
-    upload: false,
-    current: null,
-    set: function set(_set) {
-        test.runType.download = "download" == _set;
-        test.runType.upload = "upload" == _set;
-    }
-};
-
-test.network = function () {
-    var fnaBasicUrl, uploadBasicUrl, urls, fnaSign0, fnaSign1;
     function replaceFnaSign(url, sign) {
         url = url.split(".");
         url[1] = sign;
         return url.join(".");
     }
-    fnaBasicUrl = "https://z-m-scontent.fbog10-1.fna.fbcdn.net/v/t1.15752-9/fr/cp0/e15/q65/135856944_1366451607033113_1598808278752931662_n.jpg?_nc_cat=108&ccb=1-3&_nc_sid=58c789&efg=eyJpIjoibyJ9&_nc_eui2=AeHt6CAq5yTPwLYNQBa1yNudTvXFk30_ZfVO9cWTfT9l9Vq9sBMVOuHnd3u6jr2TKi-wHeCtj_mcDCDsK8l62o-o&_nc_ohc=zB_2FdSxjlQAX8MnMqj&_nc_ad=z-m&_nc_cid=1180&_nc_eh=39b651c6d9cde254ab0daed694bdf54b&_nc_rml=0&_nc_ht=z-m-scontent.fbaq1-1.fna&tp=14&oh=657cb5f9073a9650082eac2756c4f194&oe=6073B30C";
+
+    fnaBasicUrl = "https://z-m-scontent.fbaq1-1.fna.fbcdn.net/v/t1.15752-9/fr/cp0/e15/q65/135856944_1366451607033113_1598808278752931662_n.jpg?_nc_cat=108&ccb=3&_nc_sid=58c789&efg=eyJpIjoibyJ9&_nc_eui2=AeHt6CAq5yTPwLYNQBa1yNudTvXFk30_ZfVO9cWTfT9l9Vq9sBMVOuHnd3u6jr2TKi-wHeCtj_mcDCDsK8l62o-o&_nc_ohc=J-N8yaytIh8AX-xYJUO&tn=FLSKfGZfGQ6p3p_i&_nc_ad=z-m&_nc_cid=1180&_nc_eh=7fd986fefbec5a7415120e47fc6cf163&_nc_rml=0&_nc_ht=z-m-scontent.fbaq1-1.fna&tp=14&oh=db91ce2af268290bacf7b35f0e826473&oe=60501A8C";
     uploadBasicUrl = "https://z-m-static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg";
-    fnaSign0 = ["fbog11-1", "fbog10-1", "fclo7-1", "fctg2-1", "fbaq1-1", "feoh3-1", "fbga3-1"];
-    fnaSign1 = fnaSign0.concat(["fbaq7-1", "fbaq6-1", "fbaq5-1", "fbog13-1", "fbog12-1", "fbog9-1", "fbog8-1", "fbog7-1", "fbog6-1", "fbog5-1", "fbog4-1", "fbog3-1", "fbog2-1"]);
-    urls = [{
-        name: "Vultr.com - Multi Location",
-        showName: true,
-        nodes: [{ url: "https://il-us-ping.vultr.com/vultr.com.100MB.bin", http: true }, { url: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin", http: true }, { url: "https://ga-us-ping.vultr.com/vultr.com.100MB.bin", http: true }, { url: "https://tx-us-ping.vultr.com/vultr.com.100MB.bin", http: true }],
-        selected: true
+
+    servers = [{
+        name: "Local",
+        id: 0,
+        download: URL_BASE + "/xx-download.file",
+        upload: URL_BASE,
+        ping: URL_BASE + "/index.html"
     }, {
         name: "Cachefly.net",
-        showName: true,
-        nodes: [{ url: "https://open.cachefly.net/downloading", http: true }],
-        selected: false
+        id: 1,
+        http: true,
+        download: "https://open.cachefly.net/downloading",
+        upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true",
+        ping: "https://open.cachefly.net/downloading"
     }, {
-        name: "Facebook - JPG",
-        nodes: fnaSign1.map(function (sign) {
-            return { url: replaceFnaSign(fnaBasicUrl.replace("//z-m-scontent", "//scontent"), sign) };
-        }),
-        selected: false
+        name: "New York - Librespeed.org",
+        id: 2,
+        http: true,
+        download: "https://nyc.speedtest.clouvider.net/backend/garbage.php?cors=true&ckSize=100",
+        upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true",
+        ping: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true"
     }, {
-        name: "Facebook Zero - JPG",
-        nodes: fnaSign0.map(function (sign) {
-            return { url: replaceFnaSign(fnaBasicUrl, sign), preconnectCount: 1 };
-        }),
-        selected: false
+        name: "New Jersey - Vultr.com",
+        id: 3,
+        http: true,
+        download: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin",
+        upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true",
+        ping: "https://nj-us-ping.vultr.com/favicon.ico"
     }, {
-        name: "API - JSON",
-        nodes: [{ url: "https://ayuda.tigo.com.co/api/v2/help_center/es/articles.json?per_page=100", requestsCount: 9 }],
-        selected: false
+        name: "Miami - Vultr.com",
+        id: 4,
+        http: true,
+        download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin",
+        upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true",
+        ping: "https://fl-us-ping.vultr.com/favicon.ico"
     }, {
-        name: "Mi Cuenta Tigo - CSS",
-        nodes: [{ url: "https://micuenta.tigo.com.co/sites/tigoselfcareregional.co/files/css/css_TfZmanse90OtW98FdwxK3piXS3wBN_7tCRPvOOrbWdo.css", requestsCount: 9 }],
-        selected: false
+        name: "Chicago - Vultr.com",
+        id: 5,
+        http: true,
+        download: "https://il-us-ping.vultr.com/vultr.com.100MB.bin",
+        upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true",
+        ping: "https://il-us-ping.vultr.com/favicon.ico"
     }, {
-        name: "Zdassets Static - JS",
-        nodes: [{ url: "https://static.zdassets.com/hc/assets/hc_enduser-9515a2be2d46bfece89668d9057908ea.js", requestsCount: 9 }],
-        selected: false
+        name: "Atlanta - Vultr.com",
+        id: 6,
+        http: true,
+        download: "https://ga-us-ping.vultr.com/vultr.com.100MB.bin",
+        upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true",
+        ping: "https://ga-us-ping.vultr.com/favicon.ico"
     }, {
-        name: "Mi Tigo - JS",
-        nodes: [{ url: "https://mi.tigo.com.co/main.2e0d8b7303628b84b1c1.js", requestsCount: 9 }],
-        selected: false
+        name: "Dalas - Vultr.com",
+        id: 7,
+        http: true,
+        download: "https://tx-us-ping.vultr.com/vultr.com.100MB.bin",
+        upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true",
+        ping: "https://tx-us-ping.vultr.com/favicon.ico"
     }, {
-        name: "Facebook Static - JS",
-        nodes: [{ url: "https://z-m-static.xx.fbcdn.net/rsrc.php/v3iUSS4/y3/l/es_LA/GUUaaCuowqo7X4eo6yE-9I8hLLtjZ8OG-NvXPppKfEJHkKKwog6tO_QfOSQgI7DvfNUI2U32NhGrpb7ct-kmWsiKmuFQe5BWvjxPOoqrOlBAc9K1Pg8liyyvhWD1C5bzwVyUynU_cyfu2WrkfrPRl7RyVf.js?_nc_x=oKaJbgQx21R&_nc_eui2=AeEuWIA-BDltcGuhsAythiMSPLKUA5_cIUw8spQDn9whTKB0BXHpNttc9kmniQIHkdmxLed7PYBSRMNzDFf-Uwve" }],
-        selected: false
+        name: "Washington - Fireprobe.net",
+        id: 8,
+        http: true,
+        preconnect: "https://s12-je1rw.fireinfra.net/?action=download&size=0",
+        download: "https://s12-je1rw.fireinfra.net/?action=download&size=100",
+        upload: "https://s12-je1rw.fireinfra.net/?action=xupload",
+        ping: "https://s12-je1rw.fireinfra.net/?action=download&size=0"
+    }, {
+        name: "Madrid - Movispeed.es",
+        id: 9,
+        download: "https://m0012.movispeed.es/apolo/data/a100m.dat",
+        upload: "https://m0012.movispeed.es/apolo/subida.php",
+        ping: "https://m0012.movispeed.es/apolo/data/a1b.dat"
+    }, {
+        name: "Sydney - Fireprobe.net",
+        id: 10,
+        http: true,
+        preconnect: "https://s87-lggif.fireinfra.net/?action=download&size=0",
+        download: "https://s87-lggif.fireinfra.net/?action=download&size=100",
+        upload: "https://s87-lggif.fireinfra.net/?action=xupload",
+        ping: "https://s87-lggif.fireinfra.net/?action=download&size=0"
+    }, {
+        name: "Singapore - Fireprobe.net",
+        id: 11,
+        http: true,
+        preconnect: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0",
+        download: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100",
+        upload: "https://s281-tnorz.fireinfra.net:9114/?action=xupload",
+        ping: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0"
     }];
-    return {
+
+    servers = servers.map(function (item) {
+        if (httpProtocol && item.http) {
+            if (item.preconnect) item.preconnect = item.preconnect.replace("https://", "http://");
+            if (item.download) item.download = item.download.replace("https://", "http://");
+            if (item.upload) item.upload = item.upload.replace("https://", "http://");
+            if (item.ping) item.ping = item.ping.replace("https://", "http://");
+        }
+
+        return item;
+    });
+
+    test = {
+        started: false, // false = stop - finished, true = started
+        opened: false,
+        finished: false,
+        onprogress: false, // true = progress, false = waiting
+        increments: [0, 1, 5, 10, 20, 30, 50, 75, 100],
+        viewInterfaz: 1,
+        runTime: isLocal ? 1000 * 10 : 15000,
+        hearbeatTime: 80,
+        connections: {
+            default: 4,
+            count: 4
+        },
+        mode: "1",
+        bufferEnabled: true,
+        resultsPrecision: 1,
+        gaugeCircleStrokeMin: 404,
+        gaugeCircleStrokeMax: 194,
+        gaugeNeedleRotateMin: 49, // in deg
+        gaugeNeedleRotateMax: 310, // in deg
+        user: {
+            isp: null,
+            ip: null
+        },
+        servers: [servers[0], servers[1], {
+            name: "United States (East) - Multi Server",
+            multi: [servers[5], servers[3], servers[6], servers[7], servers[4]],
+            upload: servers[2].upload
+        }, servers[2], servers[3], servers[4], servers[5], servers[6], servers[7], servers[8], servers[9], servers[10], servers[11]],
         fnaBasicUrl: fnaBasicUrl,
-        uploadBasicUrl: uploadBasicUrl,
-        urls: urls
+        uploadBasicUrl: uploadBasicUrl
     };
-}();
-test.ping = function () {
-    var graphItems = [],
-        graphItemsLen = 100,
-        index,
-        servers,
-        fnaServers;
-    for (index = 0; index < graphItemsLen; index++) {
-        graphItems.push(index);
-    }
-    servers = [{ name: "Local", url: URL_BASE + "/xx-download.file", connectType: 1, progress: URL_BASE + "/xx-download.file" }, { name: "Cachefly.net", url: "https://open.cachefly.net/downloading", connectType: 1, progress: "https://open.cachefly.net/downloading" }, { name: "New York - Librespeed.org", url: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true", connectType: 1, progress: "https://nyc.speedtest.clouvider.net/backend/garbage.php?cors=true&ckSize=100" }, { name: "New Jersey - Vultr.com", url: "https://nj-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Chicago - Vultr.com", url: "https://il-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://il-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Atlanta - Vultr.com", url: "https://ga-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://ga-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Dallas - Vultr.com", url: "https://tx-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://tx-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Miami - Vultr.com", url: "https://fl-us-ping.vultr.com/favicon.ico", connectType: 1, progress: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin" }, { name: "Tigo", url: "https://tigo.5886662453.com", connectType: 1 },
-    /*{name: "Facebook Static", url: "https://z-m-static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg", connectType: 1, progress: test.network.fnaBasicUrl},*/
-    { name: "Facebook", url: test.network.fnaBasicUrl, connectType: 1, progress: test.network.fnaBasicUrl }, { name: "Washington - Fireprobe.net", url: "https://s12-je1rw.fireinfra.net/?action=download&size=0", connectType: 1, progress: "https://s12-je1rw.fireinfra.net/?action=download&size=100" }, { name: "Sydney - Fireprobe.net", url: "https://s87-lggif.fireinfra.net/?action=download&size=0", connectType: 1, progress: "https://s87-lggif.fireinfra.net/?action=download&size=100" }, { name: "Madrid - Movispeed.es", url: "https://m0011.movispeed.es/apolo/data/a1b.dat", connectType: 1, progress: "https://m0012.movispeed.es/apolo/data/a100m.dat" }, { name: "Singapore - Fireprobe.net", url: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0", connectType: 1, progress: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100" }];
-    fnaServers = [{ name: "New York", url: "https://scontent.fmia1-1.fna.fbcdn.net/favicon.ico" }];
-    return {
-        results: 100,
-        completeAll: false,
-        servers: servers,
-        server: servers[1],
-        runTime: 10000,
-        graphItemsLen: graphItemsLen,
-        graphVisibleItems: [0, 2, 4, 6, 8, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49, 52, 55, 58, 61, 64, 67, 70, 73, 76, 79, 82, 85, 88, 91, 94, 97],
-        graphItems: graphItems
+
+    test.selectedServer = isLocal ? 0 : 2;
+    test.selectedServer = 2;
+
+    test.gaugeCircleOffsetRef = test.gaugeCircleStrokeMax - test.gaugeCircleStrokeMin;
+    test.gaugeNeedleRotateRef = test.gaugeNeedleRotateMax - test.gaugeNeedleRotateMin; // in deg
+    test.uploadData30 = function () {
+        var str = "111111111111111",
+            size = 21,
+            formData30 = new FormData(),
+            formData100 = new FormData(),
+            dup,
+            blob;
+
+        for (dup = 0; dup < size; dup++) {
+            str += str;
+        }
+
+        blob = new Blob([str], { type: "plain/text" });
+
+        formData30.append("x-file-1", blob);
+
+        formData100.append("x-file-1", blob);
+        formData100.append("x-file-2", blob);
+        formData100.append("x-file-3", blob);
+
+        test.uploadData100 = formData100;
+
+        return formData30;
+    }();
+
+    test.fixNumber = function (number, len, index) {
+        number = number.toString();
+        number += (number.indexOf(".") == -1 ? "." : "") + "00000";
+        index = number.indexOf(".");
+        return number.slice(0, index + 1 + parseInt(len));
     };
+    test.runType = {
+        download: false,
+        upload: false,
+        current: null,
+        set: function set(_set) {
+            test.runType.download = "download" == _set;
+            test.runType.upload = "upload" == _set;
+        }
+    };
+
+    test.network = function () {
+        var urls, fnaSign0, fnaSign1;
+
+        fnaSign0 = ["fbog11-1", "fbog10-1", "fclo7-1", "fctg2-1", "fbaq1-1", "feoh3-1", "fbga3-1"];
+        fnaSign1 = fnaSign0.concat(["fbaq7-1", "fbaq6-1", "fbaq5-1", "fbog13-1", "fbog12-1", "fbog9-1", "fbog8-1", "fbog7-1", "fbog6-1", "fbog5-1", "fbog4-1", "fbog3-1", "fbog2-1"]);
+        urls = [{
+            name: "Vultr.com - Multi Location",
+            showName: true,
+            nodes: [{ url: servers[5].download }, { url: servers[3].download }, { url: servers[6].download }, { url: servers[7].download }],
+            selected: true
+        }, {
+            name: "Cachefly.net",
+            showName: true,
+            nodes: [{ url: servers[1].download }],
+            selected: false
+        }, {
+            name: servers[2].name,
+            showName: true,
+            nodes: [{ url: servers[2].download }],
+            selected: false
+        },
+        /*{
+            name: "Facebook - JPG",
+            nodes: fnaSign1.map(function(sign){
+                return {url: replaceFnaSign(fnaBasicUrl.replace("//z-m-scontent", "//scontent"), sign)}
+            }),
+            selected: false
+        },*/
+        {
+            name: "Facebook Zero - JPG",
+            nodes: fnaSign0.map(function (sign) {
+                return { url: replaceFnaSign(fnaBasicUrl, sign), preconnectCount: 1 };
+            }),
+            selected: false
+        }, {
+            name: "API - JSON",
+            nodes: [{ url: "https://ayuda.tigo.com.co/api/v2/help_center/es/articles.json?per_page=100", requestsCount: 9 }],
+            selected: false
+        }, {
+            name: "Mi Cuenta Tigo - CSS",
+            nodes: [{ url: "https://micuenta.tigo.com.co/sites/tigoselfcareregional.co/files/css/css_TfZmanse90OtW98FdwxK3piXS3wBN_7tCRPvOOrbWdo.css", requestsCount: 9 }],
+            selected: false
+        }, {
+            name: "Zdassets Static - JS",
+            nodes: [{ url: "https://static.zdassets.com/hc/assets/hc_enduser-9515a2be2d46bfece89668d9057908ea.js", requestsCount: 9 }],
+            selected: false
+        }, {
+            name: "Mi Tigo - JS",
+            nodes: [{ url: "https://mi.tigo.com.co/main.2e0d8b7303628b84b1c1.js", requestsCount: 9 }],
+            selected: false
+        }, {
+            name: "Facebook Static - JS",
+            nodes: [{ url: "https://z-m-static.xx.fbcdn.net/rsrc.php/v3iUSS4/y3/l/es_LA/GUUaaCuowqo7X4eo6yE-9I8hLLtjZ8OG-NvXPppKfEJHkKKwog6tO_QfOSQgI7DvfNUI2U32NhGrpb7ct-kmWsiKmuFQe5BWvjxPOoqrOlBAc9K1Pg8liyyvhWD1C5bzwVyUynU_cyfu2WrkfrPRl7RyVf.js?_nc_x=oKaJbgQx21R&_nc_eui2=AeEuWIA-BDltcGuhsAythiMSPLKUA5_cIUw8spQDn9whTKB0BXHpNttc9kmniQIHkdmxLed7PYBSRMNzDFf-Uwve" }],
+            selected: false
+        }];
+        return {
+            fnaBasicUrl: fnaBasicUrl,
+            uploadBasicUrl: uploadBasicUrl,
+            urls: urls
+        };
+    }();
+    test.ping = function () {
+        var graphItems = [],
+            graphItemsLen = 100,
+            index,
+            pingServers;
+        for (index = 0; index < graphItemsLen; index++) {
+            graphItems.push(index);
+        }
+        pingServers = [servers[0], servers[1], servers[2], servers[3], servers[4], servers[5], servers[6], servers[7], { name: "Tigo", ping: "https://tigo.5886662453.com" }, { name: "Facebook", ping: fnaBasicUrl, download: fnaBasicUrl }, servers[8], servers[9], servers[10], servers[11]];
+        return {
+            results: 100,
+            completeAll: false,
+            servers: pingServers,
+            server: pingServers[1],
+            runTime: 10000,
+            graphItemsLen: graphItemsLen,
+            graphVisibleItems: [0, 2, 4, 6, 8, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49, 52, 55, 58, 61, 64, 67, 70, 73, 76, 79, 82, 85, 88, 91, 94, 97],
+            graphItems: graphItems
+        };
+    }();
+
+    return test;
 }();
 
 exports.default = test;
@@ -1809,7 +1892,6 @@ function TestStage(props) {
                     serverUrl = 0,
                     serverIndex = 0,
                     serverLen = 0,
-                    preconnect = connections.server.preconnect === void 0 ? true : connections.server.preconnect,
                     preconnectUrl = 0;
 
                 if (connections.server.multi && isDownload) {
@@ -1823,32 +1905,30 @@ function TestStage(props) {
                 for (index = 0; index < connections.count; index++) {
                     serverItem = servers[serverIndex];
                     serverUrl = serverItem[isDownload ? "download" : "upload"];
-                    preconnectUrl = serverItem["preconnect" + (isDownload ? "Download" : "Upload")];
+                    preconnectUrl = serverItem["preconnect"];
 
-                    if (preconnect) {
-                        connections.preconnect.requests.push(_App2.default.fetch({
-                            url: preconnectUrl ? preconnectUrl : serverUrl,
-                            get: { v: _App2.default.random() },
-                            type: preconnectUrl ? "GET" : "HEAD",
-                            done: function done() {
-                                if (connections.preconnect.isAborted) return;
-                                connections.preconnect.success += 1;
-                                if (connections.preconnect.success == connections.count) {
-                                    setTimeout(function () {
-                                        sendRequests(connections.requests);
-                                    }, 1);
-                                }
-                            },
-                            send: false
-                        }));
-                    }
+                    connections.preconnect.requests.push(_App2.default.fetch({
+                        url: preconnectUrl ? preconnectUrl : serverUrl,
+                        get: { v: _App2.default.random() },
+                        type: preconnectUrl ? "GET" : "HEAD",
+                        done: function done() {
+                            if (connections.preconnect.isAborted) return;
+                            connections.preconnect.success += 1;
+                            if (connections.preconnect.success == connections.count) {
+                                setTimeout(function () {
+                                    sendRequests(connections.requests);
+                                }, 1);
+                            }
+                        },
+                        send: false
+                    }));
 
                     connections.addRequest(false, serverUrl);
 
                     serverIndex = serverIndex == serverLen - 1 ? 0 : serverIndex + 1;
                 }
 
-                sendRequests(preconnect ? connections.preconnect.requests : connections.requests);
+                sendRequests(connections.preconnect.requests);
             }
 
             startConnections();
@@ -2363,7 +2443,7 @@ function PingItem(props) {
 
     this.onMount = function () {
         startedTime = _App2.default.time();
-        measures.connectionUrl = measures.progressMode ? _TestConfig2.default.ping.server.progress : _TestConfig2.default.ping.server.url;
+        measures.connectionUrl = measures.progressMode ? _TestConfig2.default.ping.server.download : _TestConfig2.default.ping.server.ping;
         measures.connectionType = measures.progressMode ? "GET" : "HEAD";
         measures.connectionPrefix = measures.connectionUrl.indexOf("?") > -1 ? "&" : "?";
 
@@ -2449,8 +2529,8 @@ function PingStage() {
         elem.selectServer.node.childNodes.forEach(function (item, index) {
             child = elem.selectServer.child(index);
             value = child.attr("value");
-            child.style({ display: checked && _TestConfig2.default.ping.servers[value].progress === void 0 ? "none" : "block" });
-            if (child.selected() && _TestConfig2.default.ping.servers[value].progress === void 0) {
+            child.style({ display: checked && _TestConfig2.default.ping.servers[value].download === void 0 ? "none" : "block" });
+            if (child.selected() && _TestConfig2.default.ping.servers[value].download === void 0) {
                 elem.selectServer.child(1).selected(true);
                 changeServer();
             }
@@ -2891,7 +2971,6 @@ function NetworkStage(props) {
             requestsCountValue = elem.requestsCount.value().trim(),
             selectedRequestsCount = countSelectedRequests(),
             defaultRequestCount = 20,
-            httpProtocol = window.location.protocol == "http:",
             requestsUrl = [],
             urlId = -1;
 
@@ -2919,12 +2998,11 @@ function NetworkStage(props) {
         if (!measures.uploadMode) {
             _TestConfig2.default.network.urls.forEach(function (url) {
                 if (url.selected) {
-                    url.nodes.forEach(function (node, nodeUrl) {
-                        nodeUrl = node.http && httpProtocol ? node.url.replace("https://", "http://") : node.url;
+                    url.nodes.forEach(function (node) {
                         urls.push({
-                            url: nodeUrl,
+                            url: node.url,
                             id: urlId += 1,
-                            prefix: nodeUrl.indexOf("?") > -1 ? "&" : "?",
+                            prefix: node.url.indexOf("?") > -1 ? "&" : "?",
                             preconnectCount: _App2.default.parseInt({ value: node.preconnectCount, min: 1, default: 6 }),
                             requestsCount: _App2.default.parseInt({ value: node.requestsCount, min: 1, default: 1 }),
                             done: 0,
