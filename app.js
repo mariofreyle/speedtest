@@ -994,7 +994,7 @@ var test = window.test = function () {
         return url.join(".");
     }
 
-    fnaBasicUrl = "https://z-m-scontent.fbaq1-1.fna.fbcdn.net/v/t1.15752-9/fr/cp0/e15/q65/135856944_1366451607033113_1598808278752931662_n.jpg?_nc_cat=108&ccb=3&_nc_sid=58c789&efg=eyJpIjoibyJ9&_nc_eui2=AeHt6CAq5yTPwLYNQBa1yNudTvXFk30_ZfVO9cWTfT9l9Vq9sBMVOuHnd3u6jr2TKi-wHeCtj_mcDCDsK8l62o-o&_nc_ohc=J-N8yaytIh8AX-xYJUO&tn=FLSKfGZfGQ6p3p_i&_nc_ad=z-m&_nc_cid=1180&_nc_eh=7fd986fefbec5a7415120e47fc6cf163&_nc_rml=0&_nc_ht=z-m-scontent.fbaq1-1.fna&tp=14&oh=db91ce2af268290bacf7b35f0e826473&oe=60501A8C";
+    fnaBasicUrl = "https://z-m-scontent.fbog10-1.fna.fbcdn.net/v/t1.15752-9/fr/cp0/e15/q65/135856944_1366451607033113_1598808278752931662_n.jpg?_nc_cat=108&ccb=1-3&_nc_sid=58c789&efg=eyJpIjoibyJ9&_nc_eui2=AeHt6CAq5yTPwLYNQBa1yNudTvXFk30_ZfVO9cWTfT9l9Vq9sBMVOuHnd3u6jr2TKi-wHeCtj_mcDCDsK8l62o-o&_nc_ohc=qw56x-tJjv4AX_pqPPA&tn=FLSKfGZfGQ6p3p_i&_nc_ad=z-m&_nc_cid=1180&_nc_eh=39b651c6d9cde254ab0daed694bdf54b&_nc_rml=0&_nc_ht=z-m-scontent.fbga3-1.fna&tp=14&oh=c530e6497bdef41186e3bd6e2a0df32e&oe=607F908C";
     uploadBasicUrl = "https://z-m-static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg";
 
     servers = [{
@@ -1194,15 +1194,13 @@ var test = window.test = function () {
             showName: true,
             nodes: [{ url: servers[2].download }],
             selected: false
-        },
-        /*{
+        }, {
             name: "Facebook - JPG",
-            nodes: fnaSign1.map(function(sign){
-                return {url: replaceFnaSign(fnaBasicUrl.replace("//z-m-scontent", "//scontent"), sign)}
+            nodes: fnaSign1.map(function (sign) {
+                return { url: replaceFnaSign(fnaBasicUrl.replace("//z-m-scontent", "//scontent"), sign) };
             }),
             selected: false
-        },*/
-        {
+        }, {
             name: "Facebook Zero - JPG",
             nodes: fnaSign0.map(function (sign) {
                 return { url: replaceFnaSign(fnaBasicUrl, sign), preconnectCount: 1 };
