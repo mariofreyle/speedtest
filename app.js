@@ -986,16 +986,54 @@ var test = window.test = function () {
         fnaBasicUrl,
         uploadBasicUrl,
         httpProtocol = window.location.protocol == "http:",
-        servers;
+        servers,
+        gaugeCircleStrokeMin,
+        gaugeCircleStrokeMax,
+        gaugeNeedleRotateMin,
+        gaugeNeedleRotateMax,
+        gaugeCircleOffsetRef,
+        gaugeNeedleRotateRef;
 
     function replaceFnaSign(url, sign) {
         url = url.split(".");
         url[1] = sign;
         return url.join(".");
     }
+    function uploadData() {
+        var str = "111111111111111",
+            size = 21,
+            formData30 = new FormData(),
+            formData99 = new FormData(),
+            dup,
+            blob;
+
+        for (dup = 0; dup < size; dup++) {
+            str += str;
+        }
+
+        blob = new Blob([str], { type: "plain/text" });
+
+        formData30.append("x-file-1", blob);
+
+        formData99.append("x-file-1", blob);
+        formData99.append("x-file-2", blob);
+        formData99.append("x-file-3", blob);
+
+        return {
+            $30: formData30,
+            $99: formData99
+        };
+    }
 
     fnaBasicUrl = "https://z-m-scontent.fbog10-1.fna.fbcdn.net/v/t1.15752-9/fr/cp0/e15/q65/135856944_1366451607033113_1598808278752931662_n.jpg?_nc_cat=108&ccb=1-3&_nc_sid=58c789&efg=eyJpIjoibyJ9&_nc_eui2=AeHt6CAq5yTPwLYNQBa1yNudTvXFk30_ZfVO9cWTfT9l9Vq9sBMVOuHnd3u6jr2TKi-wHeCtj_mcDCDsK8l62o-o&_nc_ohc=qw56x-tJjv4AX_pqPPA&tn=FLSKfGZfGQ6p3p_i&_nc_ad=z-m&_nc_cid=1180&_nc_eh=39b651c6d9cde254ab0daed694bdf54b&_nc_rml=0&_nc_ht=z-m-scontent.fbga3-1.fna&tp=14&oh=c530e6497bdef41186e3bd6e2a0df32e&oe=607F908C";
     uploadBasicUrl = "https://z-m-static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg";
+
+    gaugeCircleStrokeMin = 404; // deg
+    gaugeCircleStrokeMax = 194; // deg
+    gaugeNeedleRotateMin = 49; // deg
+    gaugeNeedleRotateMax = 310; // deg
+    gaugeCircleOffsetRef = gaugeCircleStrokeMax - gaugeCircleStrokeMin;
+    gaugeNeedleRotateRef = gaugeNeedleRotateMax - gaugeNeedleRotateMin;
 
     servers = [{
         name: "Local",
@@ -1055,7 +1093,6 @@ var test = window.test = function () {
     }, {
         name: "Washington - Fireprobe.net",
         id: 8,
-        http: true,
         preconnect: "https://s12-je1rw.fireinfra.net/?action=download&size=0",
         download: "https://s12-je1rw.fireinfra.net/?action=download&size=100",
         upload: "https://s12-je1rw.fireinfra.net/?action=xupload",
@@ -1069,7 +1106,6 @@ var test = window.test = function () {
     }, {
         name: "Sydney - Fireprobe.net",
         id: 10,
-        http: true,
         preconnect: "https://s87-lggif.fireinfra.net/?action=download&size=0",
         download: "https://s87-lggif.fireinfra.net/?action=download&size=100",
         upload: "https://s87-lggif.fireinfra.net/?action=xupload",
@@ -1077,7 +1113,6 @@ var test = window.test = function () {
     }, {
         name: "Singapore - Fireprobe.net",
         id: 11,
-        http: true,
         preconnect: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0",
         download: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100",
         upload: "https://s281-tnorz.fireinfra.net:9114/?action=xupload",
@@ -1111,10 +1146,12 @@ var test = window.test = function () {
         mode: "1",
         bufferEnabled: true,
         resultsPrecision: 1,
-        gaugeCircleStrokeMin: 404,
-        gaugeCircleStrokeMax: 194,
-        gaugeNeedleRotateMin: 49, // in deg
-        gaugeNeedleRotateMax: 310, // in deg
+        gaugeCircleStrokeMin: gaugeCircleStrokeMin,
+        gaugeCircleStrokeMax: gaugeCircleStrokeMax,
+        gaugeNeedleRotateMin: gaugeNeedleRotateMin,
+        gaugeNeedleRotateMax: gaugeNeedleRotateMax,
+        gaugeCircleOffsetRef: gaugeCircleOffsetRef,
+        gaugeNeedleRotateRef: gaugeNeedleRotateRef,
         user: {
             isp: null,
             ip: null
@@ -1124,54 +1161,17 @@ var test = window.test = function () {
             multi: [servers[5], servers[3], servers[6], servers[7], servers[4]],
             upload: servers[2].upload
         }, servers[2], servers[3], servers[4], servers[5], servers[6], servers[7], servers[8], servers[9], servers[10], servers[11]],
-        fnaBasicUrl: fnaBasicUrl,
-        uploadBasicUrl: uploadBasicUrl
-    };
-
-    test.selectedServer = isLocal ? 0 : 2;
-    test.selectedServer = 2;
-
-    test.gaugeCircleOffsetRef = test.gaugeCircleStrokeMax - test.gaugeCircleStrokeMin;
-    test.gaugeNeedleRotateRef = test.gaugeNeedleRotateMax - test.gaugeNeedleRotateMin; // in deg
-    test.uploadData30 = function () {
-        var str = "111111111111111",
-            size = 21,
-            formData30 = new FormData(),
-            formData100 = new FormData(),
-            dup,
-            blob;
-
-        for (dup = 0; dup < size; dup++) {
-            str += str;
-        }
-
-        blob = new Blob([str], { type: "plain/text" });
-
-        formData30.append("x-file-1", blob);
-
-        formData100.append("x-file-1", blob);
-        formData100.append("x-file-2", blob);
-        formData100.append("x-file-3", blob);
-
-        test.uploadData100 = formData100;
-
-        return formData30;
-    }();
-
-    test.fixNumber = function (number, len, index) {
-        number = number.toString();
-        number += (number.indexOf(".") == -1 ? "." : "") + "00000";
-        index = number.indexOf(".");
-        return number.slice(0, index + 1 + parseInt(len));
-    };
-    test.runType = {
-        download: false,
-        upload: false,
-        current: null,
-        set: function set(_set) {
-            test.runType.download = "download" == _set;
-            test.runType.upload = "upload" == _set;
-        }
+        uploadData: uploadData(),
+        runType: {
+            download: false,
+            upload: false,
+            current: null,
+            set: function set(_set) {
+                test.runType.download = "download" == _set;
+                test.runType.upload = "upload" == _set;
+            }
+        },
+        selectedServer: isLocal && 0 ? 0 : 2
     };
 
     test.network = function () {
@@ -1238,6 +1238,7 @@ var test = window.test = function () {
             urls: urls
         };
     }();
+
     test.ping = function () {
         var graphItems = [],
             graphItemsLen = 100,
@@ -1315,7 +1316,7 @@ function TestStage(props) {
         timeout: {},
         interval: {}
     },
-        fixNumber = _TestConfig2.default.fixNumber,
+        fixNumber = _App2.default.fixNumber,
         graph,
         connections,
         intervalStarted,
@@ -1469,7 +1470,7 @@ function TestStage(props) {
     function breakTest() {
         clearTimers();
         stopTest();
-        graph && connections.outputSpeed && graph.draw(connections.outputSpeed, _TestConfig2.default.runTime, _App2.default.time(), true);
+        graph && connections.speedRate && graph.draw(connections.speedRate, _TestConfig2.default.runTime, _App2.default.time(), true);
         testConsole.state("measures error");
         timer.timeout.breakTest = setTimeout(progressEnd, 1300);
     }
@@ -1651,8 +1652,10 @@ function TestStage(props) {
             speed: 0,
             calc: new averageSpeed()
         },
-            outputSpeed,
-            speedRate,
+            output = {
+            speed: 0,
+            speedRate: 0
+        },
             took,
             it = 0;
 
@@ -1719,14 +1722,14 @@ function TestStage(props) {
             instant.average = instant.calc.get(instant.speed, instant.maxItems);
             average.speed = average.calc.get(instant.average, instant.maxItems);
 
-            outputSpeed = _TestConfig2.default.outputSpeed == "average" ? average.speed : instant.speed;
-            speedRate = speedRateMbps(outputSpeed);
+            output.speedRate = speedRateMbps(_TestConfig2.default.outputSpeed == "average" ? average.speed : instant.speed);
+            output.speed = fixNumber(output.speedRate, output.speedRate < 1 && resultsPrecision < 2 ? 2 : resultsPrecision);
 
             testConsole.state("instant: " + consoleSpeed(instant.speed) + "mbps, average: " + consoleSpeed(average.speed) + "mbps, time: " + consoleTime(loadTime) + "s, loaded: " + loadedData(loaded) + ", transf: " + transferredData(transfer.transferred));
 
-            speedNumberElem.textContent(fixNumber(speedRate, speedRate < 1 && resultsPrecision < 2 ? 2 : resultsPrecision));
-            elem.gauge.method("updateNumber", { speedRate: speedRate });
-            graph.draw(outputSpeed, intervalTime, time, closeInterval);
+            speedNumberElem.textContent(output.speed);
+            elem.gauge.method("updateNumber", { number: output.speed, speedRate: output.speedRate });
+            graph.draw(output.speedRate, intervalTime, time, closeInterval);
 
             if (it % 3 == 0) {
                 elem.gauge.method("updateIcon");
@@ -1734,8 +1737,7 @@ function TestStage(props) {
 
             prev.loaded = loaded;
             prev.transferTime = transfer.time;
-            connections.outputSpeed = outputSpeed;
-            connections.speedRate = speedRate;
+            connections.speedRate = output.speedRate;
             it++;
         }
         function stopInterval() {
@@ -1851,7 +1853,7 @@ function TestStage(props) {
             //timer.timeout.closeTest = setTimeout(function(){ app.event("closeTest"), closeGauge(); }, 3000);
             //return;
 
-            var uploadData = _TestConfig2.default.runType.download ? null : [_TestConfig2.default.uploadData30, _TestConfig2.default.uploadData100],
+            var uploadData = _TestConfig2.default.runType.download ? null : [_TestConfig2.default.uploadData.$30, _TestConfig2.default.uploadData.$99],
                 i;
 
             testConsole.state("starting measures...");
@@ -1862,7 +1864,6 @@ function TestStage(props) {
                 requests: [],
                 count: _TestConfig2.default.connections.count,
                 loaded: 0,
-                outputSpeed: 0,
                 speedRate: 0,
                 addRequest: function addRequest(send, url, upload) {
                     connections.requests.push(_App2.default.fetch({
@@ -2064,9 +2065,7 @@ function GaugeContainer(props) {
         gaugePercent,
         circleOffset,
         needleRotate,
-        listenInterval = null,
-        fixNumber = _TestConfig2.default.fixNumber,
-        resultsPrecision = _TestConfig2.default.resultsPrecision;
+        listenInterval = null;
 
     function calcGaugePercent(speedRate) {
         var index,
@@ -2092,10 +2091,10 @@ function GaugeContainer(props) {
         return percent;
     }
 
-    function updateSpeed(speedRate, noparse) {
+    function _updateNumber(value, speedRate) {
         currentSpeed = speedRate;
 
-        elem.speedDetailsNumber.textContent(noparse ? speedRate : fixNumber(speedRate, speedRate < 1 && resultsPrecision < 2 ? 2 : resultsPrecision));
+        elem.speedDetailsNumber.textContent(value);
     }
     function _updateIcon() {
         if (prevSpeed != currentSpeed) {
@@ -2129,20 +2128,20 @@ function GaugeContainer(props) {
             listenInterval = setInterval(_updateIcon, 200);
         },
         updateNumber: function updateNumber(e) {
-            updateSpeed(e.speedRate);
+            _updateNumber(e.number, e.speedRate);
         },
         updateIcon: function updateIcon() {
             _updateIcon();
         },
         update: function update(e) {
-            updateSpeed(e.speedRate);
+            _updateNumber(e.number, e.speedRate);
             _updateIcon();
         },
         clear: function clear() {
             elem.gaugeContainer.addClass("clear-QvMr");
 
             clearInterval(listenInterval);
-            updateSpeed("0.0", true);
+            _updateNumber("0.0", "0.0");
             _updateIcon();
 
             setTimeout(function () {
@@ -2611,7 +2610,7 @@ function NetworkStage(props) {
         mconsole,
         getTime = Date.now,
         random = Math.random,
-        fixNumber = _TestConfig2.default.fixNumber,
+        fixNumber = _App2.default.fixNumber,
         reqId = 0,
         currentRequests = {},
         interval,
@@ -2741,7 +2740,8 @@ function NetworkStage(props) {
             index,
             len,
             it = 1,
-            itemsLoadedValue;
+            itemsLoadedValue,
+            resultsPrecision = _TestConfig2.default.resultsPrecision;
 
         function consoleTime(time) {
             return (time / 1000).toFixed(time < 10000 ? 2 : 1);
@@ -2816,7 +2816,7 @@ function NetworkStage(props) {
 
                 speedRate = average.speed;
 
-                elem.gauge.method("updateNumber", { speedRate: speedRate });
+                elem.gauge.method("updateNumber", { number: fixNumber(speedRate, speedRate < 1 && resultsPrecision < 2 ? 2 : resultsPrecision), speedRate: speedRate });
                 if (!nolog) mconsole.state("time: " + consoleTime(loadTime) + "s, loaded: " + loadedData(measures.loaded) + ", transferred: " + transferredData(transferred));
                 if (it % 2 == 0) {
                     elem.gauge.method("updateIcon");
@@ -2894,7 +2894,7 @@ function NetworkStage(props) {
             prevLoaded = 0,
             first = true,
             loaded = 0,
-            post = measures.uploadMode ? _TestConfig2.default.uploadData100 : null,
+            post = measures.uploadMode ? _TestConfig2.default.uploadData.$99 : null,
             target = measures.uploadMode ? xhr.upload : xhr;
 
         xhr._id = "_" + (reqId += 1);
