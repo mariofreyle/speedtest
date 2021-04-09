@@ -1182,7 +1182,7 @@ var test = window.test = function () {
         urls = [{
             name: "Vultr.com - Multi Location",
             showName: true,
-            nodes: [{ url: servers[5].download }, { url: servers[3].download }, { url: servers[6].download }, { url: servers[7].download }],
+            nodes: [{ url: servers[5].download, requestsCount: 5 }, { url: servers[3].download, requestsCount: 5 }, { url: servers[6].download, requestsCount: 5 }, { url: servers[7].download, requestsCount: 5 }],
             selected: true
         }, {
             name: "Cachefly.net",
@@ -1195,6 +1195,11 @@ var test = window.test = function () {
             nodes: [{ url: servers[2].download }],
             selected: false
         }, {
+            name: servers[3].name,
+            showName: true,
+            nodes: [{ url: servers[3].download }],
+            selected: false
+        }, {
             name: servers[4].name,
             showName: true,
             nodes: [{ url: servers[4].download }],
@@ -1202,30 +1207,30 @@ var test = window.test = function () {
         }, {
             name: "Facebook - JPG",
             nodes: fnaSign1.map(function (sign) {
-                return { url: replaceFnaSign(fnaBasicUrl.replace("//z-m-scontent", "//scontent"), sign) };
+                return { url: replaceFnaSign(fnaBasicUrl.replace("//z-m-scontent", "//scontent"), sign), requestsCount: 1 };
             }),
             selected: false
         }, {
             name: "Facebook Zero - JPG",
             nodes: fnaSign0.map(function (sign) {
-                return { url: replaceFnaSign(fnaBasicUrl, sign), preconnectCount: 1 };
+                return { url: replaceFnaSign(fnaBasicUrl, sign), preconnectCount: 1, requestsCount: 3 };
             }),
             selected: false
         }, {
             name: "API - JSON",
-            nodes: [{ url: "https://ayuda.tigo.com.co/api/v2/help_center/es/articles.json?per_page=100", requestsCount: 9 }],
+            nodes: [{ url: "https://ayuda.tigo.com.co/api/v2/help_center/es/articles.json?per_page=100" }],
             selected: false
         }, {
             name: "Mi Cuenta Tigo - CSS",
-            nodes: [{ url: "https://micuenta.tigo.com.co/sites/tigoselfcareregional.co/files/css/css_TfZmanse90OtW98FdwxK3piXS3wBN_7tCRPvOOrbWdo.css", requestsCount: 9 }],
+            nodes: [{ url: "https://micuenta.tigo.com.co/sites/tigoselfcareregional.co/files/css/css_TfZmanse90OtW98FdwxK3piXS3wBN_7tCRPvOOrbWdo.css" }],
             selected: false
         }, {
             name: "Zdassets Static - JS",
-            nodes: [{ url: "https://static.zdassets.com/hc/assets/hc_enduser-9515a2be2d46bfece89668d9057908ea.js", requestsCount: 9 }],
+            nodes: [{ url: "https://static.zdassets.com/hc/assets/hc_enduser-9515a2be2d46bfece89668d9057908ea.js" }],
             selected: false
         }, {
             name: "Mi Tigo - JS",
-            nodes: [{ url: "https://mi.tigo.com.co/main.2e0d8b7303628b84b1c1.js", requestsCount: 9 }],
+            nodes: [{ url: "https://mi.tigo.com.co/main.2e0d8b7303628b84b1c1.js" }],
             selected: false
         }, {
             name: "Facebook Static - JS",
@@ -2940,15 +2945,6 @@ function NetworkStage(props) {
 
         return xhr;
     }
-    function countSelectedRequests(count) {
-        count = 0;
-        _TestConfig2.default.network.urls.forEach(function (item, rCount) {
-            if (!item.selected) return;
-            rCount = parseInt(item.requestsCount);
-            count += isNaN(rCount) ? 0 : rCount;
-        });
-        return count;
-    }
     function startMeasures() {
         if (measures.actionTime && getTime() - measures.actionTime < 500) {
             return;
@@ -2969,20 +2965,16 @@ function NetworkStage(props) {
         measures.uploadMode = elem.uploadMode.checked();
 
         var urls = [],
-            requestsCount,
             urlMaster = measures.uploadMode ? _TestConfig2.default.network.uploadBasicUrl : elem.urlInput.value().trim(),
-            requestsCountValue = elem.requestsCount.value().trim(),
-            selectedRequestsCount = countSelectedRequests(),
-            defaultRequestCount = 20,
+            requestsCount = _App2.default.parseInt({
+            value: elem.requestsCount.value().trim(),
+            min: 1,
+            max: 100,
+            default: 0
+        }),
             requestsUrl = [],
             urlId = -1;
 
-        requestsCount = _App2.default.parseInt({
-            value: requestsCountValue,
-            min: 1,
-            max: 100,
-            default: requestsCountValue == "" && !measures.uploadMode && selectedRequestsCount > defaultRequestCount ? selectedRequestsCount : defaultRequestCount
-        });
         currentRequests = {};
         currentRequestsCount = 0;
         interval = new _interval();
@@ -2993,7 +2985,7 @@ function NetworkStage(props) {
                 id: urlId += 1,
                 prefix: urlMaster.indexOf("?") > -1 ? "&" : "?",
                 preconnectCount: measures.uploadMode ? 1 : 6,
-                requestsCount: 1,
+                requestsCount: measures.uploadMode ? 10 : 6,
                 done: 0,
                 loaded: 0
             });
@@ -3007,7 +2999,7 @@ function NetworkStage(props) {
                             id: urlId += 1,
                             prefix: node.url.indexOf("?") > -1 ? "&" : "?",
                             preconnectCount: _App2.default.parseInt({ value: node.preconnectCount, min: 1, default: 6 }),
-                            requestsCount: _App2.default.parseInt({ value: node.requestsCount, min: 1, default: 1 }),
+                            requestsCount: _App2.default.parseInt({ value: node.requestsCount, min: 1, default: 6 }),
                             done: 0,
                             loaded: 0
                         });
@@ -3018,8 +3010,8 @@ function NetworkStage(props) {
 
         if (urls.length == 0) {
             return;
-        } else if (urls.length > requestsCount) {
-            urls.splice(0, urls.length - requestsCount);
+        } else if (requestsCount != 0 && urls.length > requestsCount) {
+            urls.splice((urls.length - requestsCount) * -1);
         }
 
         measures.started = true;
@@ -3035,7 +3027,7 @@ function NetworkStage(props) {
             index,
             item;
 
-        if (requestsCountValue == "" && !measures.uploadMode && selectedRequestsCount > defaultRequestCount && 0) {
+        if (requestsCount == 0) {
             urls.forEach(function (item, itemIndex) {
                 urlsLen = item.requestsCount;
                 for (index = 0; index < urlsLen; index++) {
@@ -3102,7 +3094,7 @@ function NetworkStage(props) {
         return (0, _App.createElement)("div", { className: "menuItem-jrbk", onclick: function onclick() {
                 selectUrl(index, this);
             } }, (0, _App.createElement)("div", { className: "itemInner-ghrt" }, (0, _App.createElement)("button", { className: "selectedIcon-wrpb" + (item.selected ? " selected" : "") }, (0, _App.svgIcon)("checked")), (0, _App.createElement)("div", { className: "textUrl-sdsf", textContent: item.showName ? item.name : item.nodes[0].url })));
-    })), (0, _App.createElement)("div", { className: "menuOverlay-jrbk", onclick: toggleUrlMenu }))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)(elem.requestsCount, { className: "inputNumber-neXQ6", type: "number", value: "", placeholder: "20", min: "1", max: "100" }))), (0, _App.createElement)("div", { className: "group-bjFqx" }, (0, _App.createElement)("div", { className: "item-Z9hxm option-dfsj" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.persistentMode, { className: "input-dU4km", type: "checkbox", checked: "" }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Persistent measures" }))), (0, _App.createElement)("div", { className: "item-Z9hxm option-dfsj" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.uploadMode, { className: "input-dU4km", type: "checkbox", onclick: elem.uploadMode.handleClick }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Upload mode" }))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.preventClose, { className: "input-dU4km", type: "checkbox", onclick: elem.preventClose.handleClick }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Prevent close" })))))), (0, _App.createElement)(elem.content, { className: "content-LJepA" }, (0, _App.createElement)("div", { className: "engine-d3WGk " }, (0, _App.createElement)("div", { className: "header-cSqe2" }, (0, _App.createElement)("div", { className: "measuresDetails-Cs7YH" }, (0, _App.createElement)(elem.doneRequestsMenu, { className: "menu-jrbk doneRequestsMenu-rsgl", style: "display: none;" }, (0, _App.createElement)("div", { className: "menuInner-jrbk" }, (0, _App.createElement)(elem.doneRequestsItems, { className: "menuItems-jrbk" }, (0, _App.createElement)("div", { className: "menuItem-jrbk" })), (0, _App.createElement)(elem.doneRequestsItemsLoaded, { readonly: "" })), (0, _App.createElement)("div", { className: "menuOverlay-jrbk", onclick: toggleDoneRequestsMenu })), (0, _App.createElement)(elem.doneRequestsButton, { className: "item-Cs7YH", textContent: "Done requests: ", onclick: toggleDoneRequestsMenu }, (0, _App.createElement)(elem.doneRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Current requests: " }, (0, _App.createElement)(elem.currentRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Active requests: " }, (0, _App.createElement)(elem.activeRequests, { textContent: 0 }))), (0, _App.createElement)("div", { className: "options-jRr7U" }, (0, _App.createElement)(elem.recordButton, { className: "item-nEaZk button-t2qKV", onclick: elem.recordButton.handleClick }))), (0, _App.createElement)("div", { className: "consoleWrapper-rWFEZ console-e2Lfg" }, (0, _App.createElement)("button", { className: "consoleButton-mHsq", onclick: mconsole.scroll }), (0, _App.createElement)(elem.console, { className: "console-r4XGp console-Sq3NP", readonly: "" }))), (0, _App.createElement)("div", { className: "wrapper-tKbg" }, (0, _App.createElement)("div", { className: "gauge-dJ3hc size-ghjk" }, (0, _App.createElement)(elem.gauge)))));
+    })), (0, _App.createElement)("div", { className: "menuOverlay-jrbk", onclick: toggleUrlMenu }))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)(elem.requestsCount, { className: "inputNumber-neXQ6", type: "number", value: "", placeholder: "10", min: "1", max: "100" }))), (0, _App.createElement)("div", { className: "group-bjFqx" }, (0, _App.createElement)("div", { className: "item-Z9hxm option-dfsj" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.persistentMode, { className: "input-dU4km", type: "checkbox", checked: "" }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Persistent measures" }))), (0, _App.createElement)("div", { className: "item-Z9hxm option-dfsj" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.uploadMode, { className: "input-dU4km", type: "checkbox", onclick: elem.uploadMode.handleClick }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Upload mode" }))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.preventClose, { className: "input-dU4km", type: "checkbox", onclick: elem.preventClose.handleClick }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Prevent close" })))))), (0, _App.createElement)(elem.content, { className: "content-LJepA" }, (0, _App.createElement)("div", { className: "engine-d3WGk " }, (0, _App.createElement)("div", { className: "header-cSqe2" }, (0, _App.createElement)("div", { className: "measuresDetails-Cs7YH" }, (0, _App.createElement)(elem.doneRequestsMenu, { className: "menu-jrbk doneRequestsMenu-rsgl", style: "display: none;" }, (0, _App.createElement)("div", { className: "menuInner-jrbk" }, (0, _App.createElement)(elem.doneRequestsItems, { className: "menuItems-jrbk" }, (0, _App.createElement)("div", { className: "menuItem-jrbk" })), (0, _App.createElement)(elem.doneRequestsItemsLoaded, { readonly: "" })), (0, _App.createElement)("div", { className: "menuOverlay-jrbk", onclick: toggleDoneRequestsMenu })), (0, _App.createElement)(elem.doneRequestsButton, { className: "item-Cs7YH", textContent: "Done requests: ", onclick: toggleDoneRequestsMenu }, (0, _App.createElement)(elem.doneRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Current requests: " }, (0, _App.createElement)(elem.currentRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Active requests: " }, (0, _App.createElement)(elem.activeRequests, { textContent: 0 }))), (0, _App.createElement)("div", { className: "options-jRr7U" }, (0, _App.createElement)(elem.recordButton, { className: "item-nEaZk button-t2qKV", onclick: elem.recordButton.handleClick }))), (0, _App.createElement)("div", { className: "consoleWrapper-rWFEZ console-e2Lfg" }, (0, _App.createElement)("button", { className: "consoleButton-mHsq", onclick: mconsole.scroll }), (0, _App.createElement)(elem.console, { className: "console-r4XGp console-Sq3NP", readonly: "" }))), (0, _App.createElement)("div", { className: "wrapper-tKbg" }, (0, _App.createElement)("div", { className: "gauge-dJ3hc size-ghjk" }, (0, _App.createElement)(elem.gauge)))));
 }
 
 exports.default = NetworkStage;
