@@ -2780,6 +2780,14 @@ function NetworkStage(props) {
         function consoleTime(time) {
             return (time / 1000).toFixed(time < 10000 ? 2 : 1);
         }
+        function updateDoneRequestsLoaded() {
+            len = Math.min(measures[measures.groupRequests ? "urls" : "requestsUrls"].length, 20);
+            itemsLoadedValue = "";
+            for (index = 0; index < len; index++) {
+                itemsLoadedValue += (index == 0 ? "" : "\n") + loadedData(measures[measures.groupRequests ? "urls" : "requestsUrls"][index][measures.groupRequests ? "loaded" : "requestLoaded"]);
+            }
+            measures.doneRequestsLoaded.value(itemsLoadedValue);
+        }
         function callback(nolog) {
             time = getTime();
             intervalTime = time - intervalStart;
@@ -2855,12 +2863,7 @@ function NetworkStage(props) {
                     if (!nolog) mconsole.state("time: " + consoleTime(loadTime) + "s, loaded: " + loadedData(measures.loaded) + ", transferred: " + transferredData(transferred));
                     if (it % 2 == 0) {
                         elem.gauge.method("updateIcon");
-                        len = Math.min(measures[measures.groupRequests ? "urls" : "requestsUrls"].length, 20);
-                        itemsLoadedValue = "";
-                        for (index = 0; index < len; index++) {
-                            itemsLoadedValue += (index == 0 ? "" : "\n") + loadedData(measures[measures.groupRequests ? "urls" : "requestsUrls"][index][measures.groupRequests ? "loaded" : "requestLoaded"]);
-                        }
-                        measures.doneRequestsLoaded.value(itemsLoadedValue);
+                        updateDoneRequestsLoaded();
                     }
                     prev.rconsoleLoaded = measures.loaded;
                 }
@@ -2890,7 +2893,8 @@ function NetworkStage(props) {
         return {
             started: false,
             start: start,
-            stop: stop
+            stop: stop,
+            updateDoneRequestsLoaded: updateDoneRequestsLoaded
         };
     }
     function preconnectRequest(urls, callback) {
@@ -3147,6 +3151,7 @@ function NetworkStage(props) {
         var checked = elem.doneRequestsSwitch.checked();
         measures.groupRequests = checked;
         measures.doneRequestsLoaded = checked ? elem.doneRequestsLoadedOne : elem.doneRequestsLoadedTwo;
+        if (interval) interval.updateDoneRequestsLoaded();
         elem.doneRequestsGroupOne.addClass("hidden");
         elem.doneRequestsGroupTwo.addClass("hidden");
         elem["doneRequestsGroup" + (checked ? "One" : "Two")].removeClass("hidden");
