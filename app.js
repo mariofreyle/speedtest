@@ -435,7 +435,7 @@ window.app = function (window, document) {
     app = {
         fetch: function fetch(config) {
             var xhr = new XMLHttpRequest(),
-                isFormData = config.post && _typeof(config.post) == "object" && config.post.constructor.name == "FormData",
+                isFormData = config.post && _typeof(config.post) == "object" && config.post.constructor && config.post.constructor.name == "FormData",
                 postData = config.post ? !isFormData ? encodeUrlParams(config.post) : config.post : null,
                 type = config.post ? "POST" : "GET",
                 url = config.url || "",
@@ -443,39 +443,38 @@ window.app = function (window, document) {
 
             function fail() {
                 console.log("Request Fail: " + url, xhr.status);
-                if (typeof config.fail == "function") config.fail();
+                if (typeof config.fail == "function") config.fail(xhr.status, xhr);
+                if (typeof config.done == "function") config.done(xhr.status, xhr);
             }
 
             if (config.get) {
-                url += (url && url.indexOf("?") > -1 ? "&" : "?") + encodeUrlParams(config.get);
+                url += (url.indexOf("?") > -1 ? "&" : "?") + encodeUrlParams(config.get);
             }
 
             xhr.open(config.type === void 0 ? type : config.type, url, true);
 
             typeof config.xhr == "function" && config.xhr(xhr);
 
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState == 4) {
-                    if (xhr.status == 200) {
-                        if (xhr.getResponseHeader && xhr.getResponseHeader("Content-Type") && xhr.getResponseHeader("Content-Type").search("application/json") > -1) {
-                            var response = xhr.responseText,
-                                JSONParsed = false;
-                            try {
-                                response = JSON.parse(response);
-                                JSONParsed = true;
-                            } catch (e) {
-                                return fail();
-                            }
-                            JSONParsed && config.success && config.success(response);
-                        } else {
-                            config.success && config.success(xhr.responseText);
+            xhr.onload = function () {
+                if (xhr.status == 200) {
+                    if (xhr.getResponseHeader && xhr.getResponseHeader("Content-Type") && xhr.getResponseHeader("Content-Type").search("application/json") > -1) {
+                        var response = xhr.responseText,
+                            JSONParsed = false;
+                        try {
+                            response = JSON.parse(response);
+                            JSONParsed = true;
+                        } catch (e) {
+                            return fail();
                         }
-                    } else if (xhr.status == 404) {
-                        fail();
+                        JSONParsed && config.success && config.success(response);
+                    } else {
+                        config.success && config.success(xhr.responseText);
                     }
-
-                    config.done && config.done();
+                } else if (xhr.status == 404) {
+                    fail();
                 }
+
+                if (typeof config.done == "function") config.done(xhr.status, xhr);
             };
 
             xhr.ontimeout = fail;
@@ -989,7 +988,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var test = window.test = function () {
     var test,
         fnaBasicUrl,
-        uploadBasicUrl,
         httpProtocol = window.location.protocol == "http:",
         servers,
         gaugeCircleStrokeMin,
@@ -1031,10 +1029,6 @@ var test = window.test = function () {
     }
 
     fnaBasicUrl = "https://z-m-scontent.fbog10-1.fna.fbcdn.net/v/t1.15752-9/fr/cp0/e15/q65/135856944_1366451607033113_1598808278752931662_n.jpg?_nc_cat=108&ccb=1-3&_nc_sid=58c789&efg=eyJpIjoibyJ9&_nc_eui2=AeHt6CAq5yTPwLYNQBa1yNudTvXFk30_ZfVO9cWTfT9l9Vq9sBMVOuHnd3u6jr2TKi-wHeCtj_mcDCDsK8l62o-o&_nc_ohc=qw56x-tJjv4AX_pqPPA&tn=FLSKfGZfGQ6p3p_i&_nc_ad=z-m&_nc_cid=1180&_nc_eh=39b651c6d9cde254ab0daed694bdf54b&_nc_rml=0&_nc_ht=z-m-scontent.fbga3-1.fna&tp=14&oh=c530e6497bdef41186e3bd6e2a0df32e&oe=607F908C";
-    uploadBasicUrl = "https://newyork.bandwidthplace.com/uploader/upload.cgi";
-    uploadBasicUrl = "https://nvirginia.bandwidthplace.com/uploader/upload.cgi";
-    //uploadBasicUrl = "https://micuenta.tigo.com.co/rest/session/token";
-    //uploadBasicUrl = "https://z-m-static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg";
 
     gaugeCircleStrokeMin = 404; // deg
     gaugeCircleStrokeMax = 194; // deg
@@ -1214,14 +1208,7 @@ var test = window.test = function () {
             }, {
                 name: servers[4].name,
                 nodes: [{ url: servers[4].download }]
-            },
-            /*{
-                  name: "Facebook - JPG",
-                  nodes: fnaSign1.map(function(sign){
-                      return {url: replaceFnaSign(fnaBasicUrl.replace("//z-m-scontent", "//scontent"), sign), requestsCount: 1}
-                  })
-              },*/
-            {
+            }, {
                 rname: "Facebook Zero - JPG",
                 nodes: fnaSign0.map(function (sign) {
                     return { url: replaceFnaSign(fnaBasicUrl, sign), preconnectCount: 1, requestsCount: 3 };
@@ -1263,7 +1250,6 @@ var test = window.test = function () {
         if (!isLocal) urls.download.splice(0, 1), urls.upload.splice(0, 1);
         return {
             fnaBasicUrl: fnaBasicUrl,
-            uploadBasicUrl: uploadBasicUrl,
             urls: urls
         };
     }();
@@ -1435,11 +1421,9 @@ function TestStage(props) {
     }
     function stopTest() {
         clearInterval(timer.interval.intervalHeartbeat);
-        connections.requests.isAborted = true;
         connections && connections.requests && connections.requests.forEach(function (req) {
             req.abort && req.abort();
         });
-        connections.preconnect.isAborted = true;
         connections && connections.preconnect && connections.preconnect.requests.forEach(function (req) {
             req.abort && req.abort();
         });
@@ -1944,8 +1928,8 @@ function TestStage(props) {
                         url: preconnectUrl ? preconnectUrl : serverUrl,
                         get: { v: _App2.default.random() },
                         type: preconnectUrl ? "GET" : "HEAD",
-                        done: function done() {
-                            if (connections.preconnect.isAborted) return;
+                        done: function done(status) {
+                            if (status == 0) return breakTest();
                             connections.preconnect.success += 1;
                             if (connections.preconnect.success == connections.count) {
                                 setTimeout(function () {
@@ -2944,6 +2928,7 @@ function NetworkStage(props) {
 
         target.onprogress = function (e) {
             loaded = e.loaded;
+            //loaded += parseInt(app.random().slice(-7));
             measures.loaded += loaded - prevLoaded;
             measures.urls[props.id].loaded += loaded - prevLoaded;
             measures.requestsUrls[props.requestId].requestLoaded += loaded - prevLoaded;
