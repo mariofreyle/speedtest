@@ -470,7 +470,7 @@ window.app = function (window, document) {
                     } else {
                         config.success && config.success(xhr.responseText);
                     }
-                } else if (xhr.status == 404) {
+                } else {
                     fail();
                 }
 
@@ -2122,7 +2122,7 @@ function GaugeContainer(props) {
             needleRotate = _TestConfig2.default.gaugeNeedleRotateRef * gaugePercent / 100 + _TestConfig2.default.gaugeNeedleRotateMin;
 
             elem.gaugeCircleSpeed.setAttr("stroke-dashoffset", circleOffset);
-            elem.gaugeNeedle.style({ transform: "rotateZ(" + needleRotate + "deg)" });
+            elem.gaugeNeedle.style({ transform: "rotate(" + needleRotate + "deg)" });
             elem.incrementsContainer.className("incrementsContainer" + activeIncrements);
 
             prevSpeed = currentSpeed;
