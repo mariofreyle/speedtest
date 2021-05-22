@@ -1028,7 +1028,7 @@ var test = window.test = function () {
         };
     }
 
-    fnaBasicUrl = "https://z-m-scontent.fbog10-1.fna.fbcdn.net/v/t1.15752-9/fr/cp0/e15/q65/135856944_1366451607033113_1598808278752931662_n.jpg?_nc_cat=108&ccb=1-3&_nc_sid=58c789&efg=eyJpIjoibyJ9&_nc_eui2=AeHt6CAq5yTPwLYNQBa1yNudTvXFk30_ZfVO9cWTfT9l9Vq9sBMVOuHnd3u6jr2TKi-wHeCtj_mcDCDsK8l62o-o&_nc_ohc=qw56x-tJjv4AX_pqPPA&tn=FLSKfGZfGQ6p3p_i&_nc_ad=z-m&_nc_cid=1180&_nc_eh=39b651c6d9cde254ab0daed694bdf54b&_nc_rml=0&_nc_ht=z-m-scontent.fbga3-1.fna&tp=14&oh=c530e6497bdef41186e3bd6e2a0df32e&oe=607F908C";
+    fnaBasicUrl = "https://z-m-scontent-bog1-1.xx.fbcdn.net/v/t1.15752-9/fr/cp0/e15/q65/135856944_1366451607033113_1598808278752931662_n.jpg?_nc_cat=108&ccb=1-3&_nc_sid=58c789&efg=eyJpIjoibyJ9&_nc_eui2=AeHt6CAq5yTPwLYNQBa1yNudTvXFk30_ZfVO9cWTfT9l9Vq9sBMVOuHnd3u6jr2TKi-wHeCtj_mcDCDsK8l62o-o&_nc_ohc=IfotdnTyQgEAX_807-w&_nc_ad=z-m&_nc_cid=3943&_nc_eh=2ee8a0a9fb077d9dfa8d24a42b6c5ba2&_nc_rml=0&_nc_ht=z-m-scontent-bog1-1.xx&tp=14&oh=ef734d226487a49784d74e0f9674c806&oe=60CEAA8C";
 
     gaugeCircleStrokeMin = 404; // deg
     gaugeCircleStrokeMax = 194; // deg
@@ -1209,16 +1209,11 @@ var test = window.test = function () {
                 name: servers[4].name,
                 nodes: [{ url: servers[4].download }]
             }, {
-                rname: "Facebook Zero - JPG",
-                nodes: fnaSign0.map(function (sign) {
-                    return { url: replaceFnaSign(fnaBasicUrl, sign), preconnectCount: 1, requestsCount: 3 };
-                })
-            }, {
-                rname: "API - JSON",
-                nodes: [{ url: "https://ayuda.tigo.com.co/api/v2/help_center/es/articles.json?per_page=100" }]
-            }, {
-                rname: "Zdassets Static - JS",
-                nodes: [{ url: "https://static.zdassets.com/hc/assets/hc_enduser-9515a2be2d46bfece89668d9057908ea.js" }]
+                rname: "Facebook Zero - JPG", /*
+                                              nodes: fnaSign0.map(function(sign){
+                                              return {url: replaceFnaSign(fnaBasicUrl, sign), preconnectCount: 1, requestsCount: 3}
+                                              })*/
+                nodes: [{ url: fnaBasicUrl, preconnectCount: 1, requestsCount: 6 }]
             }, {
                 rname: "Mi Tigo - JS",
                 nodes: [{ url: "https://mi.tigo.com.co/main.7870aa2fbe835c315b3e.js" }]
@@ -1262,7 +1257,7 @@ var test = window.test = function () {
         for (index = 0; index < graphItemsLen; index++) {
             graphItems.push(index);
         }
-        pingServers = [servers[0], servers[1], servers[2], servers[3], servers[4], servers[5], servers[6], servers[7], { name: "Facebook", ping: fnaBasicUrl, download: fnaBasicUrl }, { name: "Tigo API", ping: "https://tigo.5886662453.com" }, { name: "Mi Cuenta Tigo", ping: "https://micuenta.tigo.com.co/favicon.ico" }, servers[8], servers[9], servers[10], servers[11]];
+        pingServers = [servers[0], servers[1], servers[3], servers[4], servers[5], servers[6], servers[7], { name: "Facebook", ping: fnaBasicUrl, download: fnaBasicUrl }, { name: "Bogota, Colombia", providerName: "EdgeUno", providerWebsite: "https://edgeuno.com/", wsping: "wss://co-edgeuno.metercdn.com:8443/wsping" }, { name: "Washsington, United States", providerName: "Fireprobe", providerWebsite: "https://www.fireprobe.net/", wsping: "ws://lw.us.v-speed.eu:8080/ws?latency", wsmessage: "LATENCY" }, servers[9], servers[10], servers[11]];
         return {
             results: 100,
             completeAll: false,
@@ -2257,9 +2252,10 @@ function PingItem(props) {
         abs = Math.abs,
         hasPerformance = "performance" in window && performance.getEntriesByType && performance.getEntriesByType("resource");
 
-    function finishTest() {
+    function finishMeasures() {
         clearTimeout(timeout.ping);
         measures.connection && measures.connection.abort();
+        measures.wsconnection && measures.wsconnection.close();
         _App2.default.event("pingTestFinished");
     }
     function updateGraphTooltip() {
@@ -2328,20 +2324,20 @@ function PingItem(props) {
         }
         return count / (countLen || 1);
     }
-    function handlePing() {
+    function handlePing(pingTime) {
         var time = _App2.default.time();
 
         measures.ping.count += 1;
 
-        if (measures.ping.time < measures.min.value) {
-            measures.min.value = measures.ping.time;
+        if (pingTime < measures.min.value) {
+            measures.min.value = pingTime;
         }
-        if (measures.ping.time > measures.max.value) {
-            measures.max.value = measures.ping.time;
+        if (pingTime > measures.max.value) {
+            measures.max.value = pingTime;
         }
 
-        measures.avg.items.push({ value: measures.ping.time, time: time });
-        measures.avg.count += measures.ping.time;
+        measures.avg.items.push({ value: pingTime, time: time });
+        measures.avg.count += pingTime;
         if (measures.avg.items.length > 100 /*&& measures.avg.items[measures.avg.items.length - 1].time - measures.avg.items[1].time >= 6000*/) {
                 measures.avg.count -= measures.avg.items[0].value;
                 measures.avg.items.splice(0, 1);
@@ -2355,25 +2351,28 @@ function PingItem(props) {
         elem.maxValue.textContent(measures.max.value + " ms");
         elem.jitterValue.textContent(measures.jitter.value.toFixed(1) + " ms");
 
-        measures.results.push(measures.ping.time);
+        measures.results.push(pingTime);
 
         if (measures.results.length > _TestConfig2.default.ping.graphItemsLen) {
             measures.results.splice(0, 1);
         }
 
-        drawGraph(measures.ping.time);
+        drawGraph(pingTime);
         updateGraphTooltip();
 
-        if (_App2.default.time() - startedTime > 10000 + measures.max.value && !_TestConfig2.default.ping.completeAll || measures.ping.count >= _TestConfig2.default.ping.results) {
-            return finishTest();
+        if (time - startedTime > 12000 + measures.max.value && !_TestConfig2.default.ping.completeAll || measures.ping.count >= _TestConfig2.default.ping.results) {
+            finishMeasures();
+            return false;
         }
-
-        if (!measures.progressMode) ping();
+        return true;
     }
-    function ping() {
+    function httpping() {
         var xhr = new XMLHttpRequest(),
             progress = 0,
             time,
+            startTime,
+            endTime,
+            pingTime,
             ping0 = Infinity,
             ping1 = Infinity;
 
@@ -2382,24 +2381,26 @@ function PingItem(props) {
         if (measures.progressMode) {
             xhr.onprogress = function () {
                 time = _App2.default.time();
+                endTime = time;
                 progress += 1;
 
-                measures.ping.time = time - measures.ping.start;
+                pingTime = endTime - startTime;
 
-                if (progress <= 2) {
+                if (progress <= 2 && measures.sendCount == 1) {
                     startedTime = time;
-                } else {
-                    handlePing();
+                } else if (progress > 1) {
+                    handlePing(Math.max(pingTime, 50));
                 }
 
-                measures.ping.start = time;
+                startTime = time;
             };
-            xhr.onload = ping;
+            xhr.onload = httpping;
         } else {
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 2) {
                     if (xhr.status == 200 || xhr.status == 204) {
-                        ping0 = _App2.default.time() - measures.ping.start;
+                        endTime = _App2.default.time();
+                        ping0 = endTime - startTime;
 
                         if (hasPerformance) {
                             var entries = performance.getEntriesByType("resource");
@@ -2413,29 +2414,65 @@ function PingItem(props) {
                                 }
                             }
                         }
-                        measures.ping.time = Math.min(ping0, ping1);
+                        pingTime = Math.min(ping0, ping1);
                         //console.log("ping 0:", ping0 + "ms", " ping 1:", ping1 + "ms");
                         if (measures.sendCount == 1) {
-                            return ping();
+                            return httpping();
                         }
-                        timeout.ping = setTimeout(handlePing, Math.max(60 - measures.ping.time, 0));
+                        timeout.ping = setTimeout(function () {
+                            if (handlePing(pingTime)) {
+                                httpping();
+                            }
+                        }, Math.max(60 - pingTime, 0));
                     } else {
-                        finishTest();
+                        finishMeasures();
                     }
                 }
             };
         }
 
-        xhr.onerror = finishTest;
-        xhr.ontimeout = finishTest;
+        xhr.onerror = finishMeasures;
+        xhr.ontimeout = finishMeasures;
+
+        measures.connection = xhr;
 
         xhr.send();
 
-        measures.sendCount += 1;
-        measures.connection = xhr;
-        measures.ping.start = _App2.default.time();
-
         if (measures.sendCount <= 2) startedTime = _App2.default.time();
+        measures.sendCount += 1;
+        startTime = _App2.default.time();
+    }
+    function wsping() {
+        var ws = new WebSocket(measures.wsping),
+            message = 0,
+            startTime,
+            endTime,
+            pingTime;
+
+        function send() {
+            ws.send(measures.wsmessage ? measures.wsmessage : message);
+            startTime = _App2.default.time();
+            message = message == 9 ? 0 : message + 1;
+        }
+
+        ws.onopen = function () {
+            startedTime = _App2.default.time();
+            send();
+        };
+
+        ws.onmessage = function () {
+            endTime = _App2.default.time();
+            pingTime = endTime - startTime;
+            timeout.ping = setTimeout(function () {
+                if (handlePing(pingTime)) {
+                    send();
+                }
+            }, Math.max(60 - pingTime, 0));
+        };
+
+        ws.onerror = finishMeasures;
+
+        measures.wsconnection = ws;
     }
     function graphMouseMove(e) {
         elem.graphTooltip.removeClass("unseen-u");
@@ -2451,18 +2488,29 @@ function PingItem(props) {
     function deleteResult() {
         elem.pingItem.addClass("close");
         setTimeout(function () {
-            finishTest();
+            finishMeasures();
             _App2.default.event("deletePingResult", { id: props.id });
         }, 300);
     }
+    function startMeasures() {
+        startedTime = _App2.default.time();
+        if (_TestConfig2.default.ping.server.wsping) {
+            measures.wsping = _TestConfig2.default.ping.server.wsping;
+            measures.wsmessage = _TestConfig2.default.ping.server.wsmessage;
+        } else {
+            measures.connectionUrl = measures.progressMode ? _TestConfig2.default.ping.server.download : _TestConfig2.default.ping.server.ping;
+            measures.connectionType = measures.progressMode ? "GET" : "HEAD";
+            measures.connectionPrefix = measures.connectionUrl.indexOf("?") > -1 ? "&" : "?";
+        }
+
+        if (measures.wsping) {
+            return wsping();
+        }
+        httpping();
+    }
 
     this.onMount = function () {
-        startedTime = _App2.default.time();
-        measures.connectionUrl = measures.progressMode ? _TestConfig2.default.ping.server.download : _TestConfig2.default.ping.server.ping;
-        measures.connectionType = measures.progressMode ? "GET" : "HEAD";
-        measures.connectionPrefix = measures.connectionUrl.indexOf("?") > -1 ? "&" : "?";
-
-        ping();
+        startMeasures();
         adjustGraph();
     };
     this.events = {
