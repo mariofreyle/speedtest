@@ -1028,7 +1028,7 @@ var test = window.test = function () {
         };
     }
 
-    fnaBasicUrl = "https://z-m-scontent-bog1-1.xx.fbcdn.net/v/t1.15752-9/fr/cp0/e15/q65/135856944_1366451607033113_1598808278752931662_n.jpg?_nc_cat=108&ccb=1-3&_nc_sid=58c789&efg=eyJpIjoibyJ9&_nc_eui2=AeHt6CAq5yTPwLYNQBa1yNudTvXFk30_ZfVO9cWTfT9l9Vq9sBMVOuHnd3u6jr2TKi-wHeCtj_mcDCDsK8l62o-o&_nc_ohc=IfotdnTyQgEAX_807-w&_nc_ad=z-m&_nc_cid=3943&_nc_eh=2ee8a0a9fb077d9dfa8d24a42b6c5ba2&_nc_rml=0&_nc_ht=z-m-scontent-bog1-1.xx&tp=14&oh=ef734d226487a49784d74e0f9674c806&oe=60CEAA8C";
+    fnaBasicUrl = "https://z-m-scontent-bog1-1.xx.fbcdn.net/v/t1.15752-9/fr/cp0/e15/q65/135856944_1366451607033113_1598808278752931662_n.jpg?_nc_cat=108&ccb=1-3&_nc_sid=58c789&efg=eyJpIjoibyJ9&_nc_eui2=AeHt6CAq5yTPwLYNQBa1yNudTvXFk30_ZfVO9cWTfT9l9Vq9sBMVOuHnd3u6jr2TKi-wHeCtj_mcDCDsK8l62o-o&_nc_ohc=j6ijnJkes4QAX9Iikyy&_nc_ad=z-m&_nc_cid=3943&_nc_eh=f60fab09e89864f36b068ff2d11e5abc&_nc_rml=0&_nc_ht=z-m-scontent-bog1-1.xx&tp=14&oh=b1f91d29beadc43f566f2c476056460f&oe=60D88DCC";
 
     gaugeCircleStrokeMin = 404; // deg
     gaugeCircleStrokeMax = 194; // deg
