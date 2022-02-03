@@ -3151,7 +3151,7 @@ function NetworkStage(props) {
         return (time / 1000).toFixed(time < 10000 ? 2 : 1);
     }
     doneRequests = function () {
-        var len, index, requests, inner, updateItems, checked;
+        var len, index, requests, inner;
 
         function update(updateItems) {
             inner = "";
@@ -3169,7 +3169,7 @@ function NetworkStage(props) {
             elem.doneRequestsLoaded.value(inner);
         }
         function handleSwitch() {
-            measures.groupRequests = checked = elem.doneRequestsSwitch.checked();
+            measures.groupRequests = elem.doneRequestsSwitch.checked();
 
             update(true);
         }
