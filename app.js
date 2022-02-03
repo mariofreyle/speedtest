@@ -106,12 +106,30 @@ var _MainContent2 = _interopRequireDefault(_MainContent);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 (function (w, d, app) {
+    var $html = (0, _App.$)("html"),
+        maxWidth = 850,
+        fontSize = 15,
+        num,
+        width;
 
-    app.n.addClass(app.isMobile ? "mobile" : "desktop", d.documentElement);
+    function resize() {
+        width = window.innerWidth;
+        num = width / maxWidth;
+        num = num < 1 ? num : 1;
+        num = num + (1 - num) / 1.5;
+        if (width < 350) {
+            num = num * (width / 350);
+        }
+        $html.style({ fontSize: fontSize * num + "px" });
+    }
 
-    // ========= Page output ===========
-    var content = app.createElement("div", {}, app.createElement(_MainHeader2.default), app.createElement(_MainContent2.default));
-    app.rootRender(content);
+    window.addEventListener("resize", resize);
+    resize();
+
+    $html.addClass(app.isMobile ? "mobile" : "desktop");
+
+    // ========= Page Output - Render Page ===========
+    (0, _App.$)("#app").render(app.createElement("div", {}, app.createElement(_MainHeader2.default), app.createElement(_MainContent2.default)));
 })(window, document, _App2.default);
 
 /***/ }),
@@ -129,22 +147,29 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 window.app = function (window, document) {
     // Initialize Variables
-    var initialId = Math.floor(Math.random() * 1000),
-        app,
-        _element = {},
+    var app,
+        node,
+        initialId = Math.floor(Math.random() * 1000),
+        element = {},
         elementPrefix = "__App_",
-        elementProps = { events: "", methods: "", onMount: "", onDismount: "" },
-        nodePrototype = { className: "", id: "", textContent: "", value: "", onclick: "", onmousemove: "", onmouseover: "", onmouseout: "", onkeyup: "", onkeydown: "", onchange: "", onsubmit: "", action: "", ariaLabel: "" },
-        nsTags = { svg: "", path: "", circle: "", polyline: "", polygon: "", linearGradient: "", defs: "", stop: "", g: "" };
+        elementProps = { events: 1, methods: 1, onMount: 1, onDismount: 1 },
+        nodePrototype = { className: 1, id: 1, textContent: 1, value: 1, selected: 1, checked: 1, onclick: 1, onmousemove: 1, onmouseover: 1, onmouseout: 1, onkeyup: 1, onkeydown: 1, onchange: 1, onsubmit: 1, action: 1, ariaLabel: 1 },
+        nsTags = { svg: 1, path: 1, circle: 1, polyline: 1, polygon: 1, linearGradient: 1, defs: 1, stop: 1, g: 1 },
+        isArray = Array.isArray;
 
     // Useful Functions
     function guid() {
         initialId += 1;
         return initialId;
     }
+
+    function rtrim(str) {
+        return str.replace(/[\x20\t\r\n\f]+/g, " ").replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, "");
+    }
     function scapeRegExp(a) {
         return a.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     }
+
     function encodeUrlParams(params) {
         var data = "",
             prop;
@@ -153,23 +178,77 @@ window.app = function (window, document) {
         }
         return data.substring(0, data.length - 1);
     }
-    function isArray(elem) {
-        return elem && elem.constructor && elem.constructor.name == "Array";
+
+    function isIterable(elem) {
+        return elem && (typeof elem === "undefined" ? "undefined" : _typeof(elem)) == "object" && "length" in elem;
     }
     function convertToArray(elem) {
-        return "length" in elem ? elem : [elem];
+        return isIterable(elem) ? elem : [elem];
     }
-    function parseNumber(props, parseFn) {
-        props.value = parseFn(props.value);
+
+    function parseNumber(value, props, parseFn) {
+        props = props || {};
+        props.value = parseFn(value);
+        if (isNaN(props.value) && typeof props.default == "number") {
+            return props.default;
+        }
         props.value = props.value < props.min ? props.min : props.value;
         props.value = props.value > props.max ? props.max : props.value;
-        props.value = typeof props.default == "number" && isNaN(props.value) ? props.default : props.value;
         return props.value;
     }
 
-    _element.listenEvents = function (elem) {
+    function classesToArray(value) {
+        if (typeof value === "string") {
+            return value.match(/[^\x20\t\r\n\f]+/g) || [];
+        }
+        return [];
+    }
+
+    function _hasClass(elem, className, classList) {
+        classList = elem.getAttribute("class") || "";
+        return classList.search(new RegExp("(\\s|^)" + className + "(\\s|$)")) !== -1;
+    }
+
+    function _addClass(elem, classes) {
+        var clazz,
+            update,
+            classList = elem.getAttribute("class") || "",
+            j = 0;
+        while (clazz = classes[j++]) {
+            if (classList.search(new RegExp("(\\s|^)" + clazz + "(\\s|$)")) === -1) {
+                classList += " " + clazz;
+                update = true;
+            }
+        }
+        if (update) {
+            elem.setAttribute("class", rtrim(classList));
+        }
+    }
+
+    function _removeClass(elem, classes) {
+        var clazz,
+            update,
+            classList = elem.getAttribute("class") || "",
+            j = 0;
+        while (clazz = classes[j++]) {
+            if (classList.search(new RegExp("(\\s|^)" + clazz + "(\\s|$)")) !== -1) {
+                classList = classList.replace(new RegExp("(\\s|^)" + clazz + "(\\s|$)", "g"), " ");
+                update = true;
+            }
+        }
+        if (update) {
+            elem.setAttribute("class", rtrim(classList));
+        }
+    }
+
+    function _toggleClass(elem, className, state) {
+        state = typeof state == "boolean" ? state : !_hasClass(elem, className);
+        return state ? _addClass(elem, [className]) : _removeClass(elem, [className]);
+    }
+
+    element.listenEvents = function (elem) {
         var events = elem[elementPrefix + "events"],
-            elementId = elem[elementPrefix + "ID"],
+            elementId = elem[elementPrefix + "id"],
             callback,
             eventName;
 
@@ -184,9 +263,9 @@ window.app = function (window, document) {
             };
         }
     };
-    _element.removeEvents = function (elem) {
+    element.removeEvents = function (elem) {
         var events = elem[elementPrefix + "events"],
-            elemId = elem[elementPrefix + "ID"],
+            elemId = elem[elementPrefix + "id"],
             eventName;
 
         for (eventName in events) {
@@ -195,7 +274,7 @@ window.app = function (window, document) {
             }
         }
     };
-    _element.mountAll = function (elements) {
+    element.mountAll = function (elements) {
         function search(childs) {
             var len = childs.length,
                 item,
@@ -206,14 +285,14 @@ window.app = function (window, document) {
                 // si el elemento tiene el methodo onMount entonces este se ejecutará (montar componente)
                 if (item[elementPrefix + "onMount"]) item[elementPrefix + "onMount"]();
                 // si el elemento tiene eventos estos se agregaran a la lista de eventos
-                if (item[elementPrefix + "events"]) _element.listenEvents(item);
+                if (item[elementPrefix + "events"]) element.listenEvents(item);
 
                 if (item.children.length) search(item.children);
             }
         }
         search(convertToArray(elements));
     };
-    _element.dismountAll = function (elements) {
+    element.dismountAll = function (elements) {
         function search(childs) {
             var len = childs.length,
                 item,
@@ -224,211 +303,631 @@ window.app = function (window, document) {
                 // si el elemento tiene el methodo componentWillUnmount entonces este se ejecutará (desmontar componente)
                 if (item[elementPrefix + "onDismount"]) item[elementPrefix + "onDismount"]();
                 // si el elemento tiene eventos estos se eliminaran y dejaran de escuchar
-                if (item[elementPrefix + "events"]) _element.removeEvents(item);
+                if (item[elementPrefix + "events"]) element.removeEvents(item);
 
                 if (item.children.length) search(item.children);
             }
         }
         search(convertToArray(elements));
     };
-    _element.init = function (elem) {
-        this.node = elem;
+    element.create = function (args) {
+        var elem,
+            index,
+            item,
+            key,
+            node,
+            len,
+            ind,
+            name = args[0],
+            props = args[1] || {},
+            nameType = typeof name === "undefined" ? "undefined" : _typeof(name),
+            argsLen = args.length;
+
+        if (nameType == "function") {
+            item = new name(props) || {};
+            elem = item.render ? item.render() : {};
+            elem = elem[0];
+
+            if (elem && elem.nodeType) {
+                for (key in item) {
+                    if (key in elementProps) {
+                        elem[elementPrefix + key] = item[key];
+                    }
+                }
+                this[0] = elem;
+                this.length = 1;
+            } else {
+                this.length = 0;
+            }
+
+            return this;
+        }
+
+        if (nameType == "string") {
+            elem = name in nsTags ? document.createElementNS("http://www.w3.org/2000/svg", name) : document.createElement(name);
+
+            elem[elementPrefix + "id"] = guid();
+        } else if (name) {
+            elem = name[0];
+        }
+
+        if (elem && elem.nodeType) {
+
+            for (key in props) {
+                if (key in nodePrototype) {
+                    elem[key] = props[key];
+                } else {
+                    elem.setAttribute(key, props[key]);
+                }
+            }
+
+            for (index = 2; index < argsLen; index++) {
+                if (item = args[index]) {
+                    if (isArray(item)) {
+                        len = item.length;
+                        for (ind = 0; ind < len; ind++) {
+                            if (node = item[ind]) {
+                                node = (node.nodeType ? node : node[0]) || {};
+                                if (node.nodeType) {
+                                    elem.appendChild(node);
+                                }
+                            }
+                        }
+                    } else {
+                        node = (item.nodeType ? item : item[0]) || {};
+                        if (node.nodeType) {
+                            elem.appendChild(node);
+                        }
+                    }
+                }
+            }
+
+            this[0] = elem;
+            this.length = 1;
+        } else {
+            this.length = 0;
+        }
+
+        return this;
+    };
+    element.init = function (selector) {
+
+        if (!selector) {
+            this.length = 0;
+
+            return this;
+        }
+
+        var elem,
+            match = [],
+            i = 0;
+
+        if (selector.nodeType) {
+            match = [selector];
+        } else if (typeof selector == "string") {
+            try {
+                match = document.querySelectorAll(selector);
+            } catch (e) {}
+        } else if (isIterable(selector)) {
+            match = selector;
+        }
+
+        while (elem = match[i]) {
+            this[i] = elem;
+            i++;
+        }
+
+        this.length = match.length;
 
         return this;
     };
     // SET ELEMENT PROPERTYS
-    _element.init.prototype = {
-        each: function each(arr, callback, len, key) {
-            len = arr.length;
-            for (key = 0; key < len; key++) {
-                callback(arr[key]);
+    element.init.prototype = element.create.prototype = {
+        forEach: function forEach(callback) {
+            var item,
+                i = 0;
+
+            while (item = this[i++]) {
+                callback(new element.init(item), i, this);
             }
         },
         remove: function remove() {
-            _element.dismountAll(this.node);
+            var elem,
+                i = 0;
 
-            this.node.parentNode.removeChild(this.node);
+            while (elem = this[i++]) {
+                if (elem.parentNode) {
+
+                    element.dismountAll(elem);
+
+                    elem.parentNode.removeChild(elem);
+                }
+            }
+
+            return this;
         },
         addClass: function addClass(value) {
-            if (this.node.classList.contains(value)) return;
+            var elem,
+                classes,
+                i = 0;
 
-            this.node.classList.add(value);
+            classes = classesToArray(value);
 
-            return this;
-        },
-        removeClass: function removeClass() {
-            var index,
-                len = arguments.length;
-
-            for (index = 0; index < len; index++) {
-                this.node.classList.remove(arguments[index]);
+            if (classes.length) {
+                while (elem = this[i++]) {
+                    if (elem.nodeType === 1) {
+                        _addClass(elem, classes);
+                    }
+                }
             }
 
             return this;
         },
-        toggleClass: function toggleClass(value) {
-            return this.node.classList.toggle(value);
+        removeClass: function removeClass(value) {
+            var elem,
+                classes,
+                i = 0;
+
+            classes = classesToArray(value);
+
+            if (classes.length) {
+                while (elem = this[i++]) {
+                    if (elem.nodeType === 1) {
+                        _removeClass(elem, classes);
+                    }
+                }
+            }
+
+            return this;
         },
         hasClass: function hasClass(value) {
-            return this.node.classList.contains(value);
+            var className,
+                elem = this[0];
+
+            className = "" + value + "";
+
+            if (elem && elem.nodeType === 1) {
+                return _hasClass(elem, className);
+            }
+
+            return false;
         },
-        replaceClass: function replaceClass(oldClass, newClass) {
-            return this.removeClass(oldClass), this.addClass(newClass);
+        toggleClass: function toggleClass(value, state) {
+            var elem,
+                i = 0;
+
+            if (typeof value == "string" && value.length) {
+                while (elem = this[i++]) {
+                    if (elem.nodeType === 1) {
+                        _toggleClass(elem, value, state);
+                    }
+                }
+            }
+
+            return this;
         },
         value: function value(_value) {
-            return void 0 === _value ? this.node.value : this.node.value = _value;
-        },
-        last: function last(before) {
-            var childs = this.nodes.childNodes,
-                len = childs.length + (void 0 === before || before >= 0 ? 0 : before);
-            return len > 0 ? new _element.init(childs[len - 1]) : null;
-        },
-        checked: function checked(a) {
-            if (a !== void 0) this.node.checked = a;
+            var elem,
+                valueUndef = _value === undefined,
+                i = 0;
 
-            return this.node.checked;
-        },
-        selected: function selected(a) {
-            if (a !== void 0) this.node.selected = a;
+            while (elem = this[i++]) {
+                if (valueUndef) {
+                    return elem.value;
+                } else {
+                    elem.value = _value;
+                }
+            }
 
-            return this.node.selected;
+            return this;
+        },
+        eq: function eq(i) {
+            return new element.init(this[i]);
+        },
+        checked: function checked(value) {
+            var elem,
+                valueValid = typeof value == "boolean",
+                i = 0;
+
+            while (elem = this[i++]) {
+                if (valueValid) {
+                    elem.checked = value;
+                } else {
+                    return elem.checked;
+                }
+            }
+
+            return this;
+        },
+        selected: function selected(value) {
+            var elem,
+                valueValid = typeof value == "boolean",
+                i = 0;
+
+            while (elem = this[i++]) {
+                if (valueValid) {
+                    elem.selected = value;
+                } else {
+                    return elem.selected;
+                }
+            }
+
+            return this;
         },
         textContent: function textContent(value) {
-            this.node.textContent = value;
+            var elem,
+                valueUndef = value === undefined,
+                i = 0;
+
+            while (elem = this[i++]) {
+                if (valueUndef) {
+                    return elem.textContent;
+                } else {
+                    elem.textContent = value;
+                }
+            }
+
+            return this;
         },
         attr: function attr(_attr, value) {
-            return value === void 0 ? this.node.getAttribute(_attr) : this.node.setAttribute(_attr, value);
-        },
-        setAttr: function setAttr(name, value) {
-            this.node.setAttribute(name, value);
-        },
-        removeAttr: function removeAttr(name) {
-            this.node.removeAttribute(name);
-            return this;
-        },
-        setAttrNS: function setAttrNS(ns, name, value) {
-            this.node.setAttributeNS(ns, name, value);
-        },
-        className: function className(value) {
-            if (value === void 0) {
-                return this.node.className;
-            }
-            this.node.className = value;
-            return this;
-        },
-        style: function style(props) {
-            var elem = this.node;
+            var elem,
+                valueUndef = value === undefined,
+                attrType = typeof _attr === "undefined" ? "undefined" : _typeof(_attr),
+                i = 0;
 
-            if (typeof props == "string") {
-                return elem.style[props];
+            if (attrType == "string" || attrType == "number") {
+                while (elem = this[i++]) {
+                    if (valueUndef) {
+                        if (elem.getAttribute) {
+                            return elem.getAttribute(_attr);
+                        }
+                    } else {
+                        elem.setAttribute && elem.setAttribute(_attr, value);
+                    }
+                }
             }
 
-            for (var i in props) {
-                elem.style[i] = props[i];
+            return this;
+        },
+        removeAttr: function removeAttr(value) {
+            var elem,
+                attr,
+                attrNames,
+                j,
+                i = 0;
+
+            attrNames = classesToArray(value);
+
+            while (elem = this[i++]) {
+                if (elem.nodeType === 1) {
+                    j = 0;
+                    while (attr = attrNames[j++]) {
+                        elem.removeAttribute(attr);
+                    }
+                }
             }
+
+            return this;
         },
-        childs: function childs() {
-            return this.node.childNodes;
+        style: function style(value) {
+            var elem,
+                key,
+                isString = typeof value == "string",
+                i = 0;
+
+            if (value && ((typeof value === "undefined" ? "undefined" : _typeof(value)) == "object" || isString)) {
+                while (elem = this[i++]) {
+                    if (elem.nodeType) {
+                        if (isString) {
+                            return elem.style[value];
+                        }
+
+                        for (key in value) {
+                            elem.style[key] = value[key];
+                        }
+                    }
+                }
+            }
+
+            return this;
         },
-        child: function child(a) {
-            return new _element.init(this.node.childNodes[a]);
+        childs: function childs(index) {
+            var childs,
+                j,
+                node,
+                finalIndex,
+                elem = this[0],
+                matched = [];
+
+            if (elem && elem.nodeType) {
+                childs = elem.childNodes;
+                if (childs) {
+                    j = 0;
+                    while (node = childs[j++]) {
+                        if (node.nodeType === 1) {
+                            matched.push(node);
+                        }
+                    }
+                }
+
+                if (index != undefined) {
+                    finalIndex = index < 0 ? matched.length + index : index;
+
+                    return new element.init(matched[finalIndex]);
+                }
+            }
+
+            return new element.init(matched);
+        },
+        child: function child(index) {
+            return this.childs(index);
         },
         firstChild: function firstChild(props) {
-            return new _element.init(this.node.firstChild);
+            return this.childs(0);
         },
-        find: function find(className) {
-            var elem = this.node,
-                find = elem.getElementsByClassName(className)[0];
+        lastChild: function lastChild(before) {
+            return this.childs(-1);
+        },
+        find: function find(selector) {
+            var find,
+                elem = this[0],
+                i = 0;
 
-            return new _element.init(find);
+            if (typeof selector == "string") {
+                if (elem && elem.querySelectorAll) {
+                    find = elem.querySelectorAll(selector);
+                }
+            }
+
+            return new element.init(find);
         },
         parent: function parent() {
-            return new _element.init(this.node.parentNode);
-        },
-        prepend: function prepend(elem) {
-            if (this.node.firstChild) {
-                this.node.insertBefore(elem, this.node.firstChild);
-            } else {
-                this.node.appendChild(elem);
+            var elem = this[0],
+                i = 0;
+
+            if (elem && elem.parentNode) {
+                return new element.init(elem.parentNode);
             }
 
-            _element.mountAll(elem);
+            return new element.init();
+        },
+        closest: function closest(className) {
+            var find,
+                elem = this[0],
+                i = 0;
+
+            if (typeof className == "string") {
+                className = className.replace(".", "");
+
+                if (elem && elem.nodeType === 1) {
+                    var search = function search(parent) {
+                        if (parent.nodeType === 1) {
+                            if (_hasClass(parent, className)) {
+                                find = parent;
+                            } else {
+                                parent.parentNode && search(parent.parentNode);
+                            }
+                        }
+                    };
+
+                    search(elem.parentNode);
+                }
+            }
+
+            return new element.init(find);
+        },
+        prepend: function prepend(insert) {
+            var node,
+                elem = this[0],
+                i = 0;
+
+            if (insert) {
+                insert = isArray(insert) ? insert : [insert];
+                insert.reverse && insert.reverse();
+
+                if (elem) {
+                    while (node = insert[i++]) {
+                        node = node.length ? node[0] : node;
+
+                        if (node.nodeType) {
+                            if (elem.firstChild) {
+                                elem.insertBefore(node, elem.firstChild);
+                            } else {
+                                elem.appendChild(node);
+                            }
+
+                            element.mountAll(node);
+                        }
+                    }
+                }
+            }
 
             return this;
         },
-        append: function append(elem) {
-            this.node.appendChild(elem);
+        append: function append(insert) {
+            var node,
+                elem = this[0],
+                i = 0;
 
-            _element.mountAll(elem);
+            if (insert) {
+                insert = isArray(insert) ? insert : [insert];
 
-            return this;
-        },
-        render: function render(_render) {
-            if (!_render) return;
+                if (elem) {
+                    while (node = insert[i++]) {
+                        node = node.length ? node[0] : node;
+                        if (node.nodeType) {
+                            elem.appendChild(node);
 
-            var elem = this.node;
-
-            _element.dismountAll(elem.children);
-
-            while (elem.firstChild) {
-                elem.removeChild(elem.firstChild);
-            }
-
-            elem.appendChild(_render);
-
-            _element.mountAll(_render);
-        },
-        empty: function empty(elem) {
-            elem = this.node;
-
-            _element.dismountAll(elem.children);
-
-            while (elem.firstChild) {
-                elem.removeChild(elem.firstChild);
+                            element.mountAll(node);
+                        }
+                    }
+                }
             }
 
             return this;
         },
-        replaceWith: function replaceWith(replace) {
-            if (!replace) return;
+        render: function render(insert) {
+            var node,
+                elem = this[0],
+                i = 0;
 
-            var node = this.node;
+            if (insert) {
+                insert = isArray(insert) ? insert : [insert];
 
-            _element.dismountAll(node);
+                if (elem) {
+                    element.dismountAll(elem.childNodes);
 
-            node.parentNode.replaceChild(replace, node);
+                    while (elem.firstChild) {
+                        elem.removeChild(elem.firstChild);
+                    }
 
-            _element.mountAll(replace);
+                    while (node = insert[i++]) {
+                        node = node.length ? node[0] : node;
+
+                        if (node.nodeType) {
+                            elem.appendChild(node);
+
+                            element.mountAll(node);
+                        }
+                    }
+                }
+            }
+
+            return this;
+        },
+        empty: function empty() {
+            var elem,
+                i = 0;
+
+            while (elem = this[i++]) {
+                if (elem.nodeType) {
+                    element.dismountAll(elem.childNodes);
+
+                    while (elem.firstChild) {
+                        elem.removeChild(elem.firstChild);
+                    }
+                }
+            }
+
+            return this;
+        },
+        replaceWith: function replaceWith(insert) {
+            var elem = this[0],
+                i = 0;
+
+            if (insert) {
+                insert = insert.nodeType ? insert : insert[0] ? insert[0] : {};
+
+                if (elem) {
+                    if (elem.parentNode && insert.nodeType) {
+                        element.dismountAll(elem);
+
+                        elem.parentNode.replaceChild(insert, elem);
+
+                        element.mountAll(insert);
+                    }
+                }
+            }
+
+            return this;
         },
         method: function method(name, props) {
-            this.node[elementPrefix + "methods"][name](props);
+            var elem,
+                i = 0;
+
+            if (typeof name == "string") {
+                while (elem = this[i++]) {
+                    elem[elementPrefix + "methods"][name](props);
+                }
+            }
 
             return this;
         },
-        scrollTop: function scrollTop(_scrollTop) {
-            return void 0 === _scrollTop ? this.node.scrollTop : this.node.scrollTop = _scrollTop;
+        scrollTop: function scrollTop(value) {
+            var elem,
+                valueUndef = value === undefined,
+                i = 0;
+
+            while (elem = this[i++]) {
+                if (valueUndef) {
+                    return elem.scrollTop;
+                } else {
+                    elem.scrollTop = value;
+                }
+            }
+
+            return valueUndef ? 0 : this;
+        },
+        scrollLeft: function scrollLeft(value) {
+            var elem,
+                valueUndef = value === undefined,
+                i = 0;
+
+            while (elem = this[i++]) {
+                if (valueUndef) {
+                    return elem.scrollLeft;
+                } else {
+                    elem.scrollLeft = value;
+                }
+            }
+
+            return valueUndef ? 0 : this;
+        },
+        scrollWidth: function scrollWidth() {
+            var elem = this[0],
+                i = 0;
+            if (elem) {
+                return elem.scrollWidth;
+            }
+            return 0;
         },
         scrollHeight: function scrollHeight() {
-            return this.node.scrollHeight;
+            var elem = this[0],
+                i = 0;
+            if (elem) {
+                return elem.scrollHeight;
+            }
+            return 0;
+        },
+        offsetWidth: function offsetWidth() {
+            var elem = this[0],
+                i = 0;
+            if (elem) {
+                return elem.offsetWidth;
+            }
+            return 0;
         },
         offsetHeight: function offsetHeight() {
-            return this.node.offsetHeight;
+            var elem = this[0],
+                i = 0;
+            if (elem) {
+                return elem.offsetHeight;
+            }
+            return 0;
         },
         focus: function focus() {
-            return this.node.focus();
-        },
-        disabled: function disabled(status) {
-            var $status = void 0 === status ? true : status;
-            $status ? this.addClass("disabled-ufQt") : this.removeClass("disabled-ufQt");
+            var elem = this[0],
+                i = 0;
+            if (elem) {
+                elem.focus();
+            }
+            return this;
         },
         width: function width() {
-            return this.node.clientWidth;
+            var elem = this[0],
+                i = 0;
+            if (elem) {
+                return elem.clientWidth;
+            }
+            return 0;
         },
         height: function height() {
-            return this.node.clientHeight;
-        },
-        data: function data(_data) {
-            if (typeof _data === "string") {}
+            var elem = this[0],
+                i = 0;
+            if (elem) {
+                return elem.clientHeight;
+            }
+            return 0;
         }
     };
 
@@ -490,74 +989,18 @@ window.app = function (window, document) {
 
             return xhr;
         },
-        createElement: function createElement(_name, _props, _childs) {
-            var props = _props || {},
-                childs = [],
-                arsLen = arguments.length,
-                node = null,
-                elem,
-                name,
-                index,
-                item,
-                key;
-
-            if (typeof _name == "string") {
-                elem = _name in nsTags ? document.createElementNS("http://www.w3.org/2000/svg", _name) : document.createElement(_name);
-            } else if (typeof _name == "function") {
-                elem = new _name(props);
-
-                return elem;
-            } else {
-                elem = _name.node;
-            }
-
-            for (key in props) {
-                if (props[key] != null) {
-                    if (key in elementProps) {
-                        elem[elementPrefix + key] = props[key];
-                    } else if (key in nodePrototype) {
-                        elem[key] = props[key];
-                    } else {
-                        elem.setAttribute(key, props[key]);
-                    }
-                }
-            }
-
-            for (index = 2; index < arsLen; index++) {
-                item = arguments[index];
-                if (isArray(item)) {
-                    var itemLen = item.length,
-                        _index,
-                        _item;
-                    for (var _index = 0; _index < itemLen; _index++) {
-                        _item = item[_index];
-                        _item && elem.appendChild(_item);
-                    }
-                } else {
-                    item && elem.appendChild(item);
-                }
-            }
-
-            elem[elementPrefix + "ID"] = guid();
-
-            return elem;
+        createElement: function createElement() {
+            return new element.create(arguments);
         },
-        createRef: function createRef(elem) {
-            return new _element.init(elem in nsTags ? document.createElementNS("http://www.w3.org/2000/svg", elem) : document.createElement(elem));
-        },
-        element: function element(elem) {
-            return new _element.init(elem);
-        },
-        $: function $(elem) {
-            if (typeof elem == "string") {
-                return new _element.init(document.querySelector(elem));
-            }
-            return new _element.init(elem);
+        $: function $(value) {
+            return new element.init(value);
         },
         event: function event(eventName, props) {
             var events = app.events[eventName],
                 key,
                 item;
+
+            props = props || {};
 
             if (!events) return;
 
@@ -575,10 +1018,6 @@ window.app = function (window, document) {
                 return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
             }
             return s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4();
-        },
-        rootRender: function rootRender(render) {
-            document.getElementById("app").appendChild(render);
-            _element.mountAll(render);
         },
         /* ----------- Utils ----------- */
         each: function each(arr, callback, key, len) {
@@ -602,7 +1041,7 @@ window.app = function (window, document) {
             return Date.now();
         },
         random: function random(a) {
-            return ("0000000000" + Math.random().toString().slice(2)).slice(-12);
+            return ("000000000000000000" + Math.random().toString().slice(2)).slice(-12);
         },
         ucWords: function ucWords(string) {
             if (!string) return;
@@ -620,7 +1059,7 @@ window.app = function (window, document) {
         },
 
         parseInt: function (_parseInt) {
-            function parseInt(_x) {
+            function parseInt(_x, _x2) {
                 return _parseInt.apply(this, arguments);
             }
 
@@ -629,11 +1068,11 @@ window.app = function (window, document) {
             };
 
             return parseInt;
-        }(function (props) {
-            return parseNumber(props, parseInt);
+        }(function (value, props) {
+            return parseNumber(value, props, parseInt);
         }),
         parseFloat: function (_parseFloat) {
-            function parseFloat(_x2) {
+            function parseFloat(_x3, _x4) {
                 return _parseFloat.apply(this, arguments);
             }
 
@@ -642,24 +1081,40 @@ window.app = function (window, document) {
             };
 
             return parseFloat;
-        }(function (props) {
-            return parseNumber(props, parseFloat);
+        }(function (value, props) {
+            return parseNumber(value, props, parseFloat);
         }),
         fixNumber: function fixNumber(number, len, index) {
             number = number.toString();
             number += (number.indexOf(".") == -1 ? "." : "") + "00000";
             index = number.indexOf(".");
             return number.slice(0, index + 1 + parseInt(len));
+        },
+        setCookie: function setCookie(props) {
+            var expires,
+                date = new Date();
+
+            props.days = props.days == undefined ? 365 : props.days;
+            date.setTime(date.getTime() + props.days * 24 * 60 * 60 * 1000);
+
+            expires = "expires=" + date.toUTCString();
+            document.cookie = props.name + "=" + props.value + ";" + expires + ";path=/";
+        },
+        getCookie: function getCookie(cname) {
+            var name = cname + "=",
+                ca = document.cookie.split(";");
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == " ") {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
         }
     };
-
-    app.n = function () {
-        return {
-            addClass: function addClass(newClass, elem) {
-                return elem.classList.add(newClass);
-            }
-        };
-    }(window);
 
     app.isMobile = function (w, n) {
         return (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino|android|ipad|playbook|silk/i.test(n.userAgent || n.vendor || w.opera) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test((n.userAgent || n.vendor || w.opera).substr(0, 4))
@@ -669,6 +1124,8 @@ window.app = function (window, document) {
     window.addEventListener("resize", function () {
         app.event("appResize");
     });
+
+    window.$ = app.$;
 
     return app;
 }(window, document);
@@ -694,7 +1151,7 @@ app.svgIcon = function (window, document, app) {
             elem.appendChild(arguments[index]);
         }
 
-        elem[app.elementPrefix + "ID"] = app.guid();
+        elem[app.elementPrefix + "id"] = app.guid();
 
         return elem;
     }
@@ -717,12 +1174,6 @@ app.svgIcon = function (window, document, app) {
         uplink: function uplink() {
             return createElement("svg", { viewBox: "0 0 16 16", class: "svgIcon uplinkIcon" }, createElement("path", { d: "M8 0a8 8 0 100 16A8 8 0 008 0zm0 14.667a6.667 6.667 0 11.013 0H8zm.493-10.48a.663.663 0 00-.946-.001L4.213 7.52a.672.672 0 000 .947c.262.26.686.26.947 0l2.2-2.2v5.066a.666.666 0 101.333 0v-5.06l2.2 2.2a.668.668 0 00.935-.946l-3.335-3.34z" }));
         },
-        gaugeNeedle: function gaugeNeedle() {
-            return createElement("svg", { viewBox: "0 0 120 801", class: "svgIcon gaugeNeedleIcon" }, createElement("defs", {}, createElement("linearGradient", { id: "needleGradient", x1: "0", x2: "0", y1: "0", y2: "1" }, createElement("stop", { class: "stop--1", "stop-opacity": "0", "stop-color": "transparent", offset: "40%" }), createElement("stop", { class: "stop--1", "stop-opacity": "0.95", "stop-color": "currentColor", offset: "100%" }))), createElement("path", { d: "M95 800.5l-34.25-.958H26.5L0 .5h120l-25 800z", fill: "url(#needleGradient)" }));
-        },
-        gaugeVector: function gaugeVector() {
-            return createElement("svg", { viewBox: "0 0 100 100", class: "svgIcon gaugeVectorIcon" }, createElement("circle", { class: "gaugeCircle gaugeCircleBackground", r: "46", cx: "50%", cy: "50%" }), createElement("circle", { class: "gaugeCircle gaugeCircleLoadingBackground", r: "46", cx: "50%", cy: "50%" }), createElement("circle", { class: "gaugeCircle gaugeCircleStrokeLeft", r: "46", cx: "50%", cy: "50%" }), createElement("circle", { class: "gaugeCircle gaugeCircleStrokeRight", r: "46", cx: "50%", cy: "50%" }), createElement("circle", { class: "gaugeCircle gaugeCircleCurrentSpeed", r: "46", cx: "50%", cy: "50%", "stroke-dashoffset": "404" }));
-        },
         resultGraph: function resultGraph(type) {
             return createElement("svg", { viewBox: "0 0 300 100", class: "svgIcon graph " + (type ? "up" : "down") + "loadGraph" }, createElement("polyline", { points: "", class: "line" }), createElement("polygon", { points: "", class: "chart" }));
         },
@@ -743,6 +1194,18 @@ app.svgIcon = function (window, document, app) {
         },
         checked: function checked() {
             return createElement("svg", { viewBox: "0 0 405 405", class: "svgIcon" }, createElement("path", { d: "M393.401,124.425L179.603,338.208c-15.832,15.835-41.514,15.835-57.361,0L11.878,227.836 c-15.838-15.835-15.838-41.52,0-57.358c15.841-15.841,41.521-15.841,57.355-0.006l81.698,81.699L336.037,67.064 c15.841-15.841,41.523-15.829,57.358,0C409.23,82.902,409.23,108.578,393.401,124.425z" }));
+        },
+        info: function info() {
+            return createElement("svg", { viewBox: "0 0 30 30", class: "svgIcon" }, createElement("path", { d: "M15,3C8.373,3,3,8.373,3,15c0,6.627,5.373,12,12,12s12-5.373,12-12C27,8.373,21.627,3,15,3z M16,21h-2v-7h2V21z M15,11.5 c-0.828,0-1.5-0.672-1.5-1.5s0.672-1.5,1.5-1.5s1.5,0.672,1.5,1.5S15.828,11.5,15,11.5z" }));
+        },
+        close2: function close2() {
+            return createElement("svg", { viewBox: "0 0 503.021 503.021", class: "svgIcon" }, createElement("path", { d: "M491.613,75.643l-64.235-64.235c-15.202-15.202-39.854-15.202-55.056,0L251.507,132.222L130.686,11.407 c-15.202-15.202-39.853-15.202-55.055,0L11.401,75.643c-15.202,15.202-15.202,39.854,0,55.056l120.821,120.815L11.401,372.328 c-15.202,15.202-15.202,39.854,0,55.056l64.235,64.229c15.202,15.202,39.854,15.202,55.056,0l120.815-120.814l120.822,120.814 c15.202,15.202,39.854,15.202,55.056,0l64.235-64.229c15.202-15.202,15.202-39.854,0-55.056L370.793,251.514l120.82-120.815 C506.815,115.49,506.815,90.845,491.613,75.643z" }));
+        },
+        radioButtonOff: function radioButtonOff() {
+            return createElement("svg", { viewBox: "0 0 24 24", class: "svgIcon" }, createElement("path", { d: "M12 22a10 10 0 1 1 10-10 10 10 0 0 1-10 10zm0-18a8 8 0 1 0 8 8 8 8 0 0 0-8-8z" }));
+        },
+        radioButtonOn: function radioButtonOn() {
+            return createElement("svg", { viewBox: "0 0 24 24", class: "svgIcon" }, createElement("path", { d: "M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z" }), createElement("path", { d: "M12 7a5 5 0 1 0 5 5 5 5 0 0 0-5-5z" }));
         }
     };
 
@@ -751,18 +1214,13 @@ app.svgIcon = function (window, document, app) {
     };
 }(window, document, app);
 
-var components = app.components,
-    createElement = app.createElement,
+var createElement = app.createElement,
     svgIcon = app.svgIcon,
-    createRef = app.createRef,
-    element = app.element,
     $ = app.$;
 
 exports.default = app;
 exports.createElement = createElement;
-exports.createRef = createRef;
 exports.svgIcon = svgIcon;
-exports.element = element;
 exports.$ = $;
 
 /***/ }),
@@ -784,57 +1242,50 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function MainHeader() {
     var elem = {
-        logoIcon: (0, _App.createRef)("span"),
-        switchButton: (0, _App.createRef)("button"),
-        testNav: (0, _App.createRef)("div"),
-        toggleButton: (0, _App.createRef)("button"),
-        settingsButton: (0, _App.createRef)("button"),
-        settingsMenu: (0, _App.createRef)("div"),
-        testOptions: (0, _App.createRef)("div"),
-        testServer: (0, _App.createRef)("select"),
-        testTime: (0, _App.createRef)("input"),
-        testConnections: (0, _App.createRef)("input"),
-        testEnableBuffer: (0, _App.createRef)("input"),
-        testOutputSpeed: (0, _App.createRef)("select"),
-        testMode: (0, _App.createRef)("select"),
-        testPrecision: (0, _App.createRef)("select"),
-        testViewInterfaz: (0, _App.createRef)("input")
+        logoIcon: (0, _App.createElement)("span"),
+        switchButton: (0, _App.createElement)("button"),
+        testNav: (0, _App.createElement)("div"),
+        toggleButton: (0, _App.createElement)("button"),
+        settingsButton: (0, _App.createElement)("button"),
+        settingsMenu: (0, _App.createElement)("div"),
+        testOptions: (0, _App.createElement)("div"),
+        testServer: (0, _App.createElement)("select"),
+        testTime: (0, _App.createElement)("input"),
+        testConnections: (0, _App.createElement)("select"),
+        testEnableBuffer: (0, _App.createElement)("input"),
+        testOutputSpeed: (0, _App.createElement)("select"),
+        testMode: (0, _App.createElement)("select"),
+        testPrecision: (0, _App.createElement)("select")
     },
         consoleOpened = false,
-        currentStage = 0;
+        initialPage;
+    function pageView(name, regex, result, view) {
+        name = "view";
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+        result = regex.exec(location.search);
+        view = result === null ? null : decodeURIComponent(result[1].replace(/\+/g, " "));
 
-    function switchStage(target) {
-        currentStage = target;
-        _App2.default.event("switchStage", { switch: target });
-
-        if (target == 0) {
-            elem.testNav.removeClass("unseen-u");
-        } else {
-            elem.testNav.addClass("unseen-u");
+        if (view != "ping" && view != "network") {
+            view = "main";
         }
+        return view;
+    }
+
+    initialPage = pageView();
+
+    function switchStage(view) {
+        _App2.default.event("switchStage", { view: view });
     }
     function toggleSettingsMenu() {
         elem.settingsMenu.style({ display: elem.settingsMenu.style("display") == "none" ? "block" : "none" });
     }
 
     elem.logoIcon.handleClick = function () {
-        elem.switchButton.toggle(false);
-
-        switchStage(currentStage == 2 ? 0 : 2);
-    };
-    elem.switchButton.toggle = function (toggle) {
-        if (void 0 === toggle) {
-            elem.switchButton.toggleClass("active");
-        } else {
-            elem.switchButton[toggle ? "addClass" : "removeClass"]("active");
-        }
-
-        elem.switchButton.textContent(elem.switchButton.hasClass("active") ? "< Back" : "Ping Test");
+        switchStage(pageView() == "network" ? "main" : "network");
     };
     elem.switchButton.handleClick = function () {
-        elem.switchButton.toggle();
-
-        switchStage(elem.switchButton.hasClass("active") ? 1 : 0);
+        switchStage(pageView() == "ping" ? "main" : "ping");
     };
     elem.toggleButton.handleClick = function () {
         consoleOpened = !consoleOpened;
@@ -842,16 +1293,12 @@ function MainHeader() {
 
         _App2.default.event("consoleToggle", { toggle: consoleOpened });
     };
-    elem.testViewInterfaz.handleClick = function () {
-        test.viewInterfaz = elem.testViewInterfaz.checked() ? 2 : 1;
-        _App2.default.event("speedTestViewInterfaz");
-    };
 
     this.events = {
         speedTestSettings: function speedTestSettings() {
-            test.runTime = _App2.default.parseInt({ value: elem.testTime.value(), min: 1, max: 1800, default: 15 }) * 1000;
-            test.connections.count = _App2.default.parseInt({ value: elem.testConnections.value(), min: 1, max: 20, default: test.connections.default });
-            test.selectedServer = parseInt(elem.testServer.value());
+            test.runTime = _App2.default.parseInt(elem.testTime.value(), { min: 1, max: 60, default: 15 }) * 1000;
+            test.connections.count = _App2.default.parseInt(elem.testConnections.value(), { min: 1, max: 6, default: test.connections.default });
+            test.selectedServer = _App2.default.parseInt(elem.testServer.value());
             test.bufferEnabled = elem.testEnableBuffer.checked();
             test.outputSpeed = elem.testOutputSpeed.value();
             test.resultsPrecision = elem.testPrecision.value();
@@ -872,18 +1319,28 @@ function MainHeader() {
                 elem.toggleButton.textContent("Show console");
             }
             elem.testOptions.removeClass("disabled-kTch");
+        },
+        switchStage: function switchStage(e) {
+            var view = e.view;
+
+            elem.switchButton.textContent(view != "ping" ? "Ping Test" : "< Back");
+            elem.testNav[view != "main" ? "addClass" : "removeClass"]("unseen-u");
         }
     };
     this.onMount = function () {
         elem.testMode.child(test.mode - 1).selected(true);
     };
-    this.reload = function () {
-        isLocal && location.reload();
-    };
 
-    return (0, _App.createElement)("header", { className: "mainHeader", events: this.events, onMount: this.onMount }, (0, _App.createElement)("div", { className: "container" }, (0, _App.createElement)("div", { className: "headerContents" }, (0, _App.createElement)("div", { className: "logoWrapper" }, (0, _App.createElement)(elem.logoIcon, { className: "logoIcon", onclick: elem.logoIcon.handleClick }, (0, _App.createElement)("button", {}, (0, _App.svgIcon)("testLogo"))), (0, _App.createElement)("span", { className: "logoText", textContent: "SPEEDTEST", onclick: this.reload }), (0, _App.createElement)("span", { className: "divider-fGntc", textContent: "•" })), (0, _App.createElement)("div", { className: "nav-gAfej" }, (0, _App.createElement)(elem.switchButton, { className: "button-r8eYj", textContent: "Ping Test", onclick: elem.switchButton.handleClick }), (0, _App.createElement)(elem.testNav, { className: "testNav-zMcl" }, (0, _App.createElement)(elem.toggleButton, { className: "consoleToggleButton", textContent: "Show console", onclick: elem.toggleButton.handleClick }), (0, _App.createElement)("div", { className: "testSettings-pwLy" }, (0, _App.createElement)(elem.settingsButton, { className: "settingsButton-rKfy", onclick: toggleSettingsMenu }, (0, _App.svgIcon)("menu")), (0, _App.createElement)(elem.settingsMenu, { className: "menu-jrbk", style: "display: none;" }, (0, _App.createElement)("div", { className: "menuInner-jrbk" }, (0, _App.createElement)(elem.testOptions, { className: "content-rtbh" }, (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Server: " }), (0, _App.createElement)(elem.testServer, {}, test.servers.map(function (item, index) {
-        return index > 0 || isLocal ? index != test.selectedServer ? (0, _App.createElement)("option", { value: index, textContent: item.name }) : (0, _App.createElement)("option", { value: index, selected: "", textContent: item.name }) : null;
-    })))), (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Test time: " }), (0, _App.createElement)(elem.testTime, { type: "number", min: "1", value: test.runTime / 1000 }))), (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Connections: " }), (0, _App.createElement)(elem.testConnections, { type: "number", min: "1", value: test.connections.count }))), (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Enable buffer: " }), test.bufferEnabled ? (0, _App.createElement)(elem.testEnableBuffer, { type: "checkbox", checked: "" }) : (0, _App.createElement)(elem.testEnableBuffer, { type: "checkbox" }))), (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Output speed: " }), (0, _App.createElement)(elem.testOutputSpeed, {}, (0, _App.createElement)("option", { value: "instant", textContent: "Instant speed" }), (0, _App.createElement)("option", { value: "average", selected: "", textContent: "Average speed" })))), (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Test mode: " }), (0, _App.createElement)(elem.testMode, {}, (0, _App.createElement)("option", { value: "1", textContent: "Download - Upload" }), (0, _App.createElement)("option", { value: "2", textContent: "Only Download" }), (0, _App.createElement)("option", { value: "3", textContent: "Only Upload" })))), (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Results precision: " }), (0, _App.createElement)(elem.testPrecision, {}, (0, _App.createElement)("option", { value: "1", textContent: "1", checked: "" }), (0, _App.createElement)("option", { value: "2", textContent: "2" })))), (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Show new speedtest interfaz: " }), test.viewInterfaz == 1 ? (0, _App.createElement)(elem.testViewInterfaz, { type: "checkbox", onclick: elem.testViewInterfaz.handleClick }) : (0, _App.createElement)(elem.testViewInterfaz, { type: "checkbox", checked: "", onclick: elem.testViewInterfaz.handleClick }))))), (0, _App.createElement)("div", { className: "menuOverlay-jrbk", onclick: toggleSettingsMenu }))))))));
+    this.render = function () {
+        return (0, _App.createElement)("header", { className: "mainHeader" }, (0, _App.createElement)("div", { className: "container" }, (0, _App.createElement)("div", { className: "headerContents" }, (0, _App.createElement)("div", { className: "logoWrapper" }, (0, _App.createElement)(elem.logoIcon, { className: "logoIcon", onclick: elem.logoIcon.handleClick }, (0, _App.createElement)("button", {}, (0, _App.svgIcon)("testLogo"))), (0, _App.createElement)("span", { className: "logoText", textContent: "SPEEDTEST", onclick: function onclick() {
+                isLocal && location.reload();
+            } }), (0, _App.createElement)("span", { className: "divider-fGntc", textContent: "•" })), (0, _App.createElement)("div", { className: "nav-gAfej" }, (0, _App.createElement)(elem.switchButton, { className: "button-r8eYj",
+            textContent: initialPage != "ping" ? "Ping Test" : "< Back",
+            onclick: elem.switchButton.handleClick }), (0, _App.createElement)(elem.testNav, { className: "testNav-zMcl" + (initialPage != "main" ? " unseen-u" : "") }, (0, _App.createElement)(elem.toggleButton, { className: "consoleToggleButton", textContent: "Show console", onclick: elem.toggleButton.handleClick }), (0, _App.createElement)("div", { className: "testSettings-pwLy" }, (0, _App.createElement)(elem.settingsButton, { className: "settingsButton-rKfy", onclick: toggleSettingsMenu }, (0, _App.svgIcon)("menu")), (0, _App.createElement)(elem.settingsMenu, { className: "menu-jrbk", style: "display: none;" }, (0, _App.createElement)("div", { className: "menuInner-jrbk" }, (0, _App.createElement)(elem.testOptions, { className: "content-rtbh" }, (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Server: " }), (0, _App.createElement)(elem.testServer, {}, test.servers.map(function (item, index) {
+            if (!isLocal && index == 0) return null;
+            return (0, _App.createElement)("option", { value: index, selected: test.selectedServer == item.id, textContent: item.name });
+        })))), (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Test time: " }), (0, _App.createElement)(elem.testTime, { type: "number", min: "1", max: "60", value: test.runTime / 1000 }))), (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Connections: " }), (0, _App.createElement)(elem.testConnections, {}, (0, _App.createElement)("option", { value: "1", textContent: "1", selected: test.connections.count == 1 }), (0, _App.createElement)("option", { value: "2", textContent: "2", selected: test.connections.count == 2 }), (0, _App.createElement)("option", { value: "4", textContent: "4", selected: test.connections.count == 4 }), (0, _App.createElement)("option", { value: "6", textContent: "6", selected: test.connections.count == 6 })))), (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Enable buffer: " }), (0, _App.createElement)(elem.testEnableBuffer, { type: "checkbox", checked: test.bufferEnabled }))), (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Output speed: " }), (0, _App.createElement)(elem.testOutputSpeed, {}, (0, _App.createElement)("option", { value: "instant", textContent: "Instant speed" }), (0, _App.createElement)("option", { value: "average", selected: true, textContent: "Average speed" })))), (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Test mode: " }), (0, _App.createElement)(elem.testMode, {}, (0, _App.createElement)("option", { value: "1", textContent: "Download - Upload", selected: test.mode == "1" }), (0, _App.createElement)("option", { value: "2", textContent: "Only Download", selected: test.mode == "2" }), (0, _App.createElement)("option", { value: "3", textContent: "Only Upload", selected: test.mode == "3" })))), (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("label", {}, (0, _App.createElement)("span", { textContent: "Results precision: " }), (0, _App.createElement)(elem.testPrecision, {}, (0, _App.createElement)("option", { value: "1", textContent: "1", checked: test.resultsPrecision == "1" }), (0, _App.createElement)("option", { value: "2", textContent: "2", checked: test.resultsPrecision == "2" })))))), (0, _App.createElement)("div", { className: "menuOverlay-jrbk", onclick: toggleSettingsMenu }))))))));
+    };
 }
 
 exports.default = MainHeader;
@@ -922,13 +1379,13 @@ var _NetworkStage2 = _interopRequireDefault(_NetworkStage);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function MainContent() {
-    var container = (0, _App.createRef)("div"),
-        testWrapper = (0, _App.createRef)("div"),
-        stageNames = ["mainTest", "pingTest", "networkTest"],
-        stageElem = (0, _App.createElement)(_TestStage2.default);
+    var container = (0, _App.createElement)("div"),
+        testWrapper = (0, _App.createElement)("div"),
+        stageElem = (0, _App.createElement)(_TestStage2.default),
+        stageNames = ["main", "ping", "network"];
 
     function className() {
-        var runType = " test--" + _TestConfig2.default.runType.current + (_TestConfig2.default.onprogress ? " onprogress" : "");
+        var runType = " test--" + _TestConfig2.default.runType.current;
         return "testWrapper" + (" test--" + (_TestConfig2.default.connections.count > 1 ? "multi" : "single") + "Mode") + (_TestConfig2.default.opened ? " testOpen" : "") + (_TestConfig2.default.started ? runType : "") + (_TestConfig2.default.finished ? " test--finished" : "");
     }
     function updateStatus(config) {
@@ -936,16 +1393,27 @@ function MainContent() {
         if (config.opened != void 0) _TestConfig2.default.opened = config.opened;
         if (config.finished != void 0) _TestConfig2.default.finished = config.finished;
         if (config.runType != void 0) _TestConfig2.default.runType.current = config.runType;
-        if (config.onprogress != void 0) _TestConfig2.default.onprogress = config.onprogress;
 
-        testWrapper.className(className());
+        testWrapper.attr("class", className());
+    }
+    function pageView(name, regex, result, view) {
+        name = "view";
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+        result = regex.exec(location.search);
+        view = result === null ? null : decodeURIComponent(result[1].replace(/\+/g, " "));
+
+        if (view != "ping" && view != "network") {
+            view = "main";
+        }
+        return view;
     }
 
     this.events = {
         renderStage: function renderStage(e) {
-            var replace = (0, _App.createElement)(_TestStage2.default, { fadeIn: e && e.fadeIn ? 1 : 0 });
+            var replace = (0, _App.createElement)(_TestStage2.default, { fadeIn: e.fadeIn ? true : false });
 
-            (0, _App.element)(stageElem).replaceWith(replace);
+            stageElem.replaceWith(replace);
 
             stageElem = replace;
         },
@@ -956,14 +1424,21 @@ function MainContent() {
             updateStatus(e);
         },
         closeTest: function closeTest() {
-            updateStatus({ started: false, finished: true, onprogress: false });
+            updateStatus({ started: false, finished: true });
         },
         switchStage: function switchStage(e) {
-            container.className("container " + stageNames[e.switch]);
+            if (e.pushState == undefined) window.history.pushState("", document.title, URL_BASE + "/?view=" + e.view);
+            container.attr("class", "container test--" + e.view);
         }
     };
 
-    return (0, _App.createElement)("div", { className: "pageContent", events: this.events }, (0, _App.createElement)(container, { className: "container mainTest" }, (0, _App.createElement)(testWrapper, { className: className() }, stageElem, (0, _App.createElement)(_PingStage2.default), (0, _App.createElement)(_NetworkStage2.default)), (0, _App.createElement)("div", { className: "log valueNumber-vgKp", textContent: "0.123456789" }), (0, _App.createElement)("div", { className: "log icrementNumber-vgKp", textContent: "0.123456789" })));
+    window.onpopstate = function () {
+        _App2.default.event("switchStage", { view: pageView(), pushState: false });
+    };
+
+    this.render = function () {
+        return (0, _App.createElement)("div", { className: "pageContent" }, (0, _App.createElement)(container, { className: "container test--" + pageView() }, (0, _App.createElement)(testWrapper, { className: className() }, stageElem, (0, _App.createElement)(_PingStage2.default), (0, _App.createElement)(_NetworkStage2.default)), (0, _App.createElement)("div", { className: "log valueNumber-vgKp", textContent: "0.123456789" }), (0, _App.createElement)("div", { className: "log icrementNumber-vgKp", textContent: "0.123456789" })));
+    };
 };
 
 exports.default = MainContent;
@@ -987,22 +1462,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var test = window.test = function () {
     var test,
-        fnaBasicUrl,
         fbStaticUrl,
+        cdnWsUrl,
+        mmgWsUrl,
         httpProtocol = window.location.protocol == "http:",
-        servers,
-        gaugeCircleStrokeMin,
-        gaugeCircleStrokeMax,
-        gaugeNeedleRotateMin,
-        gaugeNeedleRotateMax,
-        gaugeCircleOffsetRef,
-        gaugeNeedleRotateRef;
+        servers;
 
-    function replaceFnaSign(url, sign) {
-        url = url.split(".");
-        url[1] = sign;
-        return url.join(".");
-    }
     function uploadData() {
         var str = "111111111111111",
             size = 21,
@@ -1029,17 +1494,11 @@ var test = window.test = function () {
         };
     }
 
-    fnaBasicUrl = "https://z-m-scontent-bog1-1.xx.fbcdn.net/v/t1.15752-9/fr/cp0/e15/q65/135856944_1366451607033113_1598808278752931662_n.jpg?_nc_cat=108&ccb=1-3&_nc_sid=58c789&efg=eyJpIjoibyJ9&_nc_eui2=AeHt6CAq5yTPwLYNQBa1yNudTvXFk30_ZfVO9cWTfT9l9Vq9sBMVOuHnd3u6jr2TKi-wHeCtj_mcDCDsK8l62o-o&_nc_ohc=3fBWv8eDm24AX9LpRuW&_nc_ad=z-m&_nc_cid=3943&_nc_eh=2ee8a0a9fb077d9dfa8d24a42b6c5ba2&_nc_rml=0&_nc_ht=z-m-scontent-bog1-1.xx&oh=ad5367b2ca782330e009745c40986ac2&oe=60F6378C";
-
     fbStaticUrl = "https://z-m-static.xx.fbcdn.net/rsrc.php/yb/r/hLRJ1GG_y0J.ico";
 
+    cdnWsUrl = "https://media-bog1-1.cdn.whatsapp.net/v/t62.7119-24/34896796_1886206084908284_2826374126373875528_n.enc?ccb=11-4&oh=01_AVx7iGJkBRCwQiLJx0_ZYicBHAfig-uTRN-70-aI3jYnzQ&oe=620F5F37&hash=VVstsyg4AfsJ68ag_SgQNDqm-viTDvjzqGoIW9wuX4c%3D&mode=manual&mms-type=document&__wa-mms=";
 
-    gaugeCircleStrokeMin = 404; // deg
-    gaugeCircleStrokeMax = 194; // deg
-    gaugeNeedleRotateMin = 49; // deg
-    gaugeNeedleRotateMax = 310; // deg
-    gaugeCircleOffsetRef = gaugeCircleStrokeMax - gaugeCircleStrokeMin;
-    gaugeNeedleRotateRef = gaugeNeedleRotateMax - gaugeNeedleRotateMin;
+    mmgWsUrl = "https://mmg.whatsapp.net/v/t62.7119-24/34896796_1886206084908284_2826374126373875528_n.enc?ccb=11-4&oh=01_AVx7iGJkBRCwQiLJx0_ZYicBHAfig-uTRN-70-aI3jYnzQ&oe=620F5F37&hash=VVstsyg4AfsJ68ag_SgQNDqm-viTDvjzqGoIW9wuX4c%3D&mode=manual&mms-type=document&__wa-mms=";
 
     servers = [{
         name: "Local",
@@ -1052,7 +1511,7 @@ var test = window.test = function () {
         id: 1,
         http: true,
         download: "https://open.cachefly.net/downloading",
-        upload: "https://nvirginia.bandwidthplace.com/uploader/upload.cgi",
+        upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true",
         ping: "https://open.cachefly.net/downloading"
     }, {
         name: "New York - Librespeed.org",
@@ -1099,10 +1558,10 @@ var test = window.test = function () {
     }, {
         name: "Washington - Fireprobe.net",
         id: 8,
-        preconnect: "https://s12-je1rw.fireinfra.net/?action=download&size=0",
-        download: "https://s12-je1rw.fireinfra.net/?action=download&size=100",
-        upload: "https://s12-je1rw.fireinfra.net/?action=xupload",
-        ping: "https://s12-je1rw.fireinfra.net/?action=download&size=0"
+        preconnect: "https://s362-fi1h5.fireinfra.net/?action=download&size=0",
+        download: "https://s362-fi1h5.fireinfra.net/?action=download&size=100",
+        upload: "https://s362-fi1h5.fireinfra.net/?action=xupload",
+        ping: "https://s362-fi1h5.fireinfra.net/?action=download&size=0"
     }, {
         name: "Madrid - Movispeed.es",
         id: 9,
@@ -1112,20 +1571,13 @@ var test = window.test = function () {
     }, {
         name: "Sydney - Fireprobe.net",
         id: 10,
-        preconnect: "https://s87-lggif.fireinfra.net/?action=download&size=0",
-        download: "https://s87-lggif.fireinfra.net/?action=download&size=100",
-        upload: "https://s87-lggif.fireinfra.net/?action=xupload",
-        ping: "https://s87-lggif.fireinfra.net/?action=download&size=0"
+        preconnect: "https://s283-c9f39.fireinfra.net:9114/?action=download&size=0",
+        download: "https://s283-c9f39.fireinfra.net:9114/?action=download&size=100",
+        upload: "https://s283-c9f39.fireinfra.net:9114/?action=xupload",
+        ping: "https://s283-c9f39.fireinfra.net:9114/?action=download&size=0"
     }, {
         name: "Singapore - Fireprobe.net",
         id: 11,
-        preconnect: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0",
-        download: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100",
-        upload: "https://s281-tnorz.fireinfra.net:9114/?action=xupload",
-        ping: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0"
-    }, {
-        name: "Facebook",
-        id: 12,
         preconnect: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0",
         download: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100",
         upload: "https://s281-tnorz.fireinfra.net:9114/?action=xupload",
@@ -1146,10 +1598,7 @@ var test = window.test = function () {
         started: false, // false = stop - finished, true = started
         opened: false,
         finished: false,
-        onprogress: false, // true = progress, false = waiting
-        increments: [0, 1, 5, 10, 20, 30, 50, 75, 100],
-        viewInterfaz: 1,
-        runTime: isLocal ? 1000 * 10 : 15000,
+        runTime: isLocal ? 10 * 1000 : 15000,
         hearbeatTime: 80,
         connections: {
             default: 4,
@@ -1158,12 +1607,6 @@ var test = window.test = function () {
         mode: "1",
         bufferEnabled: true,
         resultsPrecision: 1,
-        gaugeCircleStrokeMin: gaugeCircleStrokeMin,
-        gaugeCircleStrokeMax: gaugeCircleStrokeMax,
-        gaugeNeedleRotateMin: gaugeNeedleRotateMin,
-        gaugeNeedleRotateMax: gaugeNeedleRotateMax,
-        gaugeCircleOffsetRef: gaugeCircleOffsetRef,
-        gaugeNeedleRotateRef: gaugeNeedleRotateRef,
         user: {
             isp: null,
             ip: null
@@ -1187,22 +1630,17 @@ var test = window.test = function () {
     };
 
     test.network = function () {
-        var urls, fnaSign0, fnaSign1;
-
-        fnaSign0 = ["fbog11-1", "fbog10-1", "fclo7-1", "fctg2-1", "fbaq1-1", "feoh3-1", "fbga3-1"];
-        fnaSign1 = fnaSign0.concat(["fbaq7-1", "fbaq6-1", "fbaq5-1", "fbog13-1", "fbog12-1", "fbog9-1", "fbog8-1", "fbog7-1", "fbog6-1", "fbog5-1", "fbog4-1", "fbog3-1", "fbog2-1"]);
-        urls = {
+        var urls = {
             download: [{
+                name: "Aditional url",
+                nodes: [{ url: "" }]
+            }, {
                 name: "Local",
                 nodes: [{ url: servers[0].download }]
             }, {
                 name: "Cachefly.net",
                 nodes: [{ url: servers[1].download }],
                 selected: true
-            }, {
-                name: "Vultr.com - Multi Location",
-                nodes: [{ url: servers[5].download, requestsCount: 5 }, { url: servers[3].download, requestsCount: 5 }, { url: servers[6].download, requestsCount: 5 }, { url: servers[7].download, requestsCount: 5 }],
-                selected: false
             }, {
                 name: servers[2].name,
                 nodes: [{ url: servers[2].download }]
@@ -1213,23 +1651,35 @@ var test = window.test = function () {
                 name: servers[4].name,
                 nodes: [{ url: servers[4].download }]
             }, {
-                rname: "Facebook Zero - JPG", /*
-                                              nodes: fnaSign0.map(function(sign){
-                                              return {url: replaceFnaSign(fnaBasicUrl, sign), preconnectCount: 1, requestsCount: 3}
-                                              })*/
-                nodes: [{ url: fnaBasicUrl, preconnectCount: 1, requestsCount: 6 }]
+                name: servers[5].name,
+                nodes: [{ url: servers[5].download }]
+            }, {
+                name: servers[6].name,
+                nodes: [{ url: servers[6].download }]
+            }, {
+                name: servers[7].name,
+                nodes: [{ url: servers[7].download }]
+            }, {
+                name: servers[8].name,
+                nodes: [{ url: servers[8].download, preconnect: servers[8].preconnect }]
+            }, {
+                name: servers[9].name,
+                nodes: [{ url: servers[9].download }]
+            }, {
+                name: servers[10].name,
+                nodes: [{ url: servers[10].download, preconnect: servers[10].preconnect }]
+            }, {
+                name: servers[11].name,
+                nodes: [{ url: servers[11].download, preconnect: servers[11].preconnect }]
+            }, {
+                rname: "Whatsapp MMG",
+                nodes: [{ url: mmgWsUrl, requestsCount: 6 }]
+            }, {
+                rname: "Whatsapp CDN",
+                nodes: [{ url: cdnWsUrl, requestsCount: 6 }]
             }, {
                 rname: "Mi Tigo - JS",
-                nodes: [{ url: "https://mi.tigo.com.co/main.7870aa2fbe835c315b3e.js" }]
-            }, {
-                rname: "Mi Cuenta Tigo - CSS",
-                nodes: [{ url: "https://micuenta.tigo.com.co/sites/tigoselfcareregional.co/files/css/css_TfZmanse90OtW98FdwxK3piXS3wBN_7tCRPvOOrbWdo.css" }]
-            }, {
-                rname: "Tigo - PDF",
-                nodes: [{ url: "https://www.tigo.com.co/sites/tigounecorp/files/fragmentos/general_listado_archivos/Mantenimientos-taoli-marz1al15.pdf" }]
-            }, {
-                rname: "Facebook Static - JS",
-                nodes: [{ url: "https://z-m-static.xx.fbcdn.net/rsrc.php/v3iaPW4/yk/l/es_LA/p9oJ6xU0RfanM5gMd_ntn3rHhjCB3MkcLFvIMIXs-Cd0GfuMdZk44cwdYgTr1fPr7jIIoDRBBJWHtUAEjMv0FyR4VrYCPoltBt5Wp1apCv48LXz2kqxAT2AB91B6Bp6TdCzUtrQV1DzHNXghaGVz-fRIdN.js?_nc_x=oKaJbgQx21R", preconnectCount: 1 }]
+                nodes: [{ url: "https://mi.tigo.com.co/main-es2015.195b32862d20f2e5354e.js" }]
             }],
             upload: [{
                 name: "Local",
@@ -1239,13 +1689,18 @@ var test = window.test = function () {
                 nodes: [{ url: "https://nvirginia.bandwidthplace.com/uploader/upload.cgi" }],
                 selected: true
             }, {
+                name: "New York, US",
+                nodes: [{ url: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true" }]
+            }, {
                 name: "Facebook Zero",
-                nodes: [{ url: fbStaticUrl, requestsCount: 15, preconnectCount: 1 }]
+                nodes: [{ url: fbStaticUrl, requestsCount: 6 }]
+            }, {
+                name: "WhatsApp MMG",
+                nodes: [{ url: mmgWsUrl, requestsCount: 6 }]
             }]
         };
-        if (!isLocal) urls.download.splice(0, 1), urls.upload.splice(0, 1);
+        if (!isLocal) urls.download.splice(1, 1), urls.upload.splice(0, 1);
         return {
-            fnaBasicUrl: fnaBasicUrl,
             urls: urls
         };
     }();
@@ -1258,15 +1713,16 @@ var test = window.test = function () {
         for (index = 0; index < graphItemsLen; index++) {
             graphItems.push(index);
         }
-        pingServers = [servers[0], servers[1], servers[3], servers[4], servers[5], servers[6], servers[7], { name: "Facebook Scontent", ping: fnaBasicUrl, download: fnaBasicUrl }, { name: "Facebook Static", ping: fbStaticUrl }, { name: "Bogota, Colombia", providerName: "EdgeUno", providerWebsite: "https://edgeuno.com/", wsping: "wss://co-edgeuno.metercdn.com:8443/wsping" }, { name: "Washsington, United States", providerName: "Fireprobe", providerWebsite: "https://www.fireprobe.net/", wsping: "ws://lw.us.v-speed.eu:8080/ws?latency", wsmessage: "LATENCY" }, servers[9], servers[10], servers[11]];
+        pingServers = [servers[0], servers[1], { name: "New York, US", providerName: "Clouvider", providerWebsite: "https://www.clouvider.com/", wsping: "wss://nyc.speedtest.clouvider.net.prod.hosts.ooklaserver.net:8080/ws", wsmessage: "PING" }, servers[3], { name: "Miami, US", providerName: "Grupo GTD", providerWebsite: "https://www.gtd.cl/", wsping: "wss://speedtest-miami.grupogtd.com.prod.hosts.ooklaserver.net:8080/ws", wsmessage: "PING" },
+        //            {name: "Miami, US", providerName: "Cloudflare", providerWebsite: "https://www.cloudflare.com/", wsping: "wss://speedtest.eti.cfdata.org:8080/ws", wsmessage: "PING"},
+        servers[4], servers[5], servers[6], servers[7], { name: "mmg.whatsapp.net", ping: mmgWsUrl }, { name: "media-bog1-1.cdn.whatsapp.net", ping: cdnWsUrl }, { name: "Facebook Static", ping: fbStaticUrl }, { name: "Bogota, Colombia", providerName: "DIRECTV Colombia", providerWebsite: "https://www.directv.com.co/", wsping: "wss://speedtest.directv.com.co.prod.hosts.ooklaserver.net:8080/ws", wsmessage: "PING" }, { name: "Washsington, US", providerName: "Xiber LLC", providerWebsite: "https://www.xiber.net/", wsping: "wss://speedtest.washington-dc.xiber.net.prod.hosts.ooklaserver.net:8080/ws", wsmessage: "PING" }, servers[9], servers[10], servers[11], { name: "Custom Url", download: "" }];
         return {
             results: 100,
-            completeAll: false,
+            completeAll: true,
             servers: pingServers,
             server: pingServers[1],
             runTime: 10000,
-            graphItemsLen: graphItemsLen,
-            graphVisibleItems: [0, 2, 4, 6, 8, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49, 52, 55, 58, 61, 64, 67, 70, 73, 76, 79, 82, 85, 88, 91, 94, 97],
+            graphItemsVisible: [0, 2, 4, 6, 8, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49, 52, 55, 58, 61, 64, 67, 70, 73, 76, 79, 82, 85, 88, 91, 94, 97],
             graphItems: graphItems
         };
     }();
@@ -1307,20 +1763,20 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function TestStage(props) {
     var elem = {
-        testStage: (0, _App.createRef)("div"),
-        stageClose: (0, _App.createRef)("button"),
-        startWrapper: (0, _App.createRef)("div"),
-        resultsContainer: (0, _App.createRef)("div"),
-        resultDownload: (0, _App.createRef)("div"),
-        speedDownloadNumber: (0, _App.createRef)("div"),
-        resultUpload: (0, _App.createRef)("div"),
-        speedUploadNumber: (0, _App.createRef)("div"),
-        consoleWrapper: (0, _App.createRef)("div"),
-        console: (0, _App.createRef)("textarea"),
-        ispName: (0, _App.createRef)("div"),
-        publicIp: (0, _App.createRef)("div"),
-        multiModeButton: (0, _App.createRef)("button"),
-        singleModeButton: (0, _App.createRef)("button"),
+        testStage: (0, _App.createElement)("div"),
+        stageClose: (0, _App.createElement)("button"),
+        startWrapper: (0, _App.createElement)("div"),
+        resultsContainer: (0, _App.createElement)("div"),
+        resultDownload: (0, _App.createElement)("div"),
+        speedDownloadNumber: (0, _App.createElement)("div"),
+        resultUpload: (0, _App.createElement)("div"),
+        speedUploadNumber: (0, _App.createElement)("div"),
+        consoleWrapper: (0, _App.createElement)("div"),
+        console: (0, _App.createElement)("textarea"),
+        ispName: (0, _App.createElement)("div"),
+        publicIp: (0, _App.createElement)("div"),
+        multiModeButton: (0, _App.createElement)("button"),
+        singleModeButton: (0, _App.createElement)("button"),
         gauge: 0
     },
         timer = {
@@ -1329,6 +1785,7 @@ function TestStage(props) {
     },
         fixNumber = _App2.default.fixNumber,
         graph,
+        interval,
         connections,
         intervalStarted,
         globalLoadStartTime,
@@ -1436,24 +1893,20 @@ function TestStage(props) {
     }
     function closeGauge() {
         elem.startWrapper.firstChild().replaceWith((0, _App.createElement)(_StartButton2.default, { textContent: "DE NUEVO", action: 2 }));
-        elem.startWrapper.addClass("close-m6jHb").addClass("tryAgain-EuG8d");
+        elem.startWrapper.addClass("close-m6jHb tryAgain-EuG8d");
         timer.timeout.closeGauge = setTimeout(function () {
-            elem.startWrapper.removeClass("open-m6jHb", "close-m6jHb");
+            elem.startWrapper.removeClass("open-m6jHb close-m6jHb");
             elem.gauge.method("removeGauge");
         }, 1300);
     }
     function clearResults() {
-        elem.resultDownload.find("resultValue").textContent("- -");
-        elem.resultDownload.find("graph").addClass("unseen");
-
-        elem.resultUpload.find("resultValue").textContent("- -");
-        elem.resultUpload.find("graph").addClass("unseen");
+        elem.resultsContainer.find(".resultValue").textContent("- -");
+        elem.resultsContainer.find("polygon, polyline").attr("points", "");
 
         testConsole.clear();
         testConsole.log("Starting test...");
     }
     function progressEnd() {
-        _App2.default.event("testStatus", { onprogress: false });
         elem.gauge.method("clear");
 
         timer.timeout.progressEnd = setTimeout(function () {
@@ -1468,210 +1921,76 @@ function TestStage(props) {
     function clearTimers() {
         var key;
         for (key in timer.timeout) {
-            //console.log(key, timer.timeout[key]);
             clearTimeout(timer.timeout[key]);
         }
         for (key in timer.interval) {
-            //console.log(key, timer.interval[key]);
             clearInterval(timer.interval[key]);
         }
     }
     function breakTest() {
         clearTimers();
         stopTest();
-        graph && connections.speedRate && graph.draw(connections.speedRate, _TestConfig2.default.runTime, _App2.default.time(), true);
+        graph && connections.speedRate && graph.draw(connections.speedRate, _TestConfig2.default.runTime, 0);
         testConsole.state("measures error");
         timer.timeout.breakTest = setTimeout(progressEnd, 1300);
     }
-    function averageSpeed() {
-        this.items = [];
-        this.len = 0;
-        this.count = 0;
+    graph = function () {
+        var graphElem, chart, line, points, pointMax, maxTime, updateCount, chartPoints, graphWidth, graphHeight, viewHeight, index, item, len, pointX, pointY;
 
-        this.get = function (speed, maxItems) {
-            this.len = this.items.push(speed);
-            this.count += speed;
+        return {
+            draw: function draw(point, intervalTime, count) {
+                point = parseFloat(point);
 
-            if (this.len > maxItems) {
-                this.count -= this.items[0];
-                this.items.splice(0, 1);
-                this.len--;
-            }
-            return this.count / this.len;
-        };
-    }
-    function drawGraph() {
-        this.elem = (_TestConfig2.default.runType.download ? elem.resultDownload : elem.resultUpload).find("graph");
-        this.elemWidth = Math.round(this.elem.width());
-        this.elemHeight = Math.round(this.elem.height());
-        this.chart = this.elem.find("chart");
-        this.line = this.elem.find("line");
-        this.points = [];
-        this.maxPoint = 0;
-        this.maxTime = _TestConfig2.default.runTime;
-        this.pointWidth = this.elemWidth / this.pointsLen;
-        this.updateTime = _TestConfig2.default.runTime / 190;
-        this.lastTime = 0;
+                if (intervalTime > maxTime) maxTime = intervalTime;
 
-        var update,
-            chartPoints = [],
-            _chartPoints,
-            viewWidth,
-            viewHeight,
-            len,
-            pointWidth,
-            index,
-            item,
-            pointX,
-            pointY;
+                if (point > pointMax) {
+                    pointMax = point;
 
-        function draw1(point, intervalTime, time) {
-            point = parseFloat(point);
-            this.points.push(point);
-            if (point > this.maxPoint) this.maxPoint = point;
-            if (intervalTime > this.maxTime) this.maxTime = intervalTime;
+                    len = points.length;
+                    chartPoints = "";
+                    for (index = 0; index < len; index++) {
+                        item = points[index];
+                        item.y = (viewHeight - item.value / pointMax * viewHeight + 2).toFixed(2);
 
-            chartPoints = "", viewWidth = intervalTime / this.maxTime * this.elemWidth;
-            viewHeight = this.elemHeight - 4;
-            len = this.points.length;
-            pointWidth = viewWidth / len;
-
-            chartPoints += "0," + this.elemHeight;
-
-            for (index = 0; index < len; index++) {
-                item = this.points[index];
-
-                pointX = (pointWidth * (index + 1)).toFixed(2);
-                pointY = (viewHeight - item / this.maxPoint * viewHeight + 2).toFixed(2);
-
-                if (index == 0) chartPoints += " 0," + pointY;
-                chartPoints += " " + pointX + "," + pointY;
-            }
-
-            this.chart.setAttr("points", chartPoints + " " + pointX + "," + this.elemHeight);
-            this.line.setAttr("points", chartPoints + " " + this.elemWidth + "," + pointY);
-        }
-        function draw2(point, intervalTime, time) {
-            point = parseFloat(point);
-            update = false;
-
-            if (point > this.maxPoint) this.maxPoint = point, update = true;
-            if (intervalTime > this.maxTime) this.maxTime = intervalTime;
-
-            viewWidth = intervalTime / this.maxTime * this.elemWidth;
-            viewHeight = this.elemHeight - 4;
-
-            pointX = viewWidth.toFixed(2);
-            pointY = (viewHeight - point / this.maxPoint * viewHeight + 2).toFixed(2);
-
-            if (chartPoints.length == 0) {
-                this.points.push({ value: point, x: 0 });
-                chartPoints.push("0," + pointY);
-            }
-
-            if (time - this.lastTime < this.updateTime) {
-                this.points[chartPoints.length - 1] = { value: point, x: pointX };
-                chartPoints[chartPoints.length - 1] = pointX + "," + pointY;
-            } else {
-                this.points.push({ value: point, x: pointX });
-                chartPoints.push(pointX + "," + pointY);
-                this.lastTime = time;
-            }
-
-            if (update) {
-                len = this.points.length;
-                for (index = 0; index < len; index++) {
-                    item = this.points[index];
-                    pointY = (viewHeight - item.value / this.maxPoint * viewHeight + 2).toFixed(2);
-
-                    chartPoints[index] = item.x + "," + pointY;
+                        chartPoints += " " + item.x + "," + item.y;
+                    }
                 }
+
+                pointX = (graphWidth * (intervalTime / maxTime)).toFixed(2);
+                pointY = (viewHeight - point / pointMax * viewHeight + 2).toFixed(2);
+
+                if (count % updateCount == 0) {
+                    points.push({ value: point, x: pointX, y: pointY });
+                } else {
+                    item = points[points.length - 1];
+                    chartPoints = chartPoints.slice(0, (" " + item.x + "," + item.y).length * -1);
+                    points[points.length - 1] = { value: point, x: pointX, y: pointY };
+                }
+
+                chartPoints += " " + pointX + "," + pointY;
+
+                chart.attr("points", "0," + graphHeight + (" 0," + points[0].y) + chartPoints + (" " + pointX + "," + graphHeight));
+                line.attr("points", pointX + "," + pointY + " " + (graphWidth + "," + pointY));
+            },
+            open: function open() {
+                graphElem = (_TestConfig2.default.runType.download ? elem.resultDownload : elem.resultUpload).find(".graph");
+                chart = graphElem.find(".chart");
+                line = graphElem.find(".line");
+                points = [];
+                pointMax = 0;
+                chartPoints = "";
+                graphWidth = Math.floor(graphElem.width());
+                graphHeight = Math.floor(graphElem.height());
+                viewHeight = graphHeight - 4;
+                maxTime = _TestConfig2.default.runTime;
+                updateCount = Math.ceil(_TestConfig2.default.runTime / _TestConfig2.default.hearbeatTime / 190);
+
+                graphElem.attr("viewBox", "0 0 " + graphWidth + " " + graphHeight);
             }
-
-            _chartPoints = chartPoints.join(" ");
-
-            this.chart.setAttr("points", "0," + this.elemHeight + " " + _chartPoints + (" " + pointX + "," + this.elemHeight));
-            this.line.setAttr("points", _chartPoints + " " + this.elemWidth + "," + pointY);
-        }
-
-        this.open = function () {
-            this.chart.setAttr("points", "");
-            this.line.setAttr("points", "");
-            this.elem.setAttr("viewBox", "0 0 " + this.elemWidth + " " + this.elemHeight);
-            this.elem.removeClass("unseen");
-
-            this.draw = _TestConfig2.default.runTime > 16000 || _TestConfig2.default.hearbeatTime < 80 ? draw2 : draw1;
         };
-    }
-    function startInterval() {
-        intervalStarted = true;
-
-        _App2.default.event("testStatus", { onprogress: true });
-
-        var speedNumberElem = _TestConfig2.default.runType.download ? elem.speedDownloadNumber : elem.speedUploadNumber,
-            runTime = _TestConfig2.default.runTime,
-            resultsPrecision = _TestConfig2.default.resultsPrecision,
-
-
-        // Iterval vars
-        time = _App2.default.time(),
-            intervalStartedTime,
-            loadTime,
-            transfer = {
-            transferred: 0,
-            lastTime: 0,
-            time: 0,
-            maxTime: 0,
-            average: {
-                count: 0,
-                len: 0,
-                time: 0
-            }
-        },
-            loaded,
-            prev = {
-            loaded: 0,
-            transferTime: 0
-        },
-            bufferEnabled = _TestConfig2.default.bufferEnabled && _TestConfig2.default.runType.download,
-            buffers = [{
-            sizeTime: 2000,
-            maxTime: 6000,
-            startTime: globalLoadStartTime,
-            loaded: 0,
-            size: 0,
-            speed: 0
-        }, {
-            sizeTime: 6000,
-            maxTime: 16000,
-            startTime: globalLoadStartTime,
-            loaded: 0,
-            size: 0,
-            speed: 0
-        }],
-            buffer = {
-            speed: 0
-        },
-            instant = {
-            speed: 0,
-            average: 0,
-            calc: new averageSpeed()
-        },
-            average = {
-            speed: 0,
-            calc: new averageSpeed()
-        },
-            output = {
-            speed: 0,
-            speedRate: 0
-        },
-            took,
-            it = 0;
-
-        loadTime = time - globalLoadStartTime;
-
-        graph = new drawGraph();
-        graph.open();
+    }();
+    interval = function () {
+        var speedNumberElem, resultsPrecision, time, hearbeatTime, intervalStartedTime, loadTime, transfer, loaded, prev, bufferEnabled, buffer, speed, took, count;
 
         function consoleTime(time) {
             return (time / 1000).toFixed(time < 10000 ? 3 : 2);
@@ -1681,7 +2000,7 @@ function TestStage(props) {
             if (speed >= 10 && !took) took = true;
             return fixNumber(speed, took && speed < 10 ? 3 : 2);
         }
-        function intervalCallback(closeInterval) {
+        function callback() {
             time = _App2.default.time();
             loadTime = time - globalLoadStartTime;
             intervalTime = time - intervalStartedTime;
@@ -1692,64 +2011,77 @@ function TestStage(props) {
             if (transfer.time > transfer.maxTime) transfer.maxTime = transfer.time;
 
             if (transfer.transferred > 0) {
-                transfer.average.count += prev.transferTime;
-                transfer.average.len += 1;
-                transfer.average.time = transfer.average.count / (transfer.average.len - 1 || 1);
+                transfer.averageCount += prev.transferTime;
+                transfer.averageLen += 1;
+                transfer.averageTime = transfer.averageCount / transfer.averageLen;
 
-                //console.log(test.runType.download ? "[download]" : "[upload]", "average time:", Math.round(transfer.average.time), "max time:", transfer.maxTime)
+                //console.log(test.runType.download ? "[download]" : "[upload]", "average time:", Math.round(transfer.averageTime), "max time:", transfer.maxTime)
             }
 
-            buffer.speed = Math.max.apply(null, buffers.map(function (buffer, index) {
-                buffer.size += transfer.transferred;
-                buffer.loaded += transfer.transferred;
+            buffer.size += transfer.transferred;
+            buffer.loaded += transfer.transferred;
+            //buffer._sizeTime = buffer.sizeTime + transfer.maxTime;
+            buffer._sizeTime = transfer.maxTime > buffer.sizeTime ? transfer.maxTime : buffer.sizeTime;
 
-                buffer._sizeTime = index == 0 ? buffer.sizeTime + transfer.maxTime : buffer.sizeTime;
+            if (transfer.transferred && time - buffer.startTime > buffer._sizeTime) {
+                buffer.speed = buffer.size / (time - buffer.startTime);
 
-                if (intervalTime < buffer.maxTime && transfer.transferred && time - buffer.startTime > buffer._sizeTime) {
-                    buffer.speed = buffer.size / (time - buffer.startTime);
+                buffer.size = buffer.speed * buffer._sizeTime;
+                buffer.startTime = time - buffer._sizeTime;
 
-                    buffer.size = buffer.speed * buffer._sizeTime;
-                    buffer.startTime = time - buffer._sizeTime;
+                buffer.speed = buffer.size / (time - buffer.startTime);
+                buffer.loaded = buffer.speed * loadTime;
+            }
 
-                    buffer.speed = buffer.size / (time - buffer.startTime);
-                    buffer.loaded = buffer.speed * loadTime;
-                }
+            //buffer.speed = buffer.size / ((time - buffer.startTime) / 1000);
+            buffer.speed = buffer.loaded / (loadTime / 1000);
 
-                //buffer.speed = buffer.size / ((time - buffer.startTime) / 1000);
-                buffer.speed = buffer.loaded / (loadTime / 1000);
+            speed.instant = loaded / (loadTime / 1000);
 
-                return buffer.speed;
-            }));
+            if (bufferEnabled) {
+                speed.instant = buffer.speed > speed.instant ? buffer.speed : speed.instant;
+            }
 
-            instant.speed = loaded / (loadTime / 1000);
-            if (bufferEnabled) instant.speed = buffer.speed > instant.speed ? buffer.speed : instant.speed;
+            speed.maxItems = 8 /* + Math.ceil(transfer.averageTime / hearbeatTime);
+                               speed.maxItems = speed.maxItems > 15 ? 15 : speed.maxItems*/;
 
-            instant.maxItems = loadTime > 2000 ? 6 : 4;
-            instant.maxItems += Math.round(transfer.average.time / 80);
-            instant.maxItems = instant.maxItems > 10 ? 10 : instant.maxItems;
+            speed.instantItems.push(speed.instant);
+            speed.instantCount += speed.instant;
 
-            instant.average = instant.calc.get(instant.speed, instant.maxItems);
-            average.speed = average.calc.get(instant.average, instant.maxItems);
+            if (speed.instantItems.length > speed.maxItems) {
+                speed.instantCount -= speed.instantItems[0];
+                speed.instantItems.splice(0, 1);
+            }
 
-            output.speedRate = speedRateMbps(_TestConfig2.default.outputSpeed == "average" ? average.speed : instant.speed);
-            output.speed = fixNumber(output.speedRate, output.speedRate < 1 && resultsPrecision < 2 ? 2 : resultsPrecision);
+            speed.averageItems.push(speed.instantAverage = speed.instantCount / speed.instantItems.length);
+            speed.averageCount += speed.instantAverage;
 
-            testConsole.state("instant: " + consoleSpeed(instant.speed) + "mbps, average: " + consoleSpeed(average.speed) + "mbps, time: " + consoleTime(loadTime) + "s, loaded: " + loadedData(loaded) + ", transf: " + transferredData(transfer.transferred));
+            if (speed.averageItems.length > speed.maxItems) {
+                speed.averageCount -= speed.averageItems[0];
+                speed.averageItems.splice(0, 1);
+            }
 
-            speedNumberElem.textContent(output.speed);
-            elem.gauge.method("updateNumber", { number: output.speed, speedRate: output.speedRate });
-            graph.draw(output.speedRate, intervalTime, time, closeInterval);
+            speed.average = speed.averageCount / speed.averageItems.length;
 
-            if (it % 3 == 0) {
-                elem.gauge.method("updateIcon");
+            speed.rate = speedRateMbps(_TestConfig2.default.outputSpeed == "average" ? speed.average : speed.instant);
+            speed.rateFixed = fixNumber(speed.rate, speed.rate < 1 ? 2 : resultsPrecision);
+
+            testConsole.state("instant: " + consoleSpeed(speed.instant) + "mbps, average: " + consoleSpeed(speed.average) + "mbps, time: " + consoleTime(loadTime) + "s, loaded: " + loadedData(loaded) + ", transf: " + transferredData(transfer.transferred));
+
+            speedNumberElem.textContent(speed.rateFixed);
+            elem.gauge.method("updateNumber", { number: speed.rateFixed });
+            graph.draw(speed.rate, intervalTime, count);
+
+            if (count % 4 == 0) {
+                elem.gauge.method("updateIcon", { speedRate: speed.rate });
             }
 
             prev.loaded = loaded;
             prev.transferTime = transfer.time;
-            connections.speedRate = output.speedRate;
-            it++;
+            connections.speedRate = speed.rate;
+            count++;
         }
-        function stopInterval() {
+        function stop() {
             stopTest();
 
             time = _App2.default.time();
@@ -1757,42 +2089,85 @@ function TestStage(props) {
             connections.requests.forEach(function (req, index) {
                 if (req.id > 6) return;
 
-                testConsole.state("request " + req.id + " loaded: " + loadedData(req.loaded) + ", max time: " + req.maxTransferTime + "ms" + (req.firstProgressTime ? ", avg time: " + Math.round((req.lastProgressTime - req.firstProgressTime) / (req.progressCount - 1 || 1)) + "ms" : "") + (req.id > connections.count ? " (added)" : ""));
+                testConsole.state("request " + req.id + " loaded: " + loadedData(req.loaded) + ", max time: " + req.maxTransferTime + "ms" + (req.firstProgressTime ? ", avg time: " + Math.round((req.lastProgressTime - req.firstProgressTime) / (req.progressCount || 1)) + "ms" : "") + (req.id > connections.count ? " (added)" : ""));
             });
+            testConsole.state("final speed: " + fixNumber(loaded / (loadTime / 1000) / 125000, 2) + "mbps, buffer speed: " + fixNumber(buffer.speed / 125000, 2) + "mbps (" + (time - buffer.startTime) + "ms)");
+            testConsole.state("total loaded: " + loadedData(connections.loaded) + ", max time: " + transfer.maxTime + "ms, avg time: " + Math.round(transfer.averageTime) + "ms");
 
-            testConsole.state("final speed: " + fixNumber(loaded / (loadTime / 1000) / 125000, 2) + "mbps, buffer 1: " + fixNumber(buffers[0].speed / 125000, 2) + "mbps (" + (time - buffers[0].startTime) + "), buffer 2: " + fixNumber(buffers[1].speed / 125000, 2) + "mbps (" + (time - buffers[1].startTime) + ")");
+            timer.timeout.progressEnd = setTimeout(progressEnd, 500);
+        }
+        function run() {
+            speedNumberElem = _TestConfig2.default.runType.download ? elem.speedDownloadNumber : elem.speedUploadNumber;
+            hearbeatTime = _TestConfig2.default.hearbeatTime;
+            resultsPrecision = _TestConfig2.default.resultsPrecision;
+            transfer = {
+                transferred: 0,
+                time: 0,
+                lastTime: 0,
+                maxTime: 0,
+                averageCount: 0,
+                averageLen: 0,
+                averageTime: 0
+            };
+            prev = {
+                loaded: 0,
+                transferTime: 0
+            };
+            bufferEnabled = _TestConfig2.default.bufferEnabled;
+            buffer = {
+                sizeTime: 6000,
+                startTime: globalLoadStartTime,
+                loaded: 0,
+                size: 0,
+                speed: 0
+            };
+            speed = {
+                instant: 0,
+                instantItems: [],
+                instantCount: 0,
+                average: 0,
+                averageItems: [],
+                averageCount: 0,
+                instantAverage: 0,
+                maxItems: 0,
+                rate: 0
+            };
+            took = false;
+            count = 0;
 
-            testConsole.state("total loaded: " + loadedData(connections.loaded) + ", max time: " + transfer.maxTime + "ms, avg time: " + Math.round(transfer.average.time) + "ms");
+            graph.open();
+
+            intervalStartedTime = _App2.default.time();
+
+            timer.interval.intervalHeartbeat = setInterval(callback, _TestConfig2.default.hearbeatTime);
 
             timer.timeout.stopInterval = setTimeout(function () {
-                _App2.default.event("testStatus", { onprogress: false });
-                elem.gauge.method("clear");
-
-                timer.timeout.$progressEnd = setTimeout(progressEnd, 500);
-            }, 500);
+                callback();
+                stop();
+            }, _TestConfig2.default.runTime);
+        }
+        function init() {
+            timer.timeout.runInterval = setTimeout(function () {
+                intervalStarted = true;
+                run();
+            }, 2000);
+        }
+        function start() {
+            intervalStarted = true;
+            clearTimeout(timer.timeout.runInterval);
+            loadTime = _App2.default.time() - globalLoadStartTime;
+            timer.timeout.startIntervalDelay = setTimeout(run, loadTime > 420 ? 1 : 420 - loadTime);
         }
 
-        timer.timeout.startIntervalDelay = setTimeout(function () {
-            intervalStartedTime = _App2.default.time();
-            // start interval
-            timer.interval.intervalHeartbeat = setInterval(intervalCallback, _TestConfig2.default.hearbeatTime);
-
-            timer.timeout.stopInterval = setTimeout(function () {
-                intervalCallback(true);
-                stopInterval();
-            }, runTime);
-
-            //elem.gauge.method("listenSpeed");
-        }, loadTime > 420 ? 1 : 420 - loadTime);
-
-        clearTimeout(timer.timeout.runInterval);
-    }
-    function runInterval() {
-        timer.timeout.runInterval = setTimeout(startInterval, 2000);
-    }
-    function requestConfig(req, url) {
+        return {
+            init: init,
+            start: start,
+            run: run
+        };
+    }();
+    function requestConfig(req, url, isAdded) {
         var target = _TestConfig2.default.runType.download ? req : req.upload,
-            progressCount = 1,
+            progressCount = 0,
             prev = { loaded: 0, progressTime: 0 },
             transfer = { transferred: 0, time: 0 },
             time;
@@ -1802,19 +2177,21 @@ function TestStage(props) {
         req.maxTransferTime = 0;
         req.firstProgressTime = 0;
         req.lastProgressTime = 0;
-        req.progressCount = 1;
+        req.progressCount = 0;
 
         target.addEventListener("progress", function (e) {
             time = _App2.default.time();
-            if (!globalLoadStartTime) globalLoadStartTime = time, runInterval();
+            progressCount++;
+            if (!globalLoadStartTime) globalLoadStartTime = time, interval.init();
             transfer.transferred = e.loaded - prev.loaded;
             transfer.time = time - (prev.progressTime || time);
             if (transfer.time > req.maxTransferTime) req.maxTransferTime = transfer.time;
-            if (progressCount > 1 || 1) req.loaded += transfer.transferred, connections.loaded += transfer.transferred;
+            if (progressCount > 1 || isAdded) connections.loaded += transfer.transferred;
             req.lastProgressTime = time;
             req.progressCount = progressCount;
+            req.loaded += transfer.transferred;
 
-            if (!intervalStarted && progressCount == 4) startInterval();
+            if (!intervalStarted && progressCount == 4) interval.start();
             if (progressCount == 1) {
                 req.id <= connections.count && testConsole.state("request " + req.id + " first transfer: " + transferredData(e.loaded));
                 req.firstProgressTime = time;
@@ -1822,7 +2199,6 @@ function TestStage(props) {
 
             prev.loaded = e.loaded;
             prev.progressTime = time;
-            progressCount++;
         });
         target.addEventListener("load", function () {
             connections.addRequest(true, url, true);
@@ -1830,11 +2206,8 @@ function TestStage(props) {
     }
 
     this.events = {
-        speedTestViewInterfaz: function speedTestViewInterfaz() {
-            elem.testStage[_TestConfig2.default.viewInterfaz == 1 ? "removeClass" : "addClass"]("view2-jGuh6");
-        },
         initializeTest: function initializeTest() {
-            var runType, gaugeNode;
+            var runType;
 
             clearResults();
 
@@ -1844,15 +2217,13 @@ function TestStage(props) {
 
             runType = _TestConfig2.default.mode == "1" || _TestConfig2.default.mode == "2" ? "download" : "upload";
 
-            gaugeNode = (0, _App.createElement)(_GaugeContainer2.default, { animate: true, loadType: runType });
+            elem.gauge = (0, _App.createElement)(_GaugeContainer2.default, { loadType: runType });
 
-            elem.gauge = _App2.default.element(gaugeNode);
-
-            elem.startWrapper.append(gaugeNode).addClass("open-m6jHb");
+            elem.startWrapper.addClass("open-m6jHb").append(elem.gauge);
 
             timer.timeout.runTest = setTimeout(function () {
                 _App2.default.event("runTest", { runType: runType });
-            }, 1050);
+            }, 850);
 
             _App2.default.event("testStatus", { opened: true, finished: false });
         },
@@ -1874,15 +2245,17 @@ function TestStage(props) {
                 count: _TestConfig2.default.connections.count,
                 loaded: 0,
                 speedRate: 0,
-                addRequest: function addRequest(send, url, upload) {
+                addRequest: function addRequest(send, url, fullUpload) {
                     connections.requests.push(_App2.default.fetch({
                         xhr: function xhr(_xhr) {
-                            requestConfig(_xhr, url);
+                            requestConfig(_xhr, url, fullUpload);
                         },
                         url: url,
                         get: { v: _App2.default.random() },
-                        post: uploadData ? uploadData[upload ? 1 : 0] : null,
-                        fail: isLocal ? null : breakTest,
+                        post: uploadData ? uploadData[fullUpload ? 1 : 0] : null,
+                        fail: function fail(status, xhr) {
+                            if (xhr.loaded < 50000) breakTest(); // < 50KB
+                        },
                         send: send
                     }));
                 }
@@ -1965,7 +2338,7 @@ function TestStage(props) {
         elem.testStage.style({ opacity: 0, pointerEvents: "none" });
 
         setTimeout(function () {
-            _App2.default.event("testStatus", { started: false, opened: false, finished: false, onprogress: false });
+            _App2.default.event("testStatus", { started: false, opened: false, finished: false });
             _App2.default.event("renderStage", { fadeIn: 1 });
         }, 300);
     };
@@ -1975,17 +2348,19 @@ function TestStage(props) {
             _App2.default.fetch({
                 url: http ? "http://ip-api.com/json/" : "https://ipapi.co/json/",
                 success: function success(fetch) {
-                    showUserProvider(_App2.default.ucWords(http ? fetch.isp : fetch.org), http ? fetch.query : fetch.ip);
+                    showUserProvider(http ? fetch.isp : fetch.org, http ? fetch.query : fetch.ip);
                 }
             });
         }
     };
 
-    return (0, _App.createElement)(elem.testStage, { className: "stage-Kbsc8 testStage" + (props.fadeIn ? " fadeIn" : "") + (_TestConfig2.default.viewInterfaz == 2 ? " view2-jGuh6" : ""), events: this.events, onMount: this.onMount }, (0, _App.createElement)("div", { className: "testContainer-y5vpt" }, (0, _App.createElement)("section", { className: "resultsArea" }, (0, _App.createElement)("div", { className: "resultsContainer" }, (0, _App.createElement)("div", { className: "stageClose-eJsd" }, (0, _App.createElement)(elem.stageClose, { className: "closeButton-fQtb", title: "Cerrar Prueba", "aria-label": "Cerrar Prueba", onclick: this.closeStage }, (0, _App.svgIcon)("close"))), (0, _App.createElement)(elem.resultsContainer, { className: "resultsData" }, (0, _App.createElement)(elem.resultDownload, { className: "resultItem resultDownload" }, (0, _App.createElement)("div", { className: "resultContainer" }, (0, _App.createElement)("div", { className: "resultHeader" }, (0, _App.createElement)("div", { className: "resultIcon" }, (0, _App.svgIcon)("downlink")), (0, _App.createElement)("div", { className: "resultTitle" }, (0, _App.createElement)("b", { textContent: "DESCARGAR" })), (0, _App.createElement)("div", { className: "resultUnit textHolder", textContent: "Mbps" })), (0, _App.createElement)("div", { className: "resultBody" }, (0, _App.createElement)(elem.speedDownloadNumber, { className: "resultValue valueNumber-vgKp", textContent: "- -" })), (0, _App.createElement)("div", { className: "resultGraph" }, (0, _App.svgIcon)("resultGraph", 0)))), (0, _App.createElement)(elem.resultUpload, { className: "resultItem resultUpload" }, (0, _App.createElement)("div", { className: "resultContainer" }, (0, _App.createElement)("div", { className: "resultHeader" }, (0, _App.createElement)("div", { className: "resultIcon" }, (0, _App.svgIcon)("uplink")), (0, _App.createElement)("div", { className: "resultTitle" }, (0, _App.createElement)("b", { textContent: "SUBIR" })), (0, _App.createElement)("div", { className: "resultUnit textHolder", textContent: "Mbps" })), (0, _App.createElement)("div", { className: "resultBody" }, (0, _App.createElement)(elem.speedUploadNumber, { className: "resultValue valueNumber-vgKp", textContent: "- -" })), (0, _App.createElement)("div", { className: "resultGraph" }, (0, _App.svgIcon)("resultGraph", 1))))))), (0, _App.createElement)("main", { className: "stageMain size-ghjk" }, (0, _App.createElement)(elem.startWrapper, { className: "startWrapper" }, (0, _App.createElement)(_StartButton2.default, { textContent: "COMENZAR", action: 1 })))), (0, _App.createElement)(elem.consoleWrapper, { className: "testConsoleWrapper hidden" }, (0, _App.createElement)("div", { className: "console-e2Lfg" }, (0, _App.createElement)("button", { className: "consoleButton-mHsq", onclick: testConsole.scroll }), (0, _App.createElement)(elem.console, { className: "console-Sq3NP", readonly: "", spellcheck: "false", value: "waiting to start the test..." }))), (0, _App.createElement)("footer", { className: "stage-footer" }, (0, _App.createElement)("div", { className: "footerItem" }, (0, _App.createElement)("div", { className: "footerItem-details" }, (0, _App.createElement)("div", { className: "footerItem-icon" }, (0, _App.svgIcon)("user")), (0, _App.createElement)("div", { className: "footerItem-content" }, (0, _App.createElement)(elem.ispName, { className: "footerItem-title ispName", textContent: _TestConfig2.default.user.isp || "- -" }), (0, _App.createElement)(elem.publicIp, { className: "footerItem-description textHolder" + (_TestConfig2.default.user.ip && _TestConfig2.default.user.ip.split("").indexOf(":") > -1 ? " hidden" : ""), textContent: _TestConfig2.default.user.ip || "- -" })))), (0, _App.createElement)("div", { className: "footerItem" }, (0, _App.createElement)("div", { className: "footerItem-details" }, (0, _App.createElement)("div", { className: "footerItem-icon" }, (0, _App.svgIcon)("connections")), (0, _App.createElement)("div", { className: "footerItem-content" }, (0, _App.createElement)("div", { className: "footerItem-title", textContent: "Conexiones" }), (0, _App.createElement)("div", { className: "footerItem-description" }, (0, _App.createElement)("div", { className: "testModeToggle-wrapper" }, (0, _App.createElement)(elem.multiModeButton, { className: "testModeToggle-button" + (_TestConfig2.default.connections.count > 1 ? " active" : ""), textContent: "Multi", onclick: function onclick() {
-            toggleConnectionsMode(_TestConfig2.default.connections.default);
-        } }), (0, _App.createElement)("span", { className: "testModeToggle-divider textHolder", textContent: "•" }), (0, _App.createElement)(elem.singleModeButton, { className: "testModeToggle-button" + (_TestConfig2.default.connections.count == 1 ? " active" : ""), textContent: "Unica", onclick: function onclick() {
-            toggleConnectionsMode(1);
-        } }))))))));
+    this.render = function () {
+        return (0, _App.createElement)(elem.testStage, { className: "stage-Kbsc8 testStage" + (props.fadeIn ? " fadeIn" : "") }, (0, _App.createElement)("div", { className: "testContainer-y5vpt" }, (0, _App.createElement)("section", { className: "resultsArea" }, (0, _App.createElement)("div", { className: "resultsContainer" }, (0, _App.createElement)("div", { className: "stageClose-eJsd" }, (0, _App.createElement)(elem.stageClose, { className: "closeButton-fQtb", title: "Cerrar Prueba", "aria-label": "Cerrar Prueba", onclick: this.closeStage }, (0, _App.svgIcon)("close"))), (0, _App.createElement)(elem.resultsContainer, { className: "resultsData" }, (0, _App.createElement)(elem.resultDownload, { className: "resultItem resultDownload" }, (0, _App.createElement)("div", { className: "resultContainer" }, (0, _App.createElement)("div", { className: "resultHeader" }, (0, _App.createElement)("div", { className: "resultIcon" }, (0, _App.svgIcon)("downlink")), (0, _App.createElement)("div", { className: "resultTitle" }, (0, _App.createElement)("b", { textContent: "DESCARGAR" })), (0, _App.createElement)("div", { className: "resultUnit textHolder", textContent: "Mbps" })), (0, _App.createElement)("div", { className: "resultBody" }, (0, _App.createElement)(elem.speedDownloadNumber, { className: "resultValue valueNumber-vgKp", textContent: "- -" })), (0, _App.createElement)("div", { className: "resultGraph" }, (0, _App.svgIcon)("resultGraph", 0)))), (0, _App.createElement)(elem.resultUpload, { className: "resultItem resultUpload" }, (0, _App.createElement)("div", { className: "resultContainer" }, (0, _App.createElement)("div", { className: "resultHeader" }, (0, _App.createElement)("div", { className: "resultIcon" }, (0, _App.svgIcon)("uplink")), (0, _App.createElement)("div", { className: "resultTitle" }, (0, _App.createElement)("b", { textContent: "SUBIR" })), (0, _App.createElement)("div", { className: "resultUnit textHolder", textContent: "Mbps" })), (0, _App.createElement)("div", { className: "resultBody" }, (0, _App.createElement)(elem.speedUploadNumber, { className: "resultValue valueNumber-vgKp", textContent: "- -" })), (0, _App.createElement)("div", { className: "resultGraph" }, (0, _App.svgIcon)("resultGraph", 1))))))), (0, _App.createElement)("main", { className: "stageMain size-ghjk" }, (0, _App.createElement)(elem.startWrapper, { className: "startWrapper" }, (0, _App.createElement)(_StartButton2.default, { textContent: "COMENZAR", action: 1 })))), (0, _App.createElement)(elem.consoleWrapper, { className: "testConsoleWrapper hidden" }, (0, _App.createElement)("div", { className: "console-e2Lfg" }, (0, _App.createElement)("button", { className: "consoleButton-mHsq", onclick: testConsole.scroll }), (0, _App.createElement)(elem.console, { className: "console-Sq3NP", readonly: "", spellcheck: "false", value: "waiting to start the test..." }))), (0, _App.createElement)("footer", { className: "stage-footer" }, (0, _App.createElement)("div", { className: "footerItem" }, (0, _App.createElement)("div", { className: "footerItem-details" }, (0, _App.createElement)("div", { className: "footerItem-icon" }, (0, _App.svgIcon)("user")), (0, _App.createElement)("div", { className: "footerItem-content" }, (0, _App.createElement)(elem.ispName, { className: "footerItem-title ispName", textContent: _TestConfig2.default.user.isp || "- -" }), (0, _App.createElement)(elem.publicIp, { className: "footerItem-description textHolder" + (_TestConfig2.default.user.ip && _TestConfig2.default.user.ip.split("").indexOf(":") > -1 ? " hidden" : ""), textContent: _TestConfig2.default.user.ip || "- -" })))), (0, _App.createElement)("div", { className: "footerItem" }, (0, _App.createElement)("div", { className: "footerItem-details" }, (0, _App.createElement)("div", { className: "footerItem-icon" }, (0, _App.svgIcon)("connections")), (0, _App.createElement)("div", { className: "footerItem-content" }, (0, _App.createElement)("div", { className: "footerItem-title", textContent: "Conexiones" }), (0, _App.createElement)("div", { className: "footerItem-description" }, (0, _App.createElement)("div", { className: "testModeToggle-wrapper" }, (0, _App.createElement)(elem.multiModeButton, { className: "testModeToggle-button" + (_TestConfig2.default.connections.count > 1 ? " active" : ""), textContent: "Multi", onclick: function onclick() {
+                toggleConnectionsMode(_TestConfig2.default.connections.default);
+            } }), (0, _App.createElement)("span", { className: "testModeToggle-divider textHolder", textContent: "•" }), (0, _App.createElement)(elem.singleModeButton, { className: "testModeToggle-button" + (_TestConfig2.default.connections.count == 1 ? " active" : ""), textContent: "Unica", onclick: function onclick() {
+                toggleConnectionsMode(1);
+            } }))))))));
+    };
 };
 
 exports.default = TestStage;
@@ -2009,8 +2384,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function StartButton(props) {
     var elem = {
-        startButton: (0, _App.createRef)("button"),
-        buttonText: (0, _App.createRef)("div")
+        startButton: (0, _App.createElement)("button"),
+        buttonText: (0, _App.createElement)("div")
     },
         action = false;
 
@@ -2022,7 +2397,9 @@ function StartButton(props) {
         _App2.default.event("initializeTest");
     };
 
-    return (0, _App.createElement)(elem.startButton, { className: "startButton", ariaLabel: props.textContent, onclick: this.handleClick }, (0, _App.createElement)(elem.buttonText, { className: "buttonText", textContent: props.textContent }), (0, _App.createElement)("div", { className: "buttonBorder" }), props.action == 1 ? (0, _App.createElement)("div", { className: "buttonAnimatedBorder" }) : null);
+    this.render = function () {
+        return (0, _App.createElement)(elem.startButton, { className: "startButton", ariaLabel: props.textContent, onclick: this.handleClick }, (0, _App.createElement)(elem.buttonText, { className: "buttonText", textContent: props.textContent }), (0, _App.createElement)("div", { className: "buttonBorder" }), props.action == 1 ? (0, _App.createElement)("div", { className: "buttonAnimatedBorder" }) : null);
+    };
 }
 
 exports.default = StartButton;
@@ -2053,28 +2430,36 @@ var _StartButton2 = _interopRequireDefault(_StartButton);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function GaugeContainer(props) {
-    var increments = _TestConfig2.default.increments,
-        incrementsLen = _TestConfig2.default.increments.length,
-        firstIncrement = _TestConfig2.default.increments[0],
-        lastIncrement = _TestConfig2.default.increments[_TestConfig2.default.increments.length - 1],
-        incrementsRefPercent = 100 / (_TestConfig2.default.increments.length - 1),
+    var increments = [0, 1, 5, 10, 20, 30, 50, 75, 100],
+        incrementsLen = increments.length,
+        firstIncrement = increments[0],
+        lastIncrement = increments[incrementsLen - 1],
+        incrementsRefPercent = 100 / (incrementsLen - 1),
+        gaugeCircleStrokeMin = 404,
+        // deg
+    gaugeCircleStrokeMax = 194,
+        // deg
+    gaugeNeedleRotateMin = 49,
+        // deg
+    gaugeNeedleRotateMax = 310,
+        // deg
+    gaugeCircleOffsetRef = gaugeCircleStrokeMax - gaugeCircleStrokeMin,
+        gaugeNeedleRotateRef = gaugeNeedleRotateMax - gaugeNeedleRotateMin,
         elem = {
-        gaugeContainer: (0, _App.createRef)("div"),
-        gaugeState: (0, _App.createRef)("div"),
-        speedDetailsNumber: (0, _App.createRef)("div"),
-        incrementsContainer: (0, _App.createRef)("div"),
-        gaugeNeedle: (0, _App.createRef)("div"),
-        gaugeIcon: (0, _App.createRef)("div"),
-        gaugeCircleSpeed: 0,
-        speedDatils: (0, _App.createRef)("div")
+        gaugeContainer: (0, _App.createElement)("div"),
+        gaugeState: (0, _App.createElement)("div"),
+        speedDetailsNumber: (0, _App.createElement)("div"),
+        incrementsContainer: (0, _App.createElement)("div"),
+        gaugeNeedle: (0, _App.createElement)("div"),
+        gaugeIcon: (0, _App.createElement)("div"),
+        gaugeCircleSpeed: (0, _App.createElement)("circle"),
+        speedDatils: (0, _App.createElement)("div")
     },
-        currentSpeed,
-        prevSpeed,
+        prevSpeed = 0,
         activeIncrements,
         gaugePercent,
         circleOffset,
-        needleRotate,
-        listenInterval = null;
+        needleRotate;
 
     function calcGaugePercent(speedRate) {
         var index,
@@ -2100,77 +2485,55 @@ function GaugeContainer(props) {
         return percent;
     }
 
-    function _updateNumber(value, speedRate) {
-        currentSpeed = speedRate;
-
+    function _updateNumber(value) {
         elem.speedDetailsNumber.textContent(value);
     }
-    function _updateIcon() {
-        if (prevSpeed != currentSpeed) {
+    function _updateIcon(speedRate) {
+        if (prevSpeed != speedRate) {
             activeIncrements = "";
 
             increments.forEach(function (item, index) {
-                if (currentSpeed >= item && currentSpeed > firstIncrement) activeIncrements += " incrementOn--" + index;
+                if (speedRate >= item && speedRate > firstIncrement) activeIncrements += " incrementOn--" + index;
             });
 
-            gaugePercent = calcGaugePercent(currentSpeed);
-            circleOffset = _TestConfig2.default.gaugeCircleOffsetRef * gaugePercent / 100 + _TestConfig2.default.gaugeCircleStrokeMin;
-            needleRotate = _TestConfig2.default.gaugeNeedleRotateRef * gaugePercent / 100 + _TestConfig2.default.gaugeNeedleRotateMin;
+            gaugePercent = calcGaugePercent(speedRate);
+            circleOffset = gaugeCircleOffsetRef * gaugePercent / 100 + gaugeCircleStrokeMin;
+            needleRotate = gaugeNeedleRotateRef * gaugePercent / 100 + gaugeNeedleRotateMin;
 
-            elem.gaugeCircleSpeed.setAttr("stroke-dashoffset", circleOffset);
+            elem.gaugeCircleSpeed.attr("stroke-dashoffset", circleOffset);
             elem.gaugeNeedle.style({ transform: "rotate(" + needleRotate + "deg)" });
-            elem.incrementsContainer.className("incrementsContainer" + activeIncrements);
-
-            prevSpeed = currentSpeed;
+            elem.incrementsContainer.attr("class", "incrementsContainer" + activeIncrements);
         }
+        prevSpeed = speedRate;
     }
     function gaugeDashoffset(speedRate) {
-        currentSpeed = speedRate;
-        _updateIcon();
+        _updateIcon(speedRate);
     }
 
     this.methods = {
         loadType: function loadType(e) {
-            elem.gaugeContainer.removeClass("download-QvMr", "upload-QvMr").addClass(e.type + "-QvMr");
-        },
-        listenSpeed: function listenSpeed() {
-            listenInterval = setInterval(_updateIcon, 200);
+            elem.gaugeContainer.removeClass("download-QvMr upload-QvMr").addClass(e.type + "-QvMr");
         },
         updateNumber: function updateNumber(e) {
-            _updateNumber(e.number, e.speedRate);
+            _updateNumber(e.number);
         },
-        updateIcon: function updateIcon() {
-            _updateIcon();
-        },
-        update: function update(e) {
-            _updateNumber(e.number, e.speedRate);
-            _updateIcon();
+        updateIcon: function updateIcon(e) {
+            _updateIcon(e.speedRate);
         },
         clear: function clear() {
-            elem.gaugeContainer.addClass("clear-QvMr");
-
-            clearInterval(listenInterval);
-            _updateNumber("0.0", "0.0");
-            _updateIcon();
-
-            setTimeout(function () {
-                elem.gaugeContainer.removeClass("clear-QvMr");
-            }, 400);
+            _updateNumber("0.0");
+            _updateIcon("0.0");
         },
         removeGauge: function removeGauge() {
             elem.gaugeContainer.remove();
         }
     };
-    this.onMount = function () {
-        elem.gaugeCircleSpeed = elem.gaugeIcon.find("gaugeCircleCurrentSpeed");
-    };
-    this.onDismount = function () {
-        clearInterval(listenInterval);
-    };
 
-    return (0, _App.createElement)(elem.gaugeContainer, { className: "gaugeContainer " + (props.loadType === void 0 ? "download" : props.loadType) + "-QvMr" + (props.animate ? " animate-QvMr" : ""), methods: this.methods, onMount: this.onMount, onDismount: this.onDismount }, (0, _App.createElement)(elem.gaugeIcon, { className: "gaugeAnim gaugeIcon" }, (0, _App.svgIcon)("gaugeVector")), (0, _App.createElement)("div", { className: "gaugeInner" }, (0, _App.createElement)(elem.incrementsContainer, { className: "incrementsContainer" }, increments.map(function (num, i) {
-        return (0, _App.createElement)("div", { className: "increment increment--" + i, textContent: num });
-    })), (0, _App.createElement)(elem.gaugeNeedle, { className: "gaugeNeedle" }, (0, _App.svgIcon)("gaugeNeedle")), (0, _App.createElement)(elem.gaugeState, { className: "gaugeState" }, (0, _App.createElement)(elem.speedDatils, { className: "speedDetailsContainer" }, (0, _App.createElement)(elem.speedDetailsNumber, { className: "speedDetailsNumber valueNumber-vgKp" }, (0, _App.createElement)("span", { textContent: "0.0" })), (0, _App.createElement)("div", { className: "speedDetailsUnit" }, (0, _App.createElement)("span", { className: "speedDetailsIcon" }, (0, _App.svgIcon)("uplink")), (0, _App.createElement)("span", { className: "textHolder", textContent: "Mbps" }))))));
+    this.render = function () {
+        return (0, _App.createElement)(elem.gaugeContainer, { className: "gaugeContainer " + (props.loadType || "download") + "-QvMr" }, (0, _App.createElement)(elem.gaugeIcon, { className: "gaugeIcon" }, (0, _App.createElement)("svg", { viewBox: "0 0 100 100", class: "svgIcon gaugeVectorIcon" }, (0, _App.createElement)("circle", { class: "gaugeCircle gaugeCircleBackground", r: "42.1", cx: "50%", cy: "50%" }), (0, _App.createElement)("circle", { class: "gaugeCircle gaugeCircleLoadingBackground", r: "42.2", cx: "50%", cy: "50%" }), (0, _App.createElement)("circle", { class: "gaugeCircle gaugeCircleStrokeLeft", r: "46", cx: "50%", cy: "50%" }), (0, _App.createElement)("circle", { class: "gaugeCircle gaugeCircleStrokeRight", r: "46", cx: "50%", cy: "50%" }), (0, _App.createElement)(elem.gaugeCircleSpeed, { class: "gaugeCircle gaugeCircleCurrentSpeed", r: "46", cx: "50%", cy: "50%", "stroke-dashoffset": "404" }))), (0, _App.createElement)("div", { className: "gaugeInner" }, (0, _App.createElement)(elem.incrementsContainer, { className: "incrementsContainer" }, increments.map(function (num, i) {
+            return (0, _App.createElement)("div", { className: "increment increment--" + i, textContent: num });
+        })), (0, _App.createElement)(elem.gaugeNeedle, { className: "gaugeNeedle" }, (0, _App.createElement)("svg", { viewBox: "0 0 120 801", class: "svgIcon gaugeNeedleIcon" }, (0, _App.createElement)("linearGradient", { id: "needleGradient", x1: "0", x2: "0", y1: "0", y2: "1" }, (0, _App.createElement)("stop", { class: "stop--1", "stop-opacity": "0", "stop-color": "transparent", offset: "40%" }), (0, _App.createElement)("stop", { class: "stop--1", "stop-opacity": "0.95", "stop-color": "currentColor", offset: "100%" })), (0, _App.createElement)("path", { d: "M95 800.5l-34.25-.958H26.5L0 .5h120l-25 800z", fill: "url(#needleGradient)" }))), (0, _App.createElement)(elem.gaugeState, { className: "gaugeState" }, (0, _App.createElement)(elem.speedDatils, { className: "speedDetailsContainer" }, (0, _App.createElement)(elem.speedDetailsNumber, { className: "speedDetailsNumber valueNumber-vgKp" }, (0, _App.createElement)("span", { textContent: "0.0" })), (0, _App.createElement)("div", { className: "speedDetailsUnit" }, (0, _App.createElement)("span", { className: "speedDetailsIcon" }, (0, _App.svgIcon)("uplink")), (0, _App.createElement)("span", { className: "textHolder", textContent: "Mbps" }))))));
+    };
 }
 
 exports.default = GaugeContainer;
@@ -2198,26 +2561,25 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function PingItem(props) {
     var elem = {
-        pingItem: (0, _App.createRef)("div"),
-        minValue: (0, _App.createRef)("b"),
-        avgValue: (0, _App.createRef)("b"),
-        maxValue: (0, _App.createRef)("b"),
-        jitterValue: (0, _App.createRef)("b"),
-        graphInner: (0, _App.createRef)("div"),
-        graphTooltip: (0, _App.createRef)("div"),
-        graphTooltipItem: (0, _App.createRef)("div"),
-        graphTooltipValue: (0, _App.createRef)("div"),
-        lineWrapper: (0, _App.createRef)("svg"),
-        graphLine: (0, _App.createRef)("polyline")
+        pingItem: (0, _App.createElement)("div"),
+        minValue: (0, _App.createElement)("b"),
+        avgValue: (0, _App.createElement)("b"),
+        maxValue: (0, _App.createElement)("b"),
+        jitterValue: (0, _App.createElement)("b"),
+        graphInner: (0, _App.createElement)("div"),
+        graphTooltip: (0, _App.createElement)("div"),
+        graphTooltipItem: (0, _App.createElement)("div"),
+        graphTooltipValue: (0, _App.createElement)("div"),
+        lineWrapper: (0, _App.createElement)("svg"),
+        graphLine: (0, _App.createElement)("polyline")
     },
         graphItems = _TestConfig2.default.ping.graphItems.map(function (item, index) {
-        return _TestConfig2.default.ping.graphVisibleItems.indexOf(index) > -1 ? (0, _App.createElement)("div", { index: index, a: "" }) : (0, _App.createElement)("div", { index: index });
+        return _TestConfig2.default.ping.graphItemsVisible.indexOf(index) > -1 ? (0, _App.createElement)("div", { index: index, a: "" }) : (0, _App.createElement)("div", { index: index });
     }),
         startedTime = _App2.default.time(),
         measures = {
         progressMode: props.progressMode,
         sendCount: 0,
-        sendTime: 0,
         ping: {
             start: 0,
             end: 0,
@@ -2229,35 +2591,36 @@ function PingItem(props) {
         },
         avg: {
             value: 0,
-            count: 0,
-            items: []
+            items: [],
+            count: 0
         },
         max: {
             value: 0
         },
         jitter: {
-            value: 0
+            value: 0,
+            items: [],
+            count: 0
         },
-        results: [],
+        prevResult: 0,
         connection: null
     },
-        graph = {
-        values: [],
-        maxValue: 50
-    },
+        graph,
         tooltipIndex,
         mousePosX,
         timeout = {
         ping: null
     },
-        abs = Math.abs,
-        hasPerformance = "performance" in window && performance.getEntriesByType && performance.getEntriesByType("resource");
+        hasPerformance = window.performance && window.performance.getEntriesByType;
 
     function finishMeasures() {
-        clearTimeout(timeout.ping);
-        measures.connection && measures.connection.abort();
-        measures.wsconnection && measures.wsconnection.close();
-        _App2.default.event("pingTestFinished");
+        if (measures.started) {
+            measures.started = false;
+            clearTimeout(timeout.ping);
+            measures.connection && measures.connection.abort();
+            measures.wsconnection && measures.wsconnection.close();
+            _App2.default.event("pingTestFinished");
+        }
     }
     function updateGraphTooltip() {
         if (tooltipIndex) {
@@ -2265,7 +2628,7 @@ function PingItem(props) {
             elem.graphTooltipValue.textContent("ping: " + graph.values[tooltipIndex] + " ms");
         }
 
-        var parentPos = elem.graphInner.node.getBoundingClientRect(),
+        var parentPos = elem.graphInner[0].getBoundingClientRect(),
             tooltipWidth = elem.graphTooltip.width(),
             posX = mousePosX - parentPos.left + 20;
 
@@ -2275,58 +2638,61 @@ function PingItem(props) {
 
         elem.graphTooltip.style({ left: posX + "px" });
     }
-    function drawGraph(value) {
-        if (!isNaN(value)) {
-            graph.values.push(value);
-            if (graph.values.length > 100) {
-                graph.values.splice(0, 90);
-            }
-            if (value > graph.maxValue) {
-                graph.maxValue = value;
-            }
-        }
-
-        var chartPoints = "",
-            portWidth = elem.graphInner.width(),
-            portHeight = elem.graphInner.height() - 25,
-            pointWidth = portWidth / _TestConfig2.default.ping.graphItems.length,
+    graph = function () {
+        var maxValue = 50,
+            viewWidth,
+            viewHeight,
+            chartPoints,
+            pointWidth,
             index,
-            len = graph.values.length,
+            len,
             item,
             pointX,
             pointY;
 
-        for (index = 0; index < len; index++) {
-            item = graph.values[index];
+        function draw(value) {
+            if (!isNaN(value)) {
+                graph.values.push(value);
+                if (graph.values.length > 100) {
+                    graph.values.splice(0, 90);
+                }
 
-            pointX = (pointWidth * index + 0.5).toFixed(2);
-            pointY = (portHeight - item / graph.maxValue * portHeight).toFixed(2);
-
-            chartPoints += " " + pointX + "," + pointY;
-        }
-
-        elem.graphLine.setAttr("points", chartPoints);
-    }
-    function adjustGraph() {
-        elem.lineWrapper.setAttr("viewBox", "0 0 " + elem.graphInner.width() + " " + elem.graphInner.height());
-    }
-    function calcJitter(values) {
-        var count = 0,
-            countLen = 0,
-            index,
-            len = values.length;
-        if (len > 1) {
-            for (index = 0; index < len; index++) {
-                if (index != len - 1) {
-                    count += abs(values[index].value - values[index + 1].value);
-                    countLen++;
+                if (value > maxValue) {
+                    maxValue = value;
                 }
             }
+
+            chartPoints = "";
+
+            len = graph.values.length;
+
+            for (index = 0; index < len; index++) {
+                item = graph.values[index];
+
+                pointX = (pointWidth * index + 0.5).toFixed(2);
+                pointY = (viewHeight - item / maxValue * viewHeight).toFixed(2);
+
+                chartPoints += pointX + "," + pointY + " ";
+            }
+
+            elem.graphLine.attr("points", chartPoints);
         }
-        return count / (countLen || 1);
-    }
+        function adjust() {
+            viewWidth = elem.graphInner.width();
+            viewHeight = elem.graphInner.height() - 25;
+            pointWidth = viewWidth / _TestConfig2.default.ping.graphItems.length;
+            elem.lineWrapper.attr("viewBox", "0 0 " + viewWidth + " " + elem.graphInner.height());
+        }
+
+        return {
+            draw: draw,
+            adjust: adjust,
+            values: []
+        };
+    }();
     function handlePing(pingTime) {
-        var time = _App2.default.time();
+        var time = _App2.default.time(),
+            jitter;
 
         measures.ping.count += 1;
 
@@ -2337,28 +2703,33 @@ function PingItem(props) {
             measures.max.value = pingTime;
         }
 
-        measures.avg.items.push({ value: pingTime, time: time });
+        measures.avg.items.push(pingTime);
         measures.avg.count += pingTime;
-        if (measures.avg.items.length > 100 /*&& measures.avg.items[measures.avg.items.length - 1].time - measures.avg.items[1].time >= 6000*/) {
-                measures.avg.count -= measures.avg.items[0].value;
-                measures.avg.items.splice(0, 1);
-            }
-
+        if (measures.avg.items.length > 100) {
+            measures.avg.count -= measures.avg.items[0];
+            measures.avg.items.splice(0, 1);
+        }
         measures.avg.value = measures.avg.count / measures.avg.items.length;
-        measures.jitter.value = calcJitter(measures.avg.items);
+
+        if (measures.ping.count > 1) {
+            jitter = pingTime > measures.prevResult ? pingTime - measures.prevResult : measures.prevResult - pingTime;
+            measures.jitter.items.push(jitter);
+            measures.jitter.count += jitter;
+            if (measures.jitter.items.length > 100) {
+                measures.jitter.count -= measures.jitter.items[0];
+                measures.jitter.items.splice(0, 1);
+            }
+            measures.jitter.value = measures.jitter.count / measures.jitter.items.length;
+        }
 
         elem.minValue.textContent(measures.min.value + " ms");
         elem.avgValue.textContent(measures.avg.value.toFixed(1) + " ms");
         elem.maxValue.textContent(measures.max.value + " ms");
         elem.jitterValue.textContent(measures.jitter.value.toFixed(1) + " ms");
 
-        measures.results.push(pingTime);
+        measures.prevResult = pingTime;
 
-        if (measures.results.length > _TestConfig2.default.ping.graphItemsLen) {
-            measures.results.splice(0, 1);
-        }
-
-        drawGraph(pingTime);
+        graph.draw(pingTime);
         updateGraphTooltip();
 
         if (time - startedTime > 12000 + measures.max.value && !_TestConfig2.default.ping.completeAll || measures.ping.count >= _TestConfig2.default.ping.results) {
@@ -2374,8 +2745,9 @@ function PingItem(props) {
             startTime,
             endTime,
             pingTime,
-            ping0 = Infinity,
-            ping1 = Infinity;
+            ping0,
+            entries,
+            timing;
 
         xhr.open(measures.connectionType, measures.connectionUrl + measures.connectionPrefix + "v=" + _App2.default.random(), true);
 
@@ -2387,47 +2759,52 @@ function PingItem(props) {
 
                 pingTime = endTime - startTime;
 
-                if (progress <= 2 && measures.sendCount == 1) {
-                    startedTime = time;
-                } else if (progress > 1) {
-                    handlePing(Math.max(pingTime, 50));
+                if (progress > 2) {
+                    if (pingTime >= 50) {
+                        handlePing(pingTime);
+                    } else {
+                        finishMeasures();
+                    }
                 }
 
                 startTime = time;
             };
-            xhr.onload = httpping;
+            xhr.onload = finishMeasures;
         } else {
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState == 2) {
-                    if (xhr.status == 200 || xhr.status == 204) {
-                        endTime = _App2.default.time();
-                        ping0 = endTime - startTime;
+            xhr.onload = function () {
+                if (xhr.status == 200 || xhr.status == 204) {
+                    endTime = _App2.default.time();
 
-                        if (hasPerformance) {
-                            var entries = performance.getEntriesByType("resource");
-                            if (entries.length > 0) {
-                                var timing = entries[entries.length - 1];
+                    pingTime = endTime - startTime;
 
-                                ping1 = parseInt((timing.responseStart || timing.responseEnd) - (timing.requestStart || timing.fetchStart));
+                    if (hasPerformance) {
+                        entries = performance.getEntriesByType("resource");
+                        if (entries.length > 0) {
+                            timing = entries[entries.length - 1];
 
-                                if (typeof performance.clearResourceTimings == "function") {
-                                    performance.clearResourceTimings();
-                                }
+                            ping0 = parseInt((timing.responseStart || timing.responseEnd) - (timing.requestStart || timing.fetchStart));
+
+                            performance.clearResourceTimings && performance.clearResourceTimings();
+
+                            if (ping0 < pingTime) {
+                                pingTime = ping0;
                             }
                         }
-                        pingTime = Math.min(ping0, ping1);
-                        //console.log("ping 0:", ping0 + "ms", " ping 1:", ping1 + "ms");
-                        if (measures.sendCount == 1) {
-                            return httpping();
-                        }
-                        timeout.ping = setTimeout(function () {
-                            if (handlePing(pingTime)) {
-                                httpping();
-                            }
-                        }, Math.max(60 - pingTime, 0));
-                    } else {
-                        finishMeasures();
                     }
+
+                    //console.log("ping 0:", ping0 + "ms", " ping 1:", ping1 + "ms");
+
+                    if (measures.sendCount == 1) {
+                        return httpping();
+                    }
+
+                    timeout.ping = setTimeout(function () {
+                        if (handlePing(pingTime)) {
+                            httpping();
+                        }
+                    }, Math.max(60 - pingTime, 0));
+                } else {
+                    finishMeasures();
                 }
             };
         }
@@ -2472,6 +2849,7 @@ function PingItem(props) {
         };
 
         ws.onerror = finishMeasures;
+        ws.onclose = finishMeasures;
 
         measures.wsconnection = ws;
     }
@@ -2494,53 +2872,68 @@ function PingItem(props) {
         }, 300);
     }
     function startMeasures() {
+        measures.started = true;
         startedTime = _App2.default.time();
+
         if (_TestConfig2.default.ping.server.wsping) {
             measures.wsping = _TestConfig2.default.ping.server.wsping;
             measures.wsmessage = _TestConfig2.default.ping.server.wsmessage;
-        } else {
-            measures.connectionUrl = measures.progressMode ? _TestConfig2.default.ping.server.download : _TestConfig2.default.ping.server.ping;
-            measures.connectionType = measures.progressMode ? "GET" : "HEAD";
-            measures.connectionPrefix = measures.connectionUrl.indexOf("?") > -1 ? "&" : "?";
-        }
 
-        if (measures.wsping) {
             return wsping();
         }
+
+        measures.connectionUrl = measures.progressMode ? _TestConfig2.default.ping.server.download : _TestConfig2.default.ping.server.ping;
+        measures.connectionType = measures.progressMode ? "GET" : "HEAD";
+        measures.connectionPrefix = measures.connectionUrl.indexOf("?") > -1 ? "&" : "?";
+
         httpping();
     }
 
     this.onMount = function () {
         startMeasures();
-        adjustGraph();
+        graph.adjust();
     };
     this.events = {
         appResize: function appResize() {
-            adjustGraph();
-            drawGraph();
+            graph.adjust();
+            graph.draw();
         }
     };
-
-    return (0, _App.createElement)(elem.pingItem, { className: "pingItem-e3Lhk", onMount: this.onMount, events: this.events }, (0, _App.createElement)("div", { className: "results-viKtf" }, (0, _App.createElement)("div", { className: "serverDetails-twBep" }, (0, _App.createElement)("button", { className: "closeButton-twBep", title: "Delete result", onclick: deleteResult }, (0, _App.svgIcon)("close")), (0, _App.createElement)("div", { className: "serverName-twBep", textContent: _TestConfig2.default.ping.server.name })), (0, _App.createElement)("div", { className: "results-hn8Gk" }, (0, _App.createElement)("div", { className: "result-x3Ayv" }, (0, _App.createElement)("span", { textContent: "min: " }), (0, _App.createElement)(elem.minValue, { textContent: "-- ms" })), (0, _App.createElement)("div", { className: "result-x3Ayv" }, (0, _App.createElement)("span", { textContent: "avg: " }), (0, _App.createElement)(elem.avgValue, { textContent: "-- ms" })), (0, _App.createElement)("div", { className: "result-x3Ayv" }, (0, _App.createElement)("span", { textContent: "max: " }), (0, _App.createElement)(elem.maxValue, { textContent: "-- ms" })), (0, _App.createElement)("div", { className: "result-x3Ayv" }, (0, _App.createElement)("span", { textContent: "jitter: " }), (0, _App.createElement)(elem.jitterValue, { textContent: "-- ms" })))), (0, _App.createElement)("div", { className: "graphWrapper-viKtf" }, (0, _App.createElement)("div", { className: "graph-o1wfv" }, (0, _App.createElement)(elem.graphInner, { className: "graphInner-o1wfv", onmousemove: graphMouseMove, onmouseout: graphMouseOut }, (0, _App.createElement)("div", { className: "graphItems-o1wfv" }, graphItems), (0, _App.createElement)(elem.lineWrapper, { class: "lineWrapper-dnXzj" }, (0, _App.createElement)(elem.graphLine, { points: "" })), (0, _App.createElement)(elem.graphTooltip, { className: "graphTooltip-o1wfv unseen-u" }, (0, _App.createElement)(elem.graphTooltipItem, { className: "tooltipItem-o1wfv", textContent: "0" }), (0, _App.createElement)(elem.graphTooltipValue, { className: "tooltipValue-o1wfv", textContent: "ping: undefined ms" }))))));
+    this.render = function () {
+        return (0, _App.createElement)(elem.pingItem, { className: "pingItem-e3Lhk" }, (0, _App.createElement)("div", { className: "results-viKtf" }, (0, _App.createElement)("div", { className: "serverDetails-twBep" }, (0, _App.createElement)("button", { className: "closeButton-twBep", title: "Delete result", onclick: deleteResult }, (0, _App.svgIcon)("close")), (0, _App.createElement)("div", { className: "serverName-twBep", textContent: _TestConfig2.default.ping.server.showName === undefined ? _TestConfig2.default.ping.server.name : _TestConfig2.default.ping.server.showName })), (0, _App.createElement)("div", { className: "results-hn8Gk" }, (0, _App.createElement)("div", { className: "result-x3Ayv" }, (0, _App.createElement)("span", { textContent: "min: " }), (0, _App.createElement)(elem.minValue, { textContent: "-- ms" })), (0, _App.createElement)("div", { className: "result-x3Ayv" }, (0, _App.createElement)("span", { textContent: "avg: " }), (0, _App.createElement)(elem.avgValue, { textContent: "-- ms" })), (0, _App.createElement)("div", { className: "result-x3Ayv" }, (0, _App.createElement)("span", { textContent: "max: " }), (0, _App.createElement)(elem.maxValue, { textContent: "-- ms" })), (0, _App.createElement)("div", { className: "result-x3Ayv" }, (0, _App.createElement)("span", { textContent: "jitter: " }), (0, _App.createElement)(elem.jitterValue, { textContent: "-- ms" })))), (0, _App.createElement)("div", { className: "graphWrapper-viKtf" }, (0, _App.createElement)("div", { className: "graph-o1wfv" }, (0, _App.createElement)(elem.graphInner, { className: "graphInner-o1wfv", onmousemove: graphMouseMove, onmouseout: graphMouseOut }, (0, _App.createElement)("div", { className: "graphItems-o1wfv" }, graphItems), (0, _App.createElement)(elem.lineWrapper, { class: "lineWrapper-dnXzj" }, (0, _App.createElement)(elem.graphLine, { points: "" })), (0, _App.createElement)(elem.graphTooltip, { className: "graphTooltip-o1wfv unseen-u" }, (0, _App.createElement)(elem.graphTooltipItem, { className: "tooltipItem-o1wfv", textContent: "0" }), (0, _App.createElement)(elem.graphTooltipValue, { className: "tooltipValue-o1wfv", textContent: "ping: undefined ms" }))))));
+    };
 }
 
 function PingStage() {
     var elem = {
-        start: (0, _App.createRef)("div"),
-        startButton: (0, _App.createRef)("button"),
-        serverDetails: (0, _App.createRef)("div"),
-        selectServer: (0, _App.createRef)("select"),
-        settingsButton: (0, _App.createRef)("button"),
-        settingsMenu: (0, _App.createRef)("div"),
-        completeAll: (0, _App.createRef)("input"),
-        progressMode: (0, _App.createRef)("input"),
-        resultsCount: (0, _App.createRef)("select"),
-        pingItems: (0, _App.createRef)("div")
+        start: (0, _App.createElement)("div"),
+        startButton: (0, _App.createElement)("button"),
+        serverDetails: (0, _App.createElement)("div"),
+        selectServer: (0, _App.createElement)("select"),
+        settingsButton: (0, _App.createElement)("button"),
+        settingsMenu: (0, _App.createElement)("div"),
+        completeAll: (0, _App.createElement)("input"),
+        progressMode: (0, _App.createElement)("input"),
+        customUrl: (0, _App.createElement)("input"),
+        resultsCount: (0, _App.createElement)("select"),
+        pingItems: (0, _App.createElement)("div")
     },
         testStarted = false,
         pingItems = [],
         itemId = 0;
 
+    function extractHostname(url) {
+        var hostname;
+        if (typeof url != "string") return "";
+        if (url.indexOf("//") > -1) {
+            hostname = url.split('/')[2];
+        } else {
+            hostname = url.split('/')[0];
+        }
+        hostname = hostname.split(':')[0];
+        hostname = hostname.split('?')[0];
+        return hostname;
+    }
     function testFinished() {
         elem.start.removeClass("disabled");
         testStarted = false;
@@ -2548,16 +2941,20 @@ function PingStage() {
     function startTest() {
         if (testStarted) return;
 
-        elem.start.addClass("disabled");
+        var indexLast = _TestConfig2.default.ping.servers.length - 1;
 
-        testStarted = true;
         _TestConfig2.default.ping.completeAll = elem.completeAll.checked();
-        if (elem.resultsCount.value() != "") _TestConfig2.default.ping.results = _App2.default.parseInt({ value: elem.resultsCount.value(), min: 50, max: 1000, default: 100 });
+        _TestConfig2.default.ping.results = _App2.default.parseInt(elem.resultsCount.value(), { min: 50, max: 1000, default: 100 });
+
+        _TestConfig2.default.ping.servers[indexLast].showName = extractHostname(elem.customUrl.value());
+        _TestConfig2.default.ping.servers[indexLast].ping = elem.customUrl.value();
+        _TestConfig2.default.ping.servers[indexLast].download = elem.customUrl.value();
+
+        if (_TestConfig2.default.ping.server.ping == "") return;
 
         itemId += 1;
 
-        var item = (0, _App.createElement)(PingItem, { id: itemId, progressMode: elem.progressMode.checked() }),
-            el = (0, _App.element)(item);
+        var el = (0, _App.createElement)(PingItem, { id: itemId, progressMode: elem.progressMode.checked() });
 
         el.id = itemId;
 
@@ -2566,12 +2963,18 @@ function PingStage() {
             pingItems[0].remove();
             pingItems.splice(0, 1);
         }
-        elem.pingItems.prepend(item);
+        elem.pingItems.prepend(el);
+
+        elem.start.addClass("disabled");
+        testStarted = true;
     }
-    function changeServer() {
-        if (_TestConfig2.default.ping.servers[elem.selectServer.value()]) {
-            _TestConfig2.default.ping.server = _TestConfig2.default.ping.servers[elem.selectServer.value()];
-            elem.serverDetails.textContent(_TestConfig2.default.ping.server.name);
+    function changeServer(id) {
+        var serverId = isNaN(id) || id == "" ? elem.selectServer.value() : id,
+            server = _TestConfig2.default.ping.servers[serverId];
+        if (server) {
+            _App2.default.setCookie({ name: "ping:serverId", value: serverId });
+            _TestConfig2.default.ping.server = server;
+            elem.serverDetails.textContent(server.name);
         }
     }
     function toggleSettingsMenu() {
@@ -2585,17 +2988,19 @@ function PingStage() {
             }
         });
     }
+    function clearCustomUrl() {
+        elem.customUrl.value("");
+    }
 
     elem.progressMode.handleClick = function () {
-        var checked = elem.progressMode.checked(),
-            child,
-            value;
-        elem.selectServer.node.childNodes.forEach(function (item, index) {
-            child = elem.selectServer.child(index);
-            value = child.attr("value");
-            child.style({ display: checked && _TestConfig2.default.ping.servers[value].download === void 0 ? "none" : "block" });
-            if (child.selected() && _TestConfig2.default.ping.servers[value].download === void 0) {
-                elem.selectServer.child(1).selected(true);
+        var value,
+            checked = elem.progressMode.checked();
+
+        elem.selectServer.childs().forEach(function (item, index) {
+            value = item.attr("value");
+            item.style({ display: checked && _TestConfig2.default.ping.servers[value].download === undefined ? "none" : "block" });
+            if (item.selected() && _TestConfig2.default.ping.servers[value].download === undefined) {
+                elem.selectServer.child(isLocal ? 1 : 0).selected(true);
                 changeServer();
             }
         });
@@ -2605,12 +3010,25 @@ function PingStage() {
         pingTestFinished: testFinished,
         deletePingResult: deletePingResult
     };
-    this.onMount = function () {};
-
-    return (0, _App.createElement)("div", { className: "stage-Kbsc8 pingStage", events: this.events, onMount: this.onMount }, (0, _App.createElement)(elem.start, { className: "start-inBnq" }, (0, _App.createElement)("div", { className: "contents-vr4n" }, (0, _App.createElement)(elem.startButton, { className: "startButton-twMcg", textContent: "start", onclick: startTest }), (0, _App.createElement)("div", { className: "selectedServer-xncHv" }, (0, _App.createElement)(elem.serverDetails, { className: "serverDetails-xncHv", textContent: _TestConfig2.default.ping.server.name }), (0, _App.createElement)("div", { className: "testSettings-qRnpi" }, (0, _App.createElement)("div", { className: "changeServer-xncHv" }, (0, _App.createElement)(elem.selectServer, { className: "select-fquMx", onchange: changeServer }, _TestConfig2.default.ping.servers.map(function (item, index) {
-        if (!isLocal && index == 0) return null;
-        return (0, _App.createElement)("option", { value: index, textContent: item.name, selected: item.name == _TestConfig2.default.ping.server.name ? "selected" : null });
-    })), (0, _App.createElement)("button", { className: "changeButton-xncHv", textContent: "Change server" })), (0, _App.createElement)("div", { className: "buttonWrapper-xvYef" }, (0, _App.createElement)(elem.settingsButton, { className: "button-xvYef", title: "Test settings", onclick: toggleSettingsMenu }, (0, _App.svgIcon)("settings")), (0, _App.createElement)(elem.settingsMenu, { className: "menu-jrbk", style: "display: none;" }, (0, _App.createElement)("div", { className: "menuInner-jrbk" }, (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("span", { textContent: "Complete all:" }), (0, _App.createElement)(elem.completeAll, { type: "checkbox" })), (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("span", { textContent: "Results:" }), (0, _App.createElement)(elem.resultsCount, {}, (0, _App.createElement)("option", { value: "100", textContent: "100", selected: "" }), (0, _App.createElement)("option", { value: "190", textContent: "190" }), (0, _App.createElement)("option", { value: "280", textContent: "280" }), (0, _App.createElement)("option", { value: "460", textContent: "460" }), (0, _App.createElement)("option", { value: "920", textContent: "920" }))), (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("span", { textContent: "Progress mode:" }), (0, _App.createElement)(elem.progressMode, { type: "checkbox", onclick: elem.progressMode.handleClick }))), (0, _App.createElement)("div", { className: "menuOverlay-jrbk", onclick: toggleSettingsMenu }))))))), (0, _App.createElement)(elem.pingItems, { className: "pingItems-id3Lk" }));
+    this.onMount = function () {
+        setTimeout(function () {
+            var serverId = _App2.default.getCookie("ping:serverId");
+            if (serverId != "") {
+                changeServer(serverId);
+                elem.selectServer.childs().forEach(function (item) {
+                    if (item.value() == serverId) {
+                        item.selected(true);
+                    }
+                });
+            }
+        }, 1);
+    };
+    this.render = function () {
+        return (0, _App.createElement)("div", { className: "stage-Kbsc8 pingStage" }, (0, _App.createElement)(elem.start, { className: "start-inBnq" }, (0, _App.createElement)("div", { className: "contents-vr4n" }, (0, _App.createElement)(elem.startButton, { className: "startButton-twMcg", textContent: "start", onclick: startTest }), (0, _App.createElement)("div", { className: "selectedServer-xncHv" }, (0, _App.createElement)(elem.serverDetails, { className: "serverDetails-xncHv", textContent: _TestConfig2.default.ping.server.name }), (0, _App.createElement)("div", { className: "testSettings-qRnpi" }, (0, _App.createElement)("div", { className: "changeServer-xncHv" }, (0, _App.createElement)(elem.selectServer, { className: "select-fquMx", onchange: changeServer }, _TestConfig2.default.ping.servers.map(function (item, index) {
+            if (!isLocal && index == 0) return null;
+            return (0, _App.createElement)("option", { value: index, textContent: item.name, selected: item.name == _TestConfig2.default.ping.server.name ? true : false });
+        })), (0, _App.createElement)("button", { className: "changeButton-xncHv", textContent: "Change server" })), (0, _App.createElement)("div", { className: "buttonWrapper-xvYef" }, (0, _App.createElement)(elem.settingsButton, { className: "button-xvYef", title: "Test settings", onclick: toggleSettingsMenu }, (0, _App.svgIcon)("settings")), (0, _App.createElement)(elem.settingsMenu, { className: "menu-jrbk", style: "display: none;" }, (0, _App.createElement)("div", { className: "menuInner-jrbk" }, (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("span", { textContent: "Complete all:" }), (0, _App.createElement)(elem.completeAll, { type: "checkbox", checked: true })), (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("span", { textContent: "Results:" }), (0, _App.createElement)(elem.resultsCount, {}, (0, _App.createElement)("option", { value: "60", textContent: "60" }), (0, _App.createElement)("option", { value: "100", textContent: "100", selected: true }), (0, _App.createElement)("option", { value: "190", textContent: "190" }), (0, _App.createElement)("option", { value: "280", textContent: "280" }), (0, _App.createElement)("option", { value: "460", textContent: "460" }), (0, _App.createElement)("option", { value: "1000", textContent: "1000" }))), (0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("span", { textContent: "Progress mode:" }), (0, _App.createElement)(elem.progressMode, { type: "checkbox", onclick: elem.progressMode.handleClick })), (0, _App.createElement)("div", { className: "menuItem-jrbk item-gxcv" }, (0, _App.createElement)("div", { textContent: "Custom Url:" }), (0, _App.createElement)("div", { className: "inputWrapper-hgjl" }, (0, _App.createElement)(elem.customUrl, { type: "text", placeholder: "Enter custom url..." }), (0, _App.createElement)("button", { className: "clearButton-ehkc", onclick: clearCustomUrl }, (0, _App.svgIcon)("close2"))))), (0, _App.createElement)("div", { className: "menuOverlay-jrbk", onclick: toggleSettingsMenu }))))))), (0, _App.createElement)(elem.pingItems, { className: "pingItems-id3Lk" }));
+    };
 };
 
 exports.default = PingStage;
@@ -2642,37 +3060,30 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function NetworkStage(props) {
     var elem = {
-        networkStage: (0, _App.createRef)("div"),
-        startButton: (0, _App.createRef)("button"),
-        urlInput: (0, _App.createRef)("input"),
-        selectUrlButton: (0, _App.createRef)("button"),
-        selectUrlMenu: (0, _App.createRef)("div"),
-        requestsCount: (0, _App.createRef)("input"),
-        persistentMode: (0, _App.createRef)("input"),
-        preventClose: (0, _App.createRef)("input"),
-        uploadMode: (0, _App.createRef)("input"),
-        content: (0, _App.createRef)("div"),
-        gauge: (0, _App.$)((0, _App.createElement)(_GaugeContainer2.default)),
-        recordButton: (0, _App.createRef)("a"),
-        console: (0, _App.createRef)("textarea"),
-        doneRequestsButton: (0, _App.createRef)("button"),
-        doneRequests: (0, _App.createRef)("span"),
-        doneRequestsMenu: (0, _App.createRef)("div"),
-        doneRequestsSwitch: (0, _App.createRef)("input"),
-        doneRequestsGroupOne: (0, _App.createRef)("div"),
-        doneRequestsItemsOne: (0, _App.createRef)("div"),
-        doneRequestsLoadedOne: (0, _App.createRef)("textarea"),
-        doneRequestsGroupTwo: (0, _App.createRef)("div"),
-        doneRequestsItemsTwo: (0, _App.createRef)("div"),
-        doneRequestsLoadedTwo: (0, _App.createRef)("textarea"),
-        currentRequests: (0, _App.createRef)("span"),
-        activeRequests: (0, _App.createRef)("span")
+        networkStage: (0, _App.createElement)("div"),
+        urlInput: (0, _App.createElement)("input"),
+        selectUrlMenu: (0, _App.createElement)("div"),
+        requestsCount: (0, _App.createElement)("input"),
+        persistentMode: (0, _App.createElement)("input"),
+        preventClose: (0, _App.createElement)("input"),
+        uploadMode: (0, _App.createElement)("input"),
+        selectedServersText: (0, _App.createElement)("div"),
+        gauge: (0, _App.createElement)(_GaugeContainer2.default),
+        console: (0, _App.createElement)("textarea"),
+        doneRequests: (0, _App.createElement)("span"),
+        doneRequestsMenu: (0, _App.createElement)("div"),
+        doneRequestsSwitch: (0, _App.createElement)("input"),
+        doneRequestsUrls: (0, _App.createElement)("div"),
+        doneRequestsLoaded: (0, _App.createElement)("textarea"),
+        currentRequests: (0, _App.createElement)("span"),
+        activeRequests: (0, _App.createElement)("span")
     },
         currentRequestsCount,
         measures = {
         loaded: 0,
         speedRate: 0,
-        recordConsole: true
+        uploadMode: false,
+        groupRequests: true
     },
         mconsole,
         getTime = Date.now,
@@ -2681,7 +3092,8 @@ function NetworkStage(props) {
         reqId = 0,
         currentRequests = {},
         interval,
-        preconnectTimeout = null;
+        preconnectTimeout = null,
+        doneRequests;
 
     mconsole = function () {
         var consoleLines = [],
@@ -2713,8 +3125,7 @@ function NetworkStage(props) {
                 _log(data);
             },
             state: function state(data) {
-                data = "[measures] " + data;
-                _log(data);
+                _log("[" + (measures.uploadMode ? "upload" : "download") + "] " + data);
             },
             clear: function clear() {
                 consoleInner = "";
@@ -2730,243 +3141,196 @@ function NetworkStage(props) {
     function transferredData(value) {
         if (value == 0) return "0KB";
         value = value / 1000;
-        return value.toFixed(value < 100 ? 2 : 1) + "KB";
+        return fixNumber(value, value < 100 ? 2 : 1) + "KB";
     }
     function loadedData(value) {
         value = value / 1000000;
-        return value.toFixed(value < 10 ? 3 : 2) + "MB";
+        return fixNumber(value, value < 10 ? 3 : 2) + "MB";
     }
+    function consoleTime(time) {
+        return (time / 1000).toFixed(time < 10000 ? 2 : 1);
+    }
+    doneRequests = function () {
+        var len, index, requests, inner, updateItems, checked;
+
+        function update(updateItems) {
+            inner = "";
+            requests = measures[measures.groupRequests ? "urls" : "requestsUrls"] || [];
+            len = requests.length < 20 ? requests.length : 20;
+            if (updateItems) {
+                elem.doneRequestsUrls.empty();
+            }
+            for (index = 0; index < len; index++) {
+                if (updateItems) {
+                    elem.doneRequestsUrls.append((0, _App.createElement)("div", { className: "textUrl-bvzp", textContent: requests[index].url }));
+                }
+                inner += (index != 0 ? "\n" : "") + loadedData(requests[index].loaded);
+            }
+            elem.doneRequestsLoaded.value(inner);
+        }
+        function handleSwitch() {
+            measures.groupRequests = checked = elem.doneRequestsSwitch.checked();
+
+            update(true);
+        }
+
+        return {
+            update: update,
+            switch: handleSwitch
+        };
+    }();
     function stopMeasures() {
         if (measures.started) {
             var prop, req;
             measures.started = false;
             measures.preconnectRequests.forEach(function (req) {
-                req.onloadend = null;
-                req.upload.onloadend = null;
-                req.isAborted = true;
                 req.abort();
             });
             for (prop in currentRequests) {
                 req = currentRequests[prop];
-                req.onloadend = null;
-                req.upload.onloadend = null;
-                req.isAborted = true;
                 req.abort();
             }
+            clearTimeout(preconnectTimeout);
             measures.activeRequests = 0;
             currentRequestsCount = 0;
-            clearTimeout(preconnectTimeout);
             interval.stop();
             elem.gauge.method("clear");
             elem.networkStage.removeClass("started-P5Hym");
-            if (typeof measures.speedRate == "number" && measures.speedRate > 0) mconsole.state("final speed: " + fixNumber(measures.speedRate, 2) + "mbps");
             mconsole.log("Finished measures.");
         }
     }
-    function _interval() {
-        var time,
-            intervalStart,
-            intervalTime,
-            loadTime,
-            loadProgress,
-            transferred,
-            speedRate = 0,
-            transfer = {
-            count: 0,
-            average: {
-                items: [],
-                len: 0,
-                time: 0
-            }
-        },
-            average = {
-            items: [],
-            maxLen: 0,
-            count: 0,
-            len: 0,
-            speed: 0
-        },
-            buffer = {
-            items: [{ loaded: 0, loadTime: measures.loadStartTime }],
-            sizeTime: 40000,
-            startTime: measures.loadStartTime,
-            size: 0,
-            speed: 0
-        },
-            prev = {
-            loaded: 0,
-            transferTime: 0,
-            rconsoleLoaded: 0
-        },
-            rconsole = {
-            loaded: 0,
-            transferred: 0
-        },
-            intervalId = null,
-            timeoutId = null,
-            index,
-            len,
-            it = 1,
-            itemsLoadedValue,
-            resultsPrecision = _TestConfig2.default.resultsPrecision;
+    interval = function () {
+        var time, started, loadTime, transferred, transfer, speed, buffer, prev, intervalId, count, resultsPrecision;
 
-        function consoleTime(time) {
-            return (time / 1000).toFixed(time < 10000 ? 2 : 1);
-        }
-        function updateDoneRequestsLoaded() {
-            len = Math.min(measures[measures.groupRequests ? "urls" : "requestsUrls"].length, 20);
-            itemsLoadedValue = "";
-            for (index = 0; index < len; index++) {
-                itemsLoadedValue += (index == 0 ? "" : "\n") + loadedData(measures[measures.groupRequests ? "urls" : "requestsUrls"][index][measures.groupRequests ? "loaded" : "requestLoaded"]);
-            }
-            measures.doneRequestsLoaded.value(itemsLoadedValue);
-        }
-        function callback(nolog) {
+        function callback(last) {
             time = getTime();
-            intervalTime = time - intervalStart;
             loadTime = time - measures.loadStartTime;
-            loadProgress = 1 - Math.min(Math.max(intervalTime - 1000, 0), 20000) / 20000;
             transferred = measures.loaded - prev.loaded;
             if (transferred) transfer.count += 1;
 
             if (transfer.count > 5 && loadTime >= 500 || loadTime > 2000) {
-                if (loadProgress > 0) {
-                    if (transfer.average.len == 0) {
-                        transfer.average.items.push(loadTime);
-                        transfer.average.len += 1;
+
+                if (transferred) {
+                    buffer.items.push({ loaded: measures.loaded, time: time });
+
+                    if (buffer.items[buffer.items.length - 1].time - buffer.items[1].time > buffer.sizeTime) {
+                        buffer.items.splice(0, 1);
                     }
-                    if (transferred > 0) {
-                        transfer.average.items.push(loadTime);
-                        transfer.average.len += 1;
-                    } else {
-                        transfer.average.items[transfer.average.len - 1] = loadTime;
-                    }
-                    if (transfer.average.items[transfer.average.len - 1] - transfer.average.items[1] > 3000) {
-                        transfer.average.items.splice(0, 1);
-                        transfer.average.len--;
-                    }
-                    transfer.average.time = (transfer.average.items[transfer.average.len - 1] - transfer.average.items[0]) / (transfer.average.len - 1);
                 }
 
-                if (measures.recordConsole) {
-                    rconsole.transferred = measures.loaded - prev.rconsoleLoaded;
-                    buffer.size += rconsole.transferred;
+                buffer.speed = (buffer.items[buffer.items.length - 1].loaded - buffer.items[0].loaded) / ((time - buffer.items[0].time) / 1000) / 125000;
 
-                    if (rconsole.transferred > 0 && time - buffer.startTime > buffer.sizeTime) {
-                        buffer.speed = buffer.size / (time - buffer.startTime);
+                speed.items.push(buffer.speed);
+                speed.count += buffer.speed;
 
-                        buffer.size = buffer.speed * buffer.sizeTime;
-                        buffer.startTime = time - buffer.sizeTime;
+                if (speed.items.length > 10) {
+                    speed.count -= speed.items[0];
+                    speed.items.splice(0, 1);
+                }
+
+                speed.average = speed.count / speed.items.length;
+
+                speed.rate = speed.average;
+                speed.rateFixed = fixNumber(speed.rate, speed.rate < 1 ? 2 : resultsPrecision);
+
+                mconsole.state("speed: " + fixNumber(speed.rate, 2) + "mbps, time: " + consoleTime(loadTime) + "s, loaded: " + loadedData(measures.loaded) + (!last ? ", transferred: " + transferredData(transferred) : ""));
+                if (!last) {
+                    elem.gauge.method("updateNumber", { number: speed.rateFixed });
+                    if (count % 3 == 0) {
+                        elem.gauge.method("updateIcon", { speedRate: speed.rate });
                     }
-                    /*if(transferred){
-                        buffer.items.push({loaded: measures.loaded, loadTime: time});
-                        if(buffer.items[buffer.items.length - 1].loadTime - buffer.items[1].loadTime > 60000){
-                            buffer.items.splice(0, 1);
-                        }
-                    }
-                    buffer.speed1 = (buffer.items[buffer.items.length - 1].loaded - buffer.items[0].loaded) / ((time - buffer.items[0].loadTime) / 1000);
-                    buffer.speed1 = buffer.speed1 / 125000;*/
-
-                    buffer.speed = buffer.size / ((time - buffer.startTime) / 1000) / 125000;
-
-                    //console.log("speed: " + buffer.speed.toFixed(2), "speed1: " + buffer.speed1.toFixed(2));
-
-                    transfer.maxLen = Math.round((transfer.average.time - 100) / 100 * 3);
-                    transfer.maxLen = Math.min(transfer.maxLen, 15);
-                    transfer.maxLen = Math.max(transfer.maxLen, 1);
-                    transfer.maxLen = Math.round((measures.uploadMode ? 10 : 5) * loadProgress) + transfer.maxLen;
-
-                    average.items.push(buffer.speed);
-                    average.count += buffer.speed;
-                    average.len++;
-                    if (average.items.length > transfer.maxLen) {
-                        len = average.items.length - transfer.maxLen;
-                        for (index = 0; index < len; index++) {
-                            average.count -= average.items[index];
-                        }
-                        average.len -= len;
-                        average.items.splice(0, len);
-                    }
-                    average.speed = average.count / average.len;
-                    //console.log("average time: " + Math.round(transfer.average.time) + "ms", "maxLen: " + transfer.maxLen, "itemsLen: " + average.items.length);
-
-                    speedRate = average.speed;
-
-                    elem.gauge.method("updateNumber", { number: fixNumber(speedRate, speedRate < 1 && resultsPrecision < 2 ? 2 : resultsPrecision), speedRate: speedRate });
-                    if (!nolog) mconsole.state("time: " + consoleTime(loadTime) + "s, loaded: " + loadedData(measures.loaded) + ", transferred: " + transferredData(transferred));
-                    if (it % 2 == 0) {
-                        elem.gauge.method("updateIcon");
-                        updateDoneRequestsLoaded();
-                    }
-                    prev.rconsoleLoaded = measures.loaded;
+                }
+                if (count % 2 == 0 || last) {
+                    doneRequests.update();
                 }
 
                 elem.activeRequests.textContent(measures.activeRequests);
                 elem.currentRequests.textContent(currentRequestsCount);
             }
 
-            measures.speedRate = speedRate;
+            measures.speedRate = speed.rate;
+            measures.loadTime = loadTime;
             prev.loaded = measures.loaded;
-            it++;
+            count++;
         }
         function start() {
-            buffer.startTime = measures.loadStartTime;
-            buffer.items[0].loadTime = measures.loadStartTime;
-            //timeoutId = setTimeout(function(){
-            intervalStart = getTime();
+            transfer = {
+                count: 0,
+                average: {
+                    items: [],
+                    len: 0,
+                    time: 0
+                }
+            };
+            speed = {
+                items: [],
+                count: 0,
+                average: 0,
+                rate: 0
+            };
+            buffer = {
+                items: [{ loaded: 0, time: measures.loadStartTime }],
+                sizeTime: 30000,
+                speed: 0
+            };
+            prev = {
+                loaded: 0
+            };
+            count = 0;
+            resultsPrecision = _TestConfig2.default.resultsPrecision;
+
             intervalId = setInterval(callback, 100);
-            //}, measures.uploadMode ? 1100 : 600);
+            started = true;
         }
         function stop() {
-            clearTimeout(timeoutId);
-            clearInterval(intervalId);
-            if (intervalStart) callback(true);
+            if (started) {
+                callback(true);
+                clearInterval(intervalId);
+
+                started = false;
+            }
         }
 
         return {
-            started: false,
             start: start,
-            stop: stop,
-            updateDoneRequestsLoaded: updateDoneRequestsLoaded
+            stop: stop
         };
-    }
-    function preconnectRequest(urls, callback) {
-        var done = 0,
-            requestsCount = {},
-            requests = [],
-            prefix,
-            first = true;
+    }();
+    function preconnectRequests(requests, callback) {
+        var count = 0,
+            first = true,
+            prefix;
 
-        urls.forEach(function (url) {
-            if (requestsCount[url.id] === void 0) requestsCount[url.id] = 0;
-            if (requestsCount[url.id] < url.preconnectCount) {
-                requests.push(url);
-                requestsCount[url.id] += 1;
-            }
-        });
         requests.forEach(function (item) {
-            var xhr = new XMLHttpRequest();
+            var xhr = new XMLHttpRequest(),
+                url;
 
-            prefix = item.url.indexOf("?") > -1 ? "&" : "?";
+            url = typeof item.preconnect == "string" ? item.preconnect : item.url;
+            prefix = url.indexOf("?") > -1 ? "&" : "?";
 
-            xhr.open("HEAD", item.url + prefix + "vr=" + random(), true);
+            xhr.open(typeof item.preconnect == "string" ? "GET" : "HEAD", url + prefix + "vr=" + random(), true);
 
-            xhr.onloadend = function () {
+            function done() {
+                count += 1;
                 if (xhr.status == 0) return stopMeasures();
                 if (first) mconsole.state("Preconnect start..."), first = false;
-                done += 1;
-                if (done == requests.length) preconnectTimeout = setTimeout(callback, 50);
-            };
+                if (count == requests.length) preconnectTimeout = setTimeout(callback, 50);
+            }
+
+            xhr.onload = done;
+            xhr.onerror = done;
+            xhr.ontimeout = done;
 
             xhr.send();
 
             measures.preconnectRequests.push(xhr);
         });
     }
-    function request(props) {
+    function request(props, isInitial) {
         var xhr = new XMLHttpRequest(),
             prevLoaded = 0,
             first = true,
+            transferred = 0,
             loaded = 0,
             post = measures.uploadMode ? _TestConfig2.default.uploadData.$99 : null,
             target = measures.uploadMode ? xhr.upload : xhr;
@@ -2977,29 +3341,32 @@ function NetworkStage(props) {
 
         target.onprogress = function (e) {
             loaded = e.loaded;
-            //loaded += parseInt(app.random().slice(-7));
-            measures.loaded += loaded - prevLoaded;
-            measures.urls[props.id].loaded += loaded - prevLoaded;
-            measures.requestsUrls[props.requestId].requestLoaded += loaded - prevLoaded;
-            prevLoaded = loaded;
+            transferred = loaded - prevLoaded;
+
+            measures.loaded += transferred;
+
+            if (isInitial && first) {
+                measures.loaded -= transferred;
+                if (!measures.loadStartTime) mconsole.state("Load start..."), measures.loadStartTime = getTime(), interval.start();
+            }
+
+            measures.urls[props.urlId].loaded += transferred;
+            measures.requestsUrls[props.requestId].loaded += transferred;
+            prevLoaded = e.loaded;
 
             if (first) measures.activeRequests += 1, first = false;
         };
-        function loadend() {
+        function done() {
             measures.doneRequests += 1;
             measures.activeRequests -= first ? 0 : 1;
 
             elem.doneRequests.textContent(measures.doneRequests);
 
-            xhr.onloadend = null;
-            target.onloadend = null;
-            xhr.abort();
-
             delete currentRequests[xhr._id];
             currentRequestsCount -= 1;
 
-            if (measures.persistentMode && loaded > 10000) {
-                // > 1KB
+            if (measures.persistentMode && loaded > 50000) {
+                // > 50KB
                 request(props).sendRequest();
             }
 
@@ -3007,8 +3374,14 @@ function NetworkStage(props) {
                 stopMeasures();
             }
         }
-        target.onloadend = loadend;
-        if (measures.uploadMode) xhr.onloadend = loadend;
+
+        if (measures.uploadMode) {
+            xhr.onload = done;
+        } else {
+            target.onload = done;
+        }
+        target.onerror = done;
+        target.ontimeout = done;
 
         currentRequests[xhr._id] = xhr;
         currentRequestsCount += 1;
@@ -3031,84 +3404,74 @@ function NetworkStage(props) {
         }
 
         measures.loaded = 0;
+        measures.loadStartTime = 0;
         measures.speedRate = 0;
+        measures.activeRequests = 0;
         measures.doneRequests = 0;
         measures.preconnectRequests = [];
-        measures.activeRequests = 0;
-        measures.persistentMode = elem.persistentMode.node.checked;
+
+        measures.persistentMode = elem.persistentMode.checked();
         measures.uploadMode = elem.uploadMode.checked();
 
-        var urls = [],
-            urlMaster = elem.urlInput.value().trim(),
-            requestsCount = _App2.default.parseInt({
-            value: elem.requestsCount.value().trim(),
-            min: 1,
-            max: 100,
-            default: 0
-        }),
-            requestsUrls = [];
+        measures.urls = [];
+        measures.requestsUrls = [];
+
+        var inputUrl = elem.urlInput.value().trim(),
+            requestsCount = _App2.default.parseInt(elem.requestsCount.value(), { min: 1, max: 100, default: 0 }),
+            index,
+            item,
+            len,
+            urlsLen;
 
         currentRequests = {};
         currentRequestsCount = 0;
-        interval = new _interval();
 
-        if (urlMaster != "" && !measures.uploadMode) {
-            urls.push({
-                url: urlMaster,
-                id: urls.length,
-                prefix: urlMaster.indexOf("?") > -1 ? "&" : "?",
-                requestsCount: 6,
-                preconnectCount: Infinity,
-                done: 0,
-                loaded: 0
-            });
-        }
+        _TestConfig2.default.network.urls["download"][0].nodes[0].url = inputUrl;
 
         _TestConfig2.default.network.urls[measures.uploadMode ? "upload" : "download"].forEach(function (url) {
             if (url.selected) {
                 url.nodes.forEach(function (node) {
-                    urls.push({
-                        url: node.url,
-                        id: urls.length,
-                        prefix: node.url.indexOf("?") > -1 ? "&" : "?",
-                        preconnectCount: _App2.default.parseInt({ value: node.preconnectCount, min: 1, default: Infinity }),
-                        requestsCount: _App2.default.parseInt({ value: node.requestsCount, min: 1, default: 6 }),
-                        done: 0,
-                        loaded: 0
-                    });
+                    if (node.url != "") {
+                        measures.urls.push({
+                            url: node.url,
+                            id: measures.urls.length,
+                            prefix: node.url.indexOf("?") > -1 ? "&" : "?",
+                            preconnect: node.preconnect,
+                            preconnectCount: _App2.default.parseInt(node.preconnectCount, { min: 1, default: Infinity }),
+                            requestsCount: _App2.default.parseInt(node.requestsCount, { min: 1, default: 6 }),
+                            done: 0,
+                            loaded: 0
+                        });
+                    }
                 });
             }
         });
 
-        if (urls.length == 0) {
+        if (measures.urls.length == 0) {
             return;
-        } else if (requestsCount != 0 && urls.length > requestsCount) {
-            urls.splice((urls.length - requestsCount) * -1);
+        } else if (requestsCount != 0 && measures.urls.length > requestsCount) {
+            measures.urls.splice((measures.urls.length - requestsCount) * -1);
         }
 
-        var index,
-            item,
-            len,
-            urlsLen = Math.ceil(requestsCount / urls.length);
+        urlsLen = Math.ceil(requestsCount / measures.urls.length);
 
-        urls.forEach(function (url) {
+        measures.urls.forEach(function (url) {
             if (requestsCount == 0) urlsLen = url.requestsCount;
             for (index = 0; index < urlsLen; index++) {
-                if (requestsCount != 0 && requestsUrls.length >= requestsCount) return;
+                if (requestsCount != 0 && measures.requestsUrls.length >= requestsCount) return;
                 item = {
                     url: url.url,
-                    id: url.id,
-                    requestId: requestsUrls.length,
+                    urlId: url.id,
+                    requestId: measures.requestsUrls.length,
                     prefix: url.prefix,
+                    preconnect: url.preconnect,
                     preconnectCount: url.preconnectCount,
                     requestsCount: url.requestsCount,
                     done: 0,
-                    loaded: 0,
-                    requestDone: 0,
-                    requestLoaded: 0
+                    loaded: 0
                 };
-                request(item);
-                requestsUrls.push(item);
+                request(item, true);
+                measures.requestsUrls.push(item);
             }
         });
 
@@ -3116,9 +3479,6 @@ function NetworkStage(props) {
             for (item in currentRequests) {
                 currentRequests[item].sendRequest();
             }
-            mconsole.state("Load start...");
-            measures.loadStartTime = getTime();
-            interval.start();
         }
 
         measures.started = true;
@@ -3126,21 +3486,10 @@ function NetworkStage(props) {
         elem.networkStage.addClass("started-P5Hym");
         elem.doneRequests.textContent("0");
         elem.currentRequests.textContent("0");
-        measures.urls = urls;
-        measures.requestsUrls = requestsUrls;
 
-        preconnectRequest(requestsUrls, sendRequests);
+        preconnectRequests(measures.requestsUrls, sendRequests);
 
-        elem.doneRequestsItemsOne.empty();
-        elem.doneRequestsLoadedOne.value("");
-        for (index = 0, len = Math.min(urls.length, 20); index < len; index++) {
-            elem.doneRequestsItemsOne.append((0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("div", { className: "textUrl-fjwq", textContent: urls[index].url })));
-        }
-        elem.doneRequestsItemsTwo.empty();
-        elem.doneRequestsLoadedTwo.value("");
-        for (index = 0, len = Math.min(requestsUrls.length, 20); index < len; index++) {
-            elem.doneRequestsItemsTwo.append((0, _App.createElement)("div", { className: "menuItem-jrbk" }, (0, _App.createElement)("div", { className: "textUrl-fjwq", textContent: requestsUrls[index].url })));
-        }
+        doneRequests.update(true);
     }
     function toggleUrlMenu() {
         elem.selectUrlMenu.style({ display: elem.selectUrlMenu.style("display") == "none" ? "block" : "none" });
@@ -3148,33 +3497,59 @@ function NetworkStage(props) {
     function toggleDoneRequestsMenu() {
         elem.doneRequestsMenu.style({ display: elem.doneRequestsMenu.style("display") == "none" ? "block" : "none" });
     }
-    function selectUrl(index, elem, type, selected) {
-        elem = (0, _App.$)(elem);
-        selected = _TestConfig2.default.network.urls[type][index].selected;
+    function selectUrl(props) {
+        props.elem = (0, _App.$)(props.elem).closest("menuItem-jrbk");
+        props.isSelected = props.elem.hasClass("selected-wrpb");
+        props.select = !props.isSelected;
 
-        if (type == "upload") {
-            elem.parent().childs().forEach(function (item) {
-                item = (0, _App.$)(item);
-                _TestConfig2.default.network.urls[type][item.attr("data-index")].selected = false;
+        if (props.multi == false) {
+            props.elem.closest("itemsContainer-tpvb").childs().forEach(function (item, index) {
+                index = item.attr("data-index");
+
+                _TestConfig2.default.network.urls[props.type][item.attr("data-index")].selected = false;
                 item.removeClass("selected-wrpb");
             });
         }
 
-        _TestConfig2.default.network.urls[type][index].selected = selected ? false : true;
-        elem[selected ? "removeClass" : "addClass"]("selected-wrpb");
+        props.selectedCount = function () {
+            var count = 0,
+                arr = _TestConfig2.default.network.urls[props.type],
+                len = arr.length,
+                index;
+            for (index = 0; index < len; index++) {
+                if (arr[index].selected) count++;
+            }
+            return count;
+        }();
+
+        if (props.isSelected && props.selectedCount <= 1) {
+            props.select = true;
+        }
+
+        _TestConfig2.default.network.urls[props.type][props.index].selected = props.select ? true : false;
+        props.elem[props.select ? "addClass" : "removeClass"]("selected-wrpb");
+        selectedServersText();
     }
     function setRequestsCount() {
         elem.requestsCount.value(this.value);
     }
+    function selectedServersText() {
+        var items = _TestConfig2.default.network.urls[measures.uploadMode ? "upload" : "download"],
+            selected = [];
+        items.forEach(function (item) {
+            if (item.selected) selected.push(item.name == undefined ? item.rname : item.name);
+        });
+        elem.selectedServersText.textContent(selected.join(", ") + " ");
+    }
+    function clearUrlInput() {
+        elem.urlInput.value("");
+    }
 
-    elem.recordButton.handleClick = function () {
-        elem.recordButton.toggleClass("off-t2qKV");
-        measures.recordConsole = !elem.recordButton.hasClass("off-t2qKV");
-    };
     elem.uploadMode.handleClick = function () {
-        var checked = elem.uploadMode.checked();
-        elem.selectUrlMenu.firstChild().attr("data-type", checked ? "upload" : "download");
-        elem.gauge.method("loadType", { type: checked ? "upload" : "download" });
+        measures.uploadMode = elem.uploadMode.checked();
+        elem.selectUrlMenu.firstChild().attr("data-type", measures.uploadMode ? "upload" : "download");
+        elem.gauge.method("loadType", { type: measures.uploadMode ? "upload" : "download" });
+        selectedServersText();
     };
     elem.preventClose.handleClick = function () {
         function prevent() {
@@ -3182,40 +3557,33 @@ function NetworkStage(props) {
         }
         window.onbeforeunload = elem.preventClose.checked() ? prevent : null;
     };
-    elem.doneRequestsSwitch.handleClick = function () {
-        var checked = elem.doneRequestsSwitch.checked();
-        measures.groupRequests = checked;
-        measures.doneRequestsLoaded = checked ? elem.doneRequestsLoadedOne : elem.doneRequestsLoadedTwo;
-        if (interval) interval.updateDoneRequestsLoaded();
-        elem.doneRequestsGroupOne.addClass("hidden");
-        elem.doneRequestsGroupTwo.addClass("hidden");
-        elem["doneRequestsGroup" + (checked ? "One" : "Two")].removeClass("hidden");
-    };
-    measures.groupRequests = true;
-    measures.doneRequestsLoaded = measures.groupRequests ? elem.doneRequestsLoadedOne : elem.doneRequestsLoadedTwo;
 
     this.onMount = function () {
         setTimeout(function () {
             elem.console.value("");
-            elem.doneRequestsLoadedOne.value("");
-            elem.doneRequestsLoadedTwo.value("");
-            elem.doneRequestsSwitch.handleClick();
             elem.uploadMode.handleClick();
             elem.preventClose.handleClick();
-        }, 100);
+            selectedServersText();
+            doneRequests.update();
+        }, 1);
     };
 
-    return (0, _App.createElement)(elem.networkStage, { className: "stage-Kbsc8 networkStage", onMount: this.onMount }, (0, _App.createElement)("div", { className: "start-BgYmU" }, (0, _App.createElement)("div", { className: "buttonWrapper-jM8zj" }, (0, _App.createElement)(elem.startButton, { className: "startButton-x4Jsv", onclick: startMeasures }, (0, _App.createElement)("span", { textContent: "start" }), (0, _App.createElement)("span", { textContent: "stop" }))), (0, _App.createElement)("div", { className: "configOptions-cs8qH" }, (0, _App.createElement)("div", { className: "group-bjFqx option-dfsj" }, (0, _App.createElement)("div", { className: "item-Z9hxm url-RD6hW" }, (0, _App.createElement)(elem.urlInput, { type: "text", name: "__url", value: "", placeholder: "Enter aditional url..." }), (0, _App.createElement)(elem.selectUrlButton, { className: "selectButton-zGsn", onclick: toggleUrlMenu }, (0, _App.svgIcon)("arrowDown")), (0, _App.createElement)(elem.selectUrlMenu, { className: "menu-jrbk", style: "display: none;" }, (0, _App.createElement)("div", { className: "menuInner-jrbk urlItems-hsqn", "data-type": "download" }, (0, _App.createElement)("div", { className: "" }, _TestConfig2.default.network.urls.download.map(function (item, index) {
-        return (0, _App.createElement)("div", { className: "menuItem-jrbk" + (item.selected ? " selected-wrpb" : ""), "data-index": index, onclick: function onclick() {
-                selectUrl(index, this, "download");
-            } }, (0, _App.createElement)("div", { className: "itemInner-ghrt" }, (0, _App.createElement)("button", { className: "selectedIcon-wrpb" }, (0, _App.svgIcon)("checked")), (0, _App.createElement)("div", { className: "textUrl-sdsf",
-            textContent: item.name ? item.name : item.nodes[0].url.replace(/^https?:\/\//, "").replace("www.", "") })));
-    })), (0, _App.createElement)("div", { className: "" }, _TestConfig2.default.network.urls.upload.map(function (item, index) {
-        return (0, _App.createElement)("div", { className: "menuItem-jrbk" + (item.selected ? " selected-wrpb" : ""), "data-index": index, onclick: function onclick() {
-                selectUrl(index, this, "upload");
-            } }, (0, _App.createElement)("div", { className: "itemInner-ghrt" }, (0, _App.createElement)("button", { className: "selectedIcon-wrpb" }, (0, _App.svgIcon)("checked")), (0, _App.createElement)("div", { className: "textUrl-sdsf",
-            textContent: item.name ? item.name : item.nodes[0].url.replace(/^https?:\/\//, "").replace("www.", "") })));
-    }))), (0, _App.createElement)("div", { className: "menuOverlay-jrbk", onclick: toggleUrlMenu }))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)(elem.requestsCount, { className: "inputNumber-neXQ6", type: "number", value: "", placeholder: "", min: "1", max: "100" }), (0, _App.createElement)("button", { className: "selectButton-zGsn" }, (0, _App.svgIcon)("arrowDown"), (0, _App.createElement)("select", { className: "select-crth", onchange: setRequestsCount }, (0, _App.createElement)("option", { value: "", selected: "" }), (0, _App.createElement)("option", { value: "1", textContent: "1" }), (0, _App.createElement)("option", { value: "6", textContent: "6" }), (0, _App.createElement)("option", { value: "10", textContent: "10" }), (0, _App.createElement)("option", { value: "20", textContent: "20" }), (0, _App.createElement)("option", { value: "30", textContent: "30" }), (0, _App.createElement)("option", { value: "50", textContent: "50" }), (0, _App.createElement)("option", { value: "60", textContent: "60" }), (0, _App.createElement)("option", { value: "80", textContent: "80" }), (0, _App.createElement)("option", { value: "100", textContent: "100" }))))), (0, _App.createElement)("div", { className: "group-bjFqx" }, (0, _App.createElement)("div", { className: "item-Z9hxm option-dfsj" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.persistentMode, { className: "input-dU4km", type: "checkbox", checked: "" }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Persistent measures" }))), (0, _App.createElement)("div", { className: "item-Z9hxm option-dfsj" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.uploadMode, { className: "input-dU4km", type: "checkbox", onclick: elem.uploadMode.handleClick }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Upload mode" }))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.preventClose, { className: "input-dU4km", type: "checkbox", onclick: elem.preventClose.handleClick }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Prevent close" })))))), (0, _App.createElement)(elem.content, { className: "content-LJepA" }, (0, _App.createElement)("div", { className: "engine-d3WGk " }, (0, _App.createElement)("div", { className: "header-cSqe2" }, (0, _App.createElement)("div", { className: "measuresDetails-Cs7YH" }, (0, _App.createElement)(elem.doneRequestsMenu, { className: "menu-jrbk doneRequestsMenu-rsgl", style: "display: none;" }, (0, _App.createElement)("div", { className: "menuInner-jrbk" }, (0, _App.createElement)("div", { className: "optionWrapper-ktwf" }, (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.doneRequestsSwitch, { className: "input-dU4km", type: "checkbox", checked: "", onclick: elem.doneRequestsSwitch.handleClick }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Group requests" })))), (0, _App.createElement)(elem.doneRequestsGroupOne, { className: "requests-bvzp requestsOne-bvzp" + (measures.groupRequests ? "" : " hidden") }, (0, _App.createElement)(elem.doneRequestsItemsOne, { className: "menuItems-jrbk" }, (0, _App.createElement)("div", { className: "menuItem-jrbk" })), (0, _App.createElement)(elem.doneRequestsLoadedOne, { readonly: "", value: "0" })), (0, _App.createElement)(elem.doneRequestsGroupTwo, { className: "requests-bvzp requestsTwo-bvzp" + (measures.groupRequests ? " hidden" : "") }, (0, _App.createElement)(elem.doneRequestsItemsTwo, { className: "menuItems-jrbk" }, (0, _App.createElement)("div", { className: "menuItem-jrbk" })), (0, _App.createElement)(elem.doneRequestsLoadedTwo, { readonly: "", value: "0" }))), (0, _App.createElement)("div", { className: "menuOverlay-jrbk", onclick: toggleDoneRequestsMenu })), (0, _App.createElement)(elem.doneRequestsButton, { className: "item-Cs7YH", textContent: "Done requests: ", onclick: toggleDoneRequestsMenu }, (0, _App.createElement)(elem.doneRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Current requests: " }, (0, _App.createElement)(elem.currentRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Active requests: " }, (0, _App.createElement)(elem.activeRequests, { textContent: 0 }))), (0, _App.createElement)("div", { className: "options-jRr7U" }, (0, _App.createElement)(elem.recordButton, { className: "item-nEaZk button-t2qKV", onclick: elem.recordButton.handleClick }))), (0, _App.createElement)("div", { className: "consoleWrapper-rWFEZ console-e2Lfg" }, (0, _App.createElement)("button", { className: "consoleButton-mHsq", onclick: mconsole.scroll }), (0, _App.createElement)(elem.console, { className: "console-r4XGp console-Sq3NP", readonly: "", value: "" }))), (0, _App.createElement)("div", { className: "wrapper-tKbg" }, (0, _App.createElement)("div", { className: "gauge-dJ3hc size-ghjk" }, (0, _App.createElement)(elem.gauge)))));
+    this.render = function () {
+        return (0, _App.createElement)(elem.networkStage, { className: "stage-Kbsc8 networkStage" }, (0, _App.createElement)("div", { className: "start-BgYmU" }, (0, _App.createElement)("div", { className: "buttonWrapper-jM8zj" }, (0, _App.createElement)("button", { className: "startButton-x4Jsv", onclick: startMeasures }, (0, _App.createElement)("span", { textContent: "start" }), (0, _App.createElement)("span", { textContent: "stop" }))), (0, _App.createElement)("div", { className: "configOptions-cs8qH" }, (0, _App.createElement)("div", { className: "group-bjFqx option-dfsj" }, (0, _App.createElement)(elem.selectUrlMenu, { className: "menu-jrbk menu-fgcv", style: "display: none;" }, (0, _App.createElement)("div", { className: "menuInner-jrbk urlItems-hsqn", "data-type": "download" }, (0, _App.createElement)("div", { className: "itemsContainer-tpvb" }, _TestConfig2.default.network.urls.download.map(function (item, index) {
+            return (0, _App.createElement)("div", { className: "menuItem-jrbk" + (item.selected ? " selected-wrpb" : ""), "data-index": index }, (0, _App.createElement)("div", { className: "itemInner-ghrt", onclick: index == 0 ? null : function () {
+                    selectUrl({ index: index, elem: this, type: "download", multi: false });
+                } }, (0, _App.createElement)("button", { className: "selectedIcon-wrpb", onclick: index == 0 ? function () {
+                    selectUrl({ index: index, elem: this, type: "download", multi: false });
+                } : null }, (0, _App.svgIcon)("checked")), index == 0 ? (0, _App.createElement)("div", { className: "inputWrapper-ghjk" }, (0, _App.createElement)(elem.urlInput, { className: "inputUrl-sdsf", type: "text", name: "__url", placeholder: "Enter aditional url..." }), (0, _App.createElement)("button", { className: "clearButton-artp", onclick: clearUrlInput }, (0, _App.svgIcon)("close2"))) : (0, _App.createElement)("div", { className: "textUrl-sdsf", textContent: item.name ? item.name : item.nodes[0].url.replace(/^https?:\/\//, "").replace("www.", "") })), (0, _App.createElement)("button", { className: "multiSelect-cbgh", onclick: function onclick() {
+                    selectUrl({ index: index, elem: this, type: "download", multi: true });
+                } }, (0, _App.svgIcon)("radioButtonOn")));
+        })), (0, _App.createElement)("div", { className: "itemsContainer-tpvb" }, _TestConfig2.default.network.urls.upload.map(function (item, index) {
+            return (0, _App.createElement)("div", { className: "menuItem-jrbk" + (item.selected ? " selected-wrpb" : ""), "data-index": index }, (0, _App.createElement)("div", { className: "itemInner-ghrt", onclick: function onclick() {
+                    selectUrl({ index: index, elem: this, type: "upload", multi: false });
+                } }, (0, _App.createElement)("button", { className: "selectedIcon-wrpb" }, (0, _App.svgIcon)("checked")), (0, _App.createElement)("div", { className: "textUrl-sdsf",
+                textContent: item.name ? item.name : item.nodes[0].url.replace(/^https?:\/\//, "").replace("www.", "") })));
+        }))), (0, _App.createElement)("div", { className: "menuOverlay-jrbk", onclick: toggleUrlMenu })), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("button", { className: "url-RD6hW", onclick: toggleUrlMenu }, (0, _App.createElement)("div", { className: "text-cghl", textContent: "Select Servers Or Url... " }), (0, _App.createElement)("div", { className: "selectButton-zGsn" }, (0, _App.svgIcon)("arrowDown")))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)(elem.requestsCount, { className: "inputNumber-neXQ6", type: "number", value: "", placeholder: "", min: "1", max: "100" }), (0, _App.createElement)("button", { className: "selectButton-zGsn" }, (0, _App.svgIcon)("arrowDown"), (0, _App.createElement)("select", { className: "select-crth", onchange: setRequestsCount }, (0, _App.createElement)("option", { value: "", selected: true }), (0, _App.createElement)("option", { value: "1", textContent: "1" }), (0, _App.createElement)("option", { value: "2", textContent: "2" }), (0, _App.createElement)("option", { value: "4", textContent: "4" }), (0, _App.createElement)("option", { value: "6", textContent: "6" }), (0, _App.createElement)("option", { value: "10", textContent: "10" }), (0, _App.createElement)("option", { value: "20", textContent: "20" }), (0, _App.createElement)("option", { value: "30", textContent: "30" }), (0, _App.createElement)("option", { value: "50", textContent: "50" }), (0, _App.createElement)("option", { value: "60", textContent: "60" }), (0, _App.createElement)("option", { value: "80", textContent: "80" }), (0, _App.createElement)("option", { value: "100", textContent: "100" }))))), (0, _App.createElement)("div", { className: "group-bjFqx" }, (0, _App.createElement)("div", { className: "item-Z9hxm option-dfsj" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.persistentMode, { className: "input-dU4km", type: "checkbox", checked: true }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Persistent measures" }))), (0, _App.createElement)("div", { className: "item-Z9hxm option-dfsj" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.uploadMode, { className: "input-dU4km", type: "checkbox", onclick: elem.uploadMode.handleClick }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Upload mode" }))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.preventClose, { className: "input-dU4km", type: "checkbox", onclick: elem.preventClose.handleClick }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Prevent close" })))), (0, _App.createElement)("div", { className: "group-bjFqx selectedServers-jgc" }, (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.svgIcon)("info"), (0, _App.createElement)(elem.selectedServersText, { className: "text-fgh", textContent: " " }))))), (0, _App.createElement)("div", { className: "content-LJepA" }, (0, _App.createElement)("div", { className: "engine-d3WGk " }, (0, _App.createElement)("div", { className: "header-cSqe2" }, (0, _App.createElement)("div", { className: "measuresDetails-Cs7YH" }, (0, _App.createElement)(elem.doneRequestsMenu, { className: "menu-jrbk doneRequestsMenu-rsgl", style: "display: none;" }, (0, _App.createElement)("div", { className: "menuInner-jrbk" }, (0, _App.createElement)("div", { className: "optionWrapper-ktwf item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.doneRequestsSwitch, { className: "input-dU4km", type: "checkbox", checked: true, onclick: doneRequests.switch }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Group requests" }))), (0, _App.createElement)("div", { className: "requests-bvzp" }, (0, _App.createElement)(elem.doneRequestsUrls, { className: "requestsUrls-bvzp" }), (0, _App.createElement)(elem.doneRequestsLoaded, { className: "requestsLoaded-bvzp", readonly: "", value: "" }))), (0, _App.createElement)("div", { className: "menuOverlay-jrbk", onclick: toggleDoneRequestsMenu })), (0, _App.createElement)("button", { className: "item-Cs7YH", textContent: "Done requests: ", onclick: toggleDoneRequestsMenu }, (0, _App.createElement)(elem.doneRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Current requests: " }, (0, _App.createElement)(elem.currentRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Active requests: " }, (0, _App.createElement)(elem.activeRequests, { textContent: 0 })))), (0, _App.createElement)("div", { className: "consoleWrapper-rWFEZ console-e2Lfg" }, (0, _App.createElement)("button", { className: "consoleButton-mHsq", onclick: mconsole.scroll }), (0, _App.createElement)(elem.console, { className: "console-r4XGp console-Sq3NP", readonly: "", value: "" }))), (0, _App.createElement)("div", { className: "wrapper-tKbg" }, (0, _App.createElement)("div", { className: "gauge-dJ3hc size-ghjk" }, (0, _App.createElement)(elem.gauge)))));
+    };
 }
 
 exports.default = NetworkStage;
