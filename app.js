@@ -1521,63 +1521,70 @@ var test = window.test = function () {
         upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true",
         ping: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true"
     }, {
-        name: "New Jersey - Vultr.com",
+        name: "Atlanta - Librespeed.org",
         id: 3,
+        http: true,
+        download: "https://atl.speedtest.clouvider.net/backend/garbage.php?cors=true&ckSize=100",
+        upload: "https://atl.speedtest.clouvider.net/backend/empty.php?cors=true",
+        ping: "https://atl.speedtest.clouvider.net/backend/empty.php?cors=true"
+    }, {
+        name: "New Jersey - Vultr.com",
+        id: 4,
         http: true,
         download: "https://nj-us-ping.vultr.com/vultr.com.100MB.bin",
         upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true",
         ping: "https://nj-us-ping.vultr.com/favicon.ico"
     }, {
         name: "Miami - Vultr.com",
-        id: 4,
+        id: 5,
         http: true,
         download: "https://fl-us-ping.vultr.com/vultr.com.100MB.bin",
         upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true",
         ping: "https://fl-us-ping.vultr.com/favicon.ico"
     }, {
         name: "Chicago - Vultr.com",
-        id: 5,
+        id: 6,
         http: true,
         download: "https://il-us-ping.vultr.com/vultr.com.100MB.bin",
         upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true",
         ping: "https://il-us-ping.vultr.com/favicon.ico"
     }, {
         name: "Atlanta - Vultr.com",
-        id: 6,
+        id: 7,
         http: true,
         download: "https://ga-us-ping.vultr.com/vultr.com.100MB.bin",
         upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true",
         ping: "https://ga-us-ping.vultr.com/favicon.ico"
     }, {
         name: "Dalas - Vultr.com",
-        id: 7,
+        id: 8,
         http: true,
         download: "https://tx-us-ping.vultr.com/vultr.com.100MB.bin",
         upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true",
         ping: "https://tx-us-ping.vultr.com/favicon.ico"
     }, {
         name: "Washington - Fireprobe.net",
-        id: 8,
+        id: 9,
         preconnect: "https://s362-fi1h5.fireinfra.net/?action=download&size=0",
         download: "https://s362-fi1h5.fireinfra.net/?action=download&size=100",
         upload: "https://s362-fi1h5.fireinfra.net/?action=xupload",
         ping: "https://s362-fi1h5.fireinfra.net/?action=download&size=0"
     }, {
         name: "Madrid - Movispeed.es",
-        id: 9,
+        id: 10,
         download: "https://m0012.movispeed.es/apolo/data/a100m.dat",
         upload: "https://m0012.movispeed.es/apolo/subida.php",
         ping: "https://m0012.movispeed.es/apolo/data/a1b.dat"
     }, {
         name: "Sydney - Fireprobe.net",
-        id: 10,
+        id: 11,
         preconnect: "https://s283-c9f39.fireinfra.net:9114/?action=download&size=0",
         download: "https://s283-c9f39.fireinfra.net:9114/?action=download&size=100",
         upload: "https://s283-c9f39.fireinfra.net:9114/?action=xupload",
         ping: "https://s283-c9f39.fireinfra.net:9114/?action=download&size=0"
     }, {
         name: "Singapore - Fireprobe.net",
-        id: 11,
+        id: 12,
         preconnect: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=0",
         download: "https://s281-tnorz.fireinfra.net:9114/?action=download&size=100",
         upload: "https://s281-tnorz.fireinfra.net:9114/?action=xupload",
@@ -1649,27 +1656,30 @@ var test = window.test = function () {
                 nodes: [{ url: servers[3].download }]
             }, {
                 name: servers[4].name,
-                nodes: [{ url: servers[4].download }]
+                nodes: [{ url: servers[3].download }]
             }, {
                 name: servers[5].name,
-                nodes: [{ url: servers[5].download }]
+                nodes: [{ url: servers[4].download }]
             }, {
                 name: servers[6].name,
-                nodes: [{ url: servers[6].download }]
+                nodes: [{ url: servers[5].download }]
             }, {
                 name: servers[7].name,
-                nodes: [{ url: servers[7].download }]
+                nodes: [{ url: servers[6].download }]
             }, {
                 name: servers[8].name,
-                nodes: [{ url: servers[8].download, preconnect: servers[8].preconnect }]
+                nodes: [{ url: servers[7].download }]
             }, {
                 name: servers[9].name,
-                nodes: [{ url: servers[9].download }]
+                nodes: [{ url: servers[8].download, preconnect: servers[8].preconnect }]
             }, {
                 name: servers[10].name,
-                nodes: [{ url: servers[10].download, preconnect: servers[10].preconnect }]
+                nodes: [{ url: servers[9].download }]
             }, {
                 name: servers[11].name,
+                nodes: [{ url: servers[10].download, preconnect: servers[10].preconnect }]
+            }, {
+                name: servers[12].name,
                 nodes: [{ url: servers[11].download, preconnect: servers[11].preconnect }]
             }, {
                 rname: "Whatsapp MMG",
@@ -1713,9 +1723,7 @@ var test = window.test = function () {
         for (index = 0; index < graphItemsLen; index++) {
             graphItems.push(index);
         }
-        pingServers = [servers[0], servers[1], { name: "New York, US", providerName: "Clouvider", providerWebsite: "https://www.clouvider.com/", wsping: "wss://nyc.speedtest.clouvider.net.prod.hosts.ooklaserver.net:8080/ws", wsmessage: "PING" }, servers[3], { name: "Miami, US", providerName: "Grupo GTD", providerWebsite: "https://www.gtd.cl/", wsping: "wss://speedtest-miami.grupogtd.com.prod.hosts.ooklaserver.net:8080/ws", wsmessage: "PING" },
-        //            {name: "Miami, US", providerName: "Cloudflare", providerWebsite: "https://www.cloudflare.com/", wsping: "wss://speedtest.eti.cfdata.org:8080/ws", wsmessage: "PING"},
-        servers[4], servers[5], servers[6], servers[7], { name: "mmg.whatsapp.net", ping: mmgWsUrl }, { name: "media-bog1-1.cdn.whatsapp.net", ping: cdnWsUrl }, { name: "Facebook Static", ping: fbStaticUrl }, { name: "Bogota, Colombia", providerName: "DIRECTV Colombia", providerWebsite: "https://www.directv.com.co/", wsping: "wss://speedtest.directv.com.co.prod.hosts.ooklaserver.net:8080/ws", wsmessage: "PING" }, { name: "Washsington, US", providerName: "Xiber LLC", providerWebsite: "https://www.xiber.net/", wsping: "wss://speedtest.washington-dc.xiber.net.prod.hosts.ooklaserver.net:8080/ws", wsmessage: "PING" }, servers[9], servers[10], servers[11], { name: "Custom Url", download: "" }];
+        pingServers = [servers[0], servers[1], { name: "New York, US", providerName: "Clouvider", providerWebsite: "https://www.clouvider.com/", wsping: "wss://nyc.speedtest.clouvider.net.prod.hosts.ooklaserver.net:8080/ws", wsmessage: "PING" }, servers[4], { name: "Miami, US", providerName: "Grupo GTD", providerWebsite: "https://www.gtd.cl/", wsping: "wss://speedtest-miami.grupogtd.com.prod.hosts.ooklaserver.net:8080/ws", wsmessage: "PING" }, servers[5], servers[6], { name: "Atlanta, US", providerName: "Clouvider", providerWebsite: "https://www.clouvider.com/", wsping: "wss://atl.speedtest.clouvider.net.prod.hosts.ooklaserver.net:8080/ws", wsmessage: "PING" }, servers[7], servers[8], { name: "mmg.whatsapp.net", ping: mmgWsUrl, download: mmgWsUrl }, { name: "media-bog1-1.cdn.whatsapp.net", ping: cdnWsUrl, download: cdnWsUrl }, { name: "Facebook Static", ping: fbStaticUrl }, { name: "Bogota, Colombia", providerName: "DIRECTV Colombia", providerWebsite: "https://www.directv.com.co/", wsping: "wss://speedtest.directv.com.co.prod.hosts.ooklaserver.net:8080/ws", wsmessage: "PING" }, { name: "Washsington, US", providerName: "Xiber LLC", providerWebsite: "https://www.xiber.net/", wsping: "wss://speedtest.washington-dc.xiber.net.prod.hosts.ooklaserver.net:8080/ws", wsmessage: "PING" }, servers[10], servers[11], servers[12], { name: "Custom Url", download: "" }];
         return {
             results: 100,
             completeAll: true,
@@ -1843,18 +1851,6 @@ function TestStage(props) {
             }
         };
     }();
-    function countArrayItems(arr) {
-        var count = 0,
-            i,
-            len = arr.length;
-        for (i = 0; i < len; i++) {
-            count += arr[i];
-        }
-        return count;
-    }
-    function speedRateMbps(rate) {
-        return rate / 125000; // convert bytes per second to megabits per second
-    }
     function transferredData(value) {
         if (value == 0) return "0KB";
         value = value / 1000;
@@ -1863,6 +1859,14 @@ function TestStage(props) {
     function loadedData(value) {
         value = value / 1000000;
         return fixNumber(value, value < 10 ? 3 : 2) + "MB";
+    }
+    function consoleTime(time) {
+        return (time / 1000).toFixed(time < 10000 ? 3 : 2);
+    }
+    function consoleSpeed(speed, speedMax, speedStr) {
+        speedMax = parseInt(speedMax).toString().length;
+        speedStr = parseInt(speed).toString().length;
+        return fixNumber(speed, 2 + (speedMax - speedStr));
     }
     function showUserProvider(isp, ip) {
         _TestConfig2.default.user.isp = isp;
@@ -1916,7 +1920,7 @@ function TestStage(props) {
             } else {
                 _App2.default.event("closeTest"), closeGauge();
             }
-        }, 500);
+        }, 600);
     }
     function clearTimers() {
         var key;
@@ -1939,8 +1943,6 @@ function TestStage(props) {
 
         return {
             draw: function draw(point, intervalTime, count) {
-                point = parseFloat(point);
-
                 if (intervalTime > maxTime) maxTime = intervalTime;
 
                 if (point > pointMax) {
@@ -1990,16 +1992,8 @@ function TestStage(props) {
         };
     }();
     interval = function () {
-        var speedNumberElem, resultsPrecision, time, hearbeatTime, intervalStartedTime, loadTime, transfer, loaded, prev, bufferEnabled, buffer, speed, took, count;
+        var speedNumberElem, resultsPrecision, time, hearbeatTime, intervalStartedTime, loadTime, transfer, loaded, prev, bufferEnabled, buffer, speed, count;
 
-        function consoleTime(time) {
-            return (time / 1000).toFixed(time < 10000 ? 3 : 2);
-        }
-        function consoleSpeed(speed) {
-            speed = speed / 125000;
-            if (speed >= 10 && !took) took = true;
-            return fixNumber(speed, took && speed < 10 ? 3 : 2);
-        }
         function callback() {
             time = _App2.default.time();
             loadTime = time - globalLoadStartTime;
@@ -2010,17 +2004,8 @@ function TestStage(props) {
             transfer.time = time - transfer.lastTime;
             if (transfer.time > transfer.maxTime) transfer.maxTime = transfer.time;
 
-            if (transfer.transferred > 0) {
-                transfer.averageCount += prev.transferTime;
-                transfer.averageLen += 1;
-                transfer.averageTime = transfer.averageCount / transfer.averageLen;
-
-                //console.log(test.runType.download ? "[download]" : "[upload]", "average time:", Math.round(transfer.averageTime), "max time:", transfer.maxTime)
-            }
-
             buffer.size += transfer.transferred;
             buffer.loaded += transfer.transferred;
-            //buffer._sizeTime = buffer.sizeTime + transfer.maxTime;
             buffer._sizeTime = transfer.maxTime > buffer.sizeTime ? transfer.maxTime : buffer.sizeTime;
 
             if (transfer.transferred && time - buffer.startTime > buffer._sizeTime) {
@@ -2033,17 +2018,16 @@ function TestStage(props) {
                 buffer.loaded = buffer.speed * loadTime;
             }
 
-            //buffer.speed = buffer.size / ((time - buffer.startTime) / 1000);
-            buffer.speed = buffer.loaded / (loadTime / 1000);
+            //buffer.speed = (buffer.size / ((time - buffer.startTime) / 1000) / 125000);
+            buffer.speed = buffer.loaded / (loadTime / 1000) / 125000;
 
-            speed.instant = loaded / (loadTime / 1000);
-
+            speed.instant = loaded / (loadTime / 1000) / 125000;
             if (bufferEnabled) {
                 speed.instant = buffer.speed > speed.instant ? buffer.speed : speed.instant;
             }
+            speed.instantMax = speed.instant > speed.instantMax ? speed.instant : speed.instantMax;
 
-            speed.maxItems = 8 /* + Math.ceil(transfer.averageTime / hearbeatTime);
-                               speed.maxItems = speed.maxItems > 15 ? 15 : speed.maxItems*/;
+            speed.maxItems = 8;
 
             speed.instantItems.push(speed.instant);
             speed.instantCount += speed.instant;
@@ -2062,22 +2046,22 @@ function TestStage(props) {
             }
 
             speed.average = speed.averageCount / speed.averageItems.length;
+            speed.averageMax = speed.average > speed.averageMax ? speed.average : speed.averageMax;
 
-            speed.rate = speedRateMbps(_TestConfig2.default.outputSpeed == "average" ? speed.average : speed.instant);
+            speed.rate = _TestConfig2.default.outputSpeed == "average" ? speed.average : speed.instant;
             speed.rateFixed = fixNumber(speed.rate, speed.rate < 1 ? 2 : resultsPrecision);
 
-            testConsole.state("instant: " + consoleSpeed(speed.instant) + "mbps, average: " + consoleSpeed(speed.average) + "mbps, time: " + consoleTime(loadTime) + "s, loaded: " + loadedData(loaded) + ", transf: " + transferredData(transfer.transferred));
+            testConsole.state("instant: " + consoleSpeed(speed.instant, speed.instantMax) + "mbps, average: " + consoleSpeed(speed.average, speed.averageMax) + "mbps, time: " + consoleTime(loadTime) + "s, loaded: " + loadedData(loaded) + ", transf: " + transferredData(transfer.transferred));
 
             speedNumberElem.textContent(speed.rateFixed);
             elem.gauge.method("updateNumber", { number: speed.rateFixed });
             graph.draw(speed.rate, intervalTime, count);
 
-            if (count % 4 == 0) {
+            if (count % 5 == 0) {
                 elem.gauge.method("updateIcon", { speedRate: speed.rate });
             }
 
             prev.loaded = loaded;
-            prev.transferTime = transfer.time;
             connections.speedRate = speed.rate;
             count++;
         }
@@ -2091,8 +2075,8 @@ function TestStage(props) {
 
                 testConsole.state("request " + req.id + " loaded: " + loadedData(req.loaded) + ", max time: " + req.maxTransferTime + "ms" + (req.firstProgressTime ? ", avg time: " + Math.round((req.lastProgressTime - req.firstProgressTime) / (req.progressCount || 1)) + "ms" : "") + (req.id > connections.count ? " (added)" : ""));
             });
-            testConsole.state("final speed: " + fixNumber(loaded / (loadTime / 1000) / 125000, 2) + "mbps, buffer speed: " + fixNumber(buffer.speed / 125000, 2) + "mbps (" + (time - buffer.startTime) + "ms)");
-            testConsole.state("total loaded: " + loadedData(connections.loaded) + ", max time: " + transfer.maxTime + "ms, avg time: " + Math.round(transfer.averageTime) + "ms");
+            testConsole.state("final speed: " + fixNumber(loaded / (loadTime / 1000) / 125000, 2) + "mbps, buffer speed: " + fixNumber(buffer.speed, 2) + "mbps (" + (time - buffer.startTime) + "ms)");
+            testConsole.state("total loaded: " + loadedData(connections.loaded) + ", max time: " + transfer.maxTime + "ms");
 
             timer.timeout.progressEnd = setTimeout(progressEnd, 500);
         }
@@ -2103,15 +2087,10 @@ function TestStage(props) {
             transfer = {
                 transferred: 0,
                 time: 0,
-                lastTime: 0,
-                maxTime: 0,
-                averageCount: 0,
-                averageLen: 0,
-                averageTime: 0
+                maxTime: 0
             };
             prev = {
-                loaded: 0,
-                transferTime: 0
+                loaded: 0
             };
             bufferEnabled = _TestConfig2.default.bufferEnabled;
             buffer = {
@@ -2123,16 +2102,17 @@ function TestStage(props) {
             };
             speed = {
                 instant: 0,
+                instantMax: 0,
                 instantItems: [],
                 instantCount: 0,
                 average: 0,
+                averageMax: 0,
                 averageItems: [],
                 averageCount: 0,
                 instantAverage: 0,
                 maxItems: 0,
                 rate: 0
             };
-            took = false;
             count = 0;
 
             graph.open();
@@ -2191,7 +2171,7 @@ function TestStage(props) {
             req.progressCount = progressCount;
             req.loaded += transfer.transferred;
 
-            if (!intervalStarted && progressCount == 4) interval.start();
+            if (!intervalStarted && progressCount == 6) interval.start();
             if (progressCount == 1) {
                 req.id <= connections.count && testConsole.state("request " + req.id + " first transfer: " + transferredData(e.loaded));
                 req.firstProgressTime = time;
@@ -2355,7 +2335,7 @@ function TestStage(props) {
     };
 
     this.render = function () {
-        return (0, _App.createElement)(elem.testStage, { className: "stage-Kbsc8 testStage" + (props.fadeIn ? " fadeIn" : "") }, (0, _App.createElement)("div", { className: "testContainer-y5vpt" }, (0, _App.createElement)("section", { className: "resultsArea" }, (0, _App.createElement)("div", { className: "resultsContainer" }, (0, _App.createElement)("div", { className: "stageClose-eJsd" }, (0, _App.createElement)(elem.stageClose, { className: "closeButton-fQtb", title: "Cerrar Prueba", "aria-label": "Cerrar Prueba", onclick: this.closeStage }, (0, _App.svgIcon)("close"))), (0, _App.createElement)(elem.resultsContainer, { className: "resultsData" }, (0, _App.createElement)(elem.resultDownload, { className: "resultItem resultDownload" }, (0, _App.createElement)("div", { className: "resultContainer" }, (0, _App.createElement)("div", { className: "resultHeader" }, (0, _App.createElement)("div", { className: "resultIcon" }, (0, _App.svgIcon)("downlink")), (0, _App.createElement)("div", { className: "resultTitle" }, (0, _App.createElement)("b", { textContent: "DESCARGAR" })), (0, _App.createElement)("div", { className: "resultUnit textHolder", textContent: "Mbps" })), (0, _App.createElement)("div", { className: "resultBody" }, (0, _App.createElement)(elem.speedDownloadNumber, { className: "resultValue valueNumber-vgKp", textContent: "- -" })), (0, _App.createElement)("div", { className: "resultGraph" }, (0, _App.svgIcon)("resultGraph", 0)))), (0, _App.createElement)(elem.resultUpload, { className: "resultItem resultUpload" }, (0, _App.createElement)("div", { className: "resultContainer" }, (0, _App.createElement)("div", { className: "resultHeader" }, (0, _App.createElement)("div", { className: "resultIcon" }, (0, _App.svgIcon)("uplink")), (0, _App.createElement)("div", { className: "resultTitle" }, (0, _App.createElement)("b", { textContent: "SUBIR" })), (0, _App.createElement)("div", { className: "resultUnit textHolder", textContent: "Mbps" })), (0, _App.createElement)("div", { className: "resultBody" }, (0, _App.createElement)(elem.speedUploadNumber, { className: "resultValue valueNumber-vgKp", textContent: "- -" })), (0, _App.createElement)("div", { className: "resultGraph" }, (0, _App.svgIcon)("resultGraph", 1))))))), (0, _App.createElement)("main", { className: "stageMain size-ghjk" }, (0, _App.createElement)(elem.startWrapper, { className: "startWrapper" }, (0, _App.createElement)(_StartButton2.default, { textContent: "COMENZAR", action: 1 })))), (0, _App.createElement)(elem.consoleWrapper, { className: "testConsoleWrapper hidden" }, (0, _App.createElement)("div", { className: "console-e2Lfg" }, (0, _App.createElement)("button", { className: "consoleButton-mHsq", onclick: testConsole.scroll }), (0, _App.createElement)(elem.console, { className: "console-Sq3NP", readonly: "", spellcheck: "false", value: "waiting to start the test..." }))), (0, _App.createElement)("footer", { className: "stage-footer" }, (0, _App.createElement)("div", { className: "footerItem" }, (0, _App.createElement)("div", { className: "footerItem-details" }, (0, _App.createElement)("div", { className: "footerItem-icon" }, (0, _App.svgIcon)("user")), (0, _App.createElement)("div", { className: "footerItem-content" }, (0, _App.createElement)(elem.ispName, { className: "footerItem-title ispName", textContent: _TestConfig2.default.user.isp || "- -" }), (0, _App.createElement)(elem.publicIp, { className: "footerItem-description textHolder" + (_TestConfig2.default.user.ip && _TestConfig2.default.user.ip.split("").indexOf(":") > -1 ? " hidden" : ""), textContent: _TestConfig2.default.user.ip || "- -" })))), (0, _App.createElement)("div", { className: "footerItem" }, (0, _App.createElement)("div", { className: "footerItem-details" }, (0, _App.createElement)("div", { className: "footerItem-icon" }, (0, _App.svgIcon)("connections")), (0, _App.createElement)("div", { className: "footerItem-content" }, (0, _App.createElement)("div", { className: "footerItem-title", textContent: "Conexiones" }), (0, _App.createElement)("div", { className: "footerItem-description" }, (0, _App.createElement)("div", { className: "testModeToggle-wrapper" }, (0, _App.createElement)(elem.multiModeButton, { className: "testModeToggle-button" + (_TestConfig2.default.connections.count > 1 ? " active" : ""), textContent: "Multi", onclick: function onclick() {
+        return (0, _App.createElement)(elem.testStage, { className: "stage-Kbsc8 testStage" + (props.fadeIn ? " fadeIn" : "") }, (0, _App.createElement)("div", { className: "testContainer-y5vpt" }, (0, _App.createElement)("section", { className: "resultsArea" }, (0, _App.createElement)("div", { className: "resultsContainer" }, (0, _App.createElement)("div", { className: "stageClose-eJsd" }, (0, _App.createElement)(elem.stageClose, { className: "closeButton-fQtb", title: "Cerrar Prueba", "aria-label": "Cerrar Prueba", onclick: this.closeStage }, (0, _App.svgIcon)("close"))), (0, _App.createElement)(elem.resultsContainer, { className: "resultsData" }, (0, _App.createElement)(elem.resultDownload, { className: "resultItem resultDownload" }, (0, _App.createElement)("div", { className: "resultContainer" }, (0, _App.createElement)("div", { className: "resultHeader" }, (0, _App.createElement)("div", { className: "resultIcon" }, (0, _App.svgIcon)("downlink")), (0, _App.createElement)("div", { className: "resultTitle" }, (0, _App.createElement)("b", { textContent: "DESCARGAR" })), (0, _App.createElement)("div", { className: "resultUnit textHolder", textContent: "Mbps" })), (0, _App.createElement)("div", { className: "resultBody" }, (0, _App.createElement)(elem.speedDownloadNumber, { className: "resultValue valueNumber-vgKp", textContent: "- -" })), (0, _App.createElement)("div", { className: "resultGraph" }, (0, _App.svgIcon)("resultGraph", 0)))), (0, _App.createElement)(elem.resultUpload, { className: "resultItem resultUpload" }, (0, _App.createElement)("div", { className: "resultContainer" }, (0, _App.createElement)("div", { className: "resultHeader" }, (0, _App.createElement)("div", { className: "resultIcon" }, (0, _App.svgIcon)("uplink")), (0, _App.createElement)("div", { className: "resultTitle" }, (0, _App.createElement)("b", { textContent: "SUBIR" })), (0, _App.createElement)("div", { className: "resultUnit textHolder", textContent: "Mbps" })), (0, _App.createElement)("div", { className: "resultBody" }, (0, _App.createElement)(elem.speedUploadNumber, { className: "resultValue valueNumber-vgKp", textContent: "- -" })), (0, _App.createElement)("div", { className: "resultGraph" }, (0, _App.svgIcon)("resultGraph", 1))))))), (0, _App.createElement)("main", { className: "stageMain" }, (0, _App.createElement)(elem.startWrapper, { className: "startWrapper" }, (0, _App.createElement)(_StartButton2.default, { textContent: "COMENZAR", action: 1 })))), (0, _App.createElement)(elem.consoleWrapper, { className: "testConsoleWrapper hidden" }, (0, _App.createElement)("div", { className: "console-e2Lfg" }, (0, _App.createElement)("button", { className: "consoleButton-mHsq", onclick: testConsole.scroll }), (0, _App.createElement)(elem.console, { className: "console-Sq3NP", readonly: "", spellcheck: "false", value: "waiting to start the test..." }))), (0, _App.createElement)("footer", { className: "stage-footer" }, (0, _App.createElement)("div", { className: "footerItem" }, (0, _App.createElement)("div", { className: "footerItem-details" }, (0, _App.createElement)("div", { className: "footerItem-icon" }, (0, _App.svgIcon)("user")), (0, _App.createElement)("div", { className: "footerItem-content" }, (0, _App.createElement)(elem.ispName, { className: "footerItem-title ispName", textContent: _TestConfig2.default.user.isp || "- -" }), (0, _App.createElement)(elem.publicIp, { className: "footerItem-description textHolder" + (_TestConfig2.default.user.ip && _TestConfig2.default.user.ip.split("").indexOf(":") > -1 ? " hidden" : ""), textContent: _TestConfig2.default.user.ip || "- -" })))), (0, _App.createElement)("div", { className: "footerItem" }, (0, _App.createElement)("div", { className: "footerItem-details" }, (0, _App.createElement)("div", { className: "footerItem-icon" }, (0, _App.svgIcon)("connections")), (0, _App.createElement)("div", { className: "footerItem-content" }, (0, _App.createElement)("div", { className: "footerItem-title", textContent: "Conexiones" }), (0, _App.createElement)("div", { className: "footerItem-description" }, (0, _App.createElement)("div", { className: "testModeToggle-wrapper" }, (0, _App.createElement)(elem.multiModeButton, { className: "testModeToggle-button" + (_TestConfig2.default.connections.count > 1 ? " active" : ""), textContent: "Multi", onclick: function onclick() {
                 toggleConnectionsMode(_TestConfig2.default.connections.default);
             } }), (0, _App.createElement)("span", { className: "testModeToggle-divider textHolder", textContent: "•" }), (0, _App.createElement)(elem.singleModeButton, { className: "testModeToggle-button" + (_TestConfig2.default.connections.count == 1 ? " active" : ""), textContent: "Unica", onclick: function onclick() {
                 toggleConnectionsMode(1);
@@ -3150,6 +3130,11 @@ function NetworkStage(props) {
     function consoleTime(time) {
         return (time / 1000).toFixed(time < 10000 ? 2 : 1);
     }
+    function consoleSpeed(speed, speedMax, speedStr) {
+        speedMax = parseInt(speedMax).toString().length;
+        speedStr = parseInt(speed).toString().length;
+        return fixNumber(speed, 2 + (speedMax - speedStr));
+    }
     doneRequests = function () {
         var len, index, requests, inner;
 
@@ -3231,12 +3216,13 @@ function NetworkStage(props) {
                 speed.average = speed.count / speed.items.length;
 
                 speed.rate = speed.average;
+                speed.rateMax = speed.rate > speed.rateMax ? speed.rate : speed.rateMax;
                 speed.rateFixed = fixNumber(speed.rate, speed.rate < 1 ? 2 : resultsPrecision);
 
-                mconsole.state("speed: " + fixNumber(speed.rate, 2) + "mbps, time: " + consoleTime(loadTime) + "s, loaded: " + loadedData(measures.loaded) + (!last ? ", transferred: " + transferredData(transferred) : ""));
+                mconsole.state("speed: " + consoleSpeed(speed.rate, speed.rateMax) + "mbps, time: " + consoleTime(loadTime) + "s, loaded: " + loadedData(measures.loaded) + (!last ? ", transferred: " + transferredData(transferred) : ""));
                 if (!last) {
                     elem.gauge.method("updateNumber", { number: speed.rateFixed });
-                    if (count % 3 == 0) {
+                    if (count % 4 == 0) {
                         elem.gauge.method("updateIcon", { speedRate: speed.rate });
                     }
                 }
@@ -3246,12 +3232,12 @@ function NetworkStage(props) {
 
                 elem.activeRequests.textContent(measures.activeRequests);
                 elem.currentRequests.textContent(currentRequestsCount);
+
+                count++;
             }
 
             measures.speedRate = speed.rate;
-            measures.loadTime = loadTime;
             prev.loaded = measures.loaded;
-            count++;
         }
         function start() {
             transfer = {
@@ -3266,7 +3252,8 @@ function NetworkStage(props) {
                 items: [],
                 count: 0,
                 average: 0,
-                rate: 0
+                rate: 0,
+                rateMax: 0
             };
             buffer = {
                 items: [{ loaded: 0, time: measures.loadStartTime }],
@@ -3582,7 +3569,7 @@ function NetworkStage(props) {
                     selectUrl({ index: index, elem: this, type: "upload", multi: false });
                 } }, (0, _App.createElement)("button", { className: "selectedIcon-wrpb" }, (0, _App.svgIcon)("checked")), (0, _App.createElement)("div", { className: "textUrl-sdsf",
                 textContent: item.name ? item.name : item.nodes[0].url.replace(/^https?:\/\//, "").replace("www.", "") })));
-        }))), (0, _App.createElement)("div", { className: "menuOverlay-jrbk", onclick: toggleUrlMenu })), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("button", { className: "url-RD6hW", onclick: toggleUrlMenu }, (0, _App.createElement)("div", { className: "text-cghl", textContent: "Select Servers Or Url... " }), (0, _App.createElement)("div", { className: "selectButton-zGsn" }, (0, _App.svgIcon)("arrowDown")))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)(elem.requestsCount, { className: "inputNumber-neXQ6", type: "number", value: "", placeholder: "", min: "1", max: "100" }), (0, _App.createElement)("button", { className: "selectButton-zGsn" }, (0, _App.svgIcon)("arrowDown"), (0, _App.createElement)("select", { className: "select-crth", onchange: setRequestsCount }, (0, _App.createElement)("option", { value: "", selected: true }), (0, _App.createElement)("option", { value: "1", textContent: "1" }), (0, _App.createElement)("option", { value: "2", textContent: "2" }), (0, _App.createElement)("option", { value: "4", textContent: "4" }), (0, _App.createElement)("option", { value: "6", textContent: "6" }), (0, _App.createElement)("option", { value: "10", textContent: "10" }), (0, _App.createElement)("option", { value: "20", textContent: "20" }), (0, _App.createElement)("option", { value: "30", textContent: "30" }), (0, _App.createElement)("option", { value: "50", textContent: "50" }), (0, _App.createElement)("option", { value: "60", textContent: "60" }), (0, _App.createElement)("option", { value: "80", textContent: "80" }), (0, _App.createElement)("option", { value: "100", textContent: "100" }))))), (0, _App.createElement)("div", { className: "group-bjFqx" }, (0, _App.createElement)("div", { className: "item-Z9hxm option-dfsj" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.persistentMode, { className: "input-dU4km", type: "checkbox", checked: true }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Persistent measures" }))), (0, _App.createElement)("div", { className: "item-Z9hxm option-dfsj" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.uploadMode, { className: "input-dU4km", type: "checkbox", onclick: elem.uploadMode.handleClick }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Upload mode" }))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.preventClose, { className: "input-dU4km", type: "checkbox", onclick: elem.preventClose.handleClick }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Prevent close" })))), (0, _App.createElement)("div", { className: "group-bjFqx selectedServers-jgc" }, (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.svgIcon)("info"), (0, _App.createElement)(elem.selectedServersText, { className: "text-fgh", textContent: " " }))))), (0, _App.createElement)("div", { className: "content-LJepA" }, (0, _App.createElement)("div", { className: "engine-d3WGk " }, (0, _App.createElement)("div", { className: "header-cSqe2" }, (0, _App.createElement)("div", { className: "measuresDetails-Cs7YH" }, (0, _App.createElement)(elem.doneRequestsMenu, { className: "menu-jrbk doneRequestsMenu-rsgl", style: "display: none;" }, (0, _App.createElement)("div", { className: "menuInner-jrbk" }, (0, _App.createElement)("div", { className: "optionWrapper-ktwf item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.doneRequestsSwitch, { className: "input-dU4km", type: "checkbox", checked: true, onclick: doneRequests.switch }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Group requests" }))), (0, _App.createElement)("div", { className: "requests-bvzp" }, (0, _App.createElement)(elem.doneRequestsUrls, { className: "requestsUrls-bvzp" }), (0, _App.createElement)(elem.doneRequestsLoaded, { className: "requestsLoaded-bvzp", readonly: "", value: "" }))), (0, _App.createElement)("div", { className: "menuOverlay-jrbk", onclick: toggleDoneRequestsMenu })), (0, _App.createElement)("button", { className: "item-Cs7YH", textContent: "Done requests: ", onclick: toggleDoneRequestsMenu }, (0, _App.createElement)(elem.doneRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Current requests: " }, (0, _App.createElement)(elem.currentRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Active requests: " }, (0, _App.createElement)(elem.activeRequests, { textContent: 0 })))), (0, _App.createElement)("div", { className: "consoleWrapper-rWFEZ console-e2Lfg" }, (0, _App.createElement)("button", { className: "consoleButton-mHsq", onclick: mconsole.scroll }), (0, _App.createElement)(elem.console, { className: "console-r4XGp console-Sq3NP", readonly: "", value: "" }))), (0, _App.createElement)("div", { className: "wrapper-tKbg" }, (0, _App.createElement)("div", { className: "gauge-dJ3hc size-ghjk" }, (0, _App.createElement)(elem.gauge)))));
+        }))), (0, _App.createElement)("div", { className: "menuOverlay-jrbk", onclick: toggleUrlMenu })), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("button", { className: "url-RD6hW", onclick: toggleUrlMenu }, (0, _App.createElement)("div", { className: "text-cghl", textContent: "Select Servers Or Url... " }), (0, _App.createElement)("div", { className: "selectButton-zGsn" }, (0, _App.svgIcon)("arrowDown")))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)(elem.requestsCount, { className: "inputNumber-neXQ6", type: "number", value: "", placeholder: "", min: "1", max: "100" }), (0, _App.createElement)("button", { className: "selectButton-zGsn" }, (0, _App.svgIcon)("arrowDown"), (0, _App.createElement)("select", { className: "select-crth", onchange: setRequestsCount }, (0, _App.createElement)("option", { value: "", selected: true }), (0, _App.createElement)("option", { value: "1", textContent: "1" }), (0, _App.createElement)("option", { value: "2", textContent: "2" }), (0, _App.createElement)("option", { value: "4", textContent: "4" }), (0, _App.createElement)("option", { value: "6", textContent: "6" }), (0, _App.createElement)("option", { value: "10", textContent: "10" }), (0, _App.createElement)("option", { value: "20", textContent: "20" }), (0, _App.createElement)("option", { value: "30", textContent: "30" }), (0, _App.createElement)("option", { value: "50", textContent: "50" }), (0, _App.createElement)("option", { value: "60", textContent: "60" }), (0, _App.createElement)("option", { value: "80", textContent: "80" }), (0, _App.createElement)("option", { value: "100", textContent: "100" }))))), (0, _App.createElement)("div", { className: "group-bjFqx" }, (0, _App.createElement)("div", { className: "item-Z9hxm option-dfsj" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.persistentMode, { className: "input-dU4km", type: "checkbox", checked: true }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Persistent measures" }))), (0, _App.createElement)("div", { className: "item-Z9hxm option-dfsj" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.uploadMode, { className: "input-dU4km", type: "checkbox", onclick: elem.uploadMode.handleClick }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Upload mode" }))), (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.preventClose, { className: "input-dU4km", type: "checkbox", onclick: elem.preventClose.handleClick }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Prevent close" })))), (0, _App.createElement)("div", { className: "group-bjFqx selectedServers-jgc" }, (0, _App.createElement)("div", { className: "item-Z9hxm" }, (0, _App.svgIcon)("info"), (0, _App.createElement)(elem.selectedServersText, { className: "text-fgh", textContent: " " }))))), (0, _App.createElement)("div", { className: "content-LJepA" }, (0, _App.createElement)("div", { className: "engine-d3WGk " }, (0, _App.createElement)("div", { className: "header-cSqe2" }, (0, _App.createElement)("div", { className: "measuresDetails-Cs7YH" }, (0, _App.createElement)(elem.doneRequestsMenu, { className: "menu-jrbk doneRequestsMenu-rsgl", style: "display: none;" }, (0, _App.createElement)("div", { className: "menuInner-jrbk" }, (0, _App.createElement)("div", { className: "optionWrapper-ktwf item-Z9hxm" }, (0, _App.createElement)("label", { className: "switch-dU4km" }, (0, _App.createElement)(elem.doneRequestsSwitch, { className: "input-dU4km", type: "checkbox", checked: true, onclick: doneRequests.switch }), (0, _App.createElement)("span", { className: "slider-dU4km" }), (0, _App.createElement)("span", { className: "text-dU4km", textContent: "Group requests" }))), (0, _App.createElement)("div", { className: "requests-bvzp" }, (0, _App.createElement)(elem.doneRequestsUrls, { className: "requestsUrls-bvzp" }), (0, _App.createElement)(elem.doneRequestsLoaded, { className: "requestsLoaded-bvzp", readonly: "", value: "" }))), (0, _App.createElement)("div", { className: "menuOverlay-jrbk", onclick: toggleDoneRequestsMenu })), (0, _App.createElement)("button", { className: "item-Cs7YH", textContent: "Done requests: ", onclick: toggleDoneRequestsMenu }, (0, _App.createElement)(elem.doneRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Current requests: " }, (0, _App.createElement)(elem.currentRequests, { textContent: 0 })), (0, _App.createElement)("div", { className: "item-Cs7YH", textContent: "Active requests: " }, (0, _App.createElement)(elem.activeRequests, { textContent: 0 })))), (0, _App.createElement)("div", { className: "consoleWrapper-rWFEZ console-e2Lfg" }, (0, _App.createElement)("button", { className: "consoleButton-mHsq", onclick: mconsole.scroll }), (0, _App.createElement)(elem.console, { className: "console-r4XGp console-Sq3NP", readonly: "", value: "" }))), (0, _App.createElement)("div", { className: "wrapper-tKbg" }, (0, _App.createElement)("div", { className: "gauge-dJ3hc" }, (0, _App.createElement)(elem.gauge)))));
     };
 }
 
