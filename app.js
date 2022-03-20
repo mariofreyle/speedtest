@@ -1,140 +1,17 @@
-/******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// define __esModule on exports
-/******/ 	__webpack_require__.r = function(exports) {
-/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 		}
-/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 	};
-/******/
-/******/ 	// create a fake namespace object
-/******/ 	// mode & 1: value is a module id, require it
-/******/ 	// mode & 2: merge all properties of value into the ns
-/******/ 	// mode & 4: return value when already ns object
-/******/ 	// mode & 8|1: behave like require
-/******/ 	__webpack_require__.t = function(value, mode) {
-/******/ 		if(mode & 1) value = __webpack_require__(value);
-/******/ 		if(mode & 8) return value;
-/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
-/******/ 		var ns = Object.create(null);
-/******/ 		__webpack_require__.r(ns);
-/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
-/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
-/******/ 		return ns;
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__webpack_require__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
-/******/
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
-/******/ })
-/************************************************************************/
-/******/ ([
-/* 0 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _assets_js_App__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
-/* harmony import */ var _components_MainHeader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
-/* harmony import */ var _components_MainContent__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3);
-
-
-
-
-
-(function(w, d, app){
-    var $html = Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["$"])("html"),
-        maxWidth = 850,
-        fontSize = 15,
-        num, width;
-    
-    function resize(){
-        width = window.innerWidth;
-        num = width / maxWidth;
-        num = num < 1 ? num : 1;
-        num = num + ((1 - num) / 1.5);
-        if(width < 350){
-            num = num * (width / 350);
-        }
-        $html.style({fontSize: (fontSize * num) + "px"});
-    }
-    
-    window.addEventListener("resize", resize);
-    resize();
-    
-    $html.addClass(app.isMobile ? "mobile" : "desktop");
-    
-    
-    // ========= Page Output - Render Page ===========
-    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["$"])("#app").render(app.createElement("div", {}, app.createElement(_components_MainHeader__WEBPACK_IMPORTED_MODULE_1__["default"]), app.createElement(_components_MainContent__WEBPACK_IMPORTED_MODULE_2__["default"])));
-
-})(window, document, _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"]);
-
-/***/ }),
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ([
+/* 0 */,
 /* 1 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createElement", function() { return createElement; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "svgIcon", function() { return svgIcon; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "$", function() { return $; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
+/* harmony export */   "createElement": () => (/* binding */ createElement),
+/* harmony export */   "svgIcon": () => (/* binding */ svgIcon),
+/* harmony export */   "$": () => (/* binding */ $)
+/* harmony export */ });
 window.app = function(window, document){
     // Initialize Variables
     var app, node,
@@ -336,9 +213,10 @@ window.app = function(window, document){
 
             for(index = 2; index < argsLen; index++){
                 if(item = args[index]){
-                    if(isArray(item)){
-                        len = item.length;
-                        for(ind = 0; ind < len; ind++){
+                    if(typeof item == "string"){
+                        elem.appendChild(document.createTextNode(item));
+                    }else if(isArray(item)){
+                        for(ind = 0, len = item.length; ind < len; ind++){
                             if(node = item[ind]){
                                 node = (node.nodeType ? node : node[0]) || {};
                                 if(node.nodeType){
@@ -373,17 +251,19 @@ window.app = function(window, document){
         }
         
         var elem,
-            match = [],
+            match,
             i = 0;
         
-        if(selector.nodeType){
-            match = [selector];
-        }else if(typeof selector == "string"){
+        if(typeof selector == "string"){
             try {
                 match = document.querySelectorAll(selector);
-            }catch(e){}
-        }else if(isIterable(selector)){
+            }catch(e){
+                match = [];
+            }
+        }else if(isIterable(selector) && selector !== window){
             match = selector;
+        }else{
+            match = [selector]
         }
         
         while(elem = match[i]){
@@ -668,26 +548,28 @@ window.app = function(window, document){
             return new element.init(find);
         },
         prepend: function(insert){
-            var node,
-                elem = this[0],
-                i = 0;
+            var elem = this[0],
+                i,
+                len,
+                node;
             
             if(insert){
                 insert = isArray(insert) ? insert : [insert];
                 insert.reverse && insert.reverse();
                 
                 if(elem){
-                    while(node = insert[i++]){
-                        node = node.length ? node[0] : node;
-                        
-                        if(node.nodeType){
-                            if(elem.firstChild){
-                                elem.insertBefore(node, elem.firstChild);
-                            }else{
-                                elem.appendChild(node);
-                            }
+                    for(i = 0, len = insert.length; i < len; i++){
+                        if(node = insert[i]){
+                            node = node.length ? node[0] : node;
 
-                            element.mountAll(node);
+                            if(node.nodeType){
+                                if(elem.firstChild){
+                                    elem.insertBefore(node, elem.firstChild);
+                                }else{
+                                    elem.appendChild(node);
+                                }
+                                element.mountAll(node);
+                            }
                         }
                     }
                 }
@@ -696,20 +578,23 @@ window.app = function(window, document){
             return this;
         },
         append: function(insert){
-            var node,
-                elem = this[0],
-                i = 0;
+            var elem = this[0],
+                i,
+                len,
+                node;
             
             if(insert){
                 insert = isArray(insert) ? insert : [insert];
                 
                 if(elem){
-                    while(node = insert[i++]){
-                        node = node.length ? node[0] : node;
-                        if(node.nodeType){
-                            elem.appendChild(node);
+                    for(i = 0, len = insert.length; i < len; i++){
+                        if(node = insert[i]){
+                            node = node.length ? node[0] : node;
                             
-                            element.mountAll(node);
+                            if(node.nodeType){
+                                elem.appendChild(node);
+                                element.mountAll(node);
+                            }
                         }
                     }
                 }
@@ -718,9 +603,10 @@ window.app = function(window, document){
             return this;
         },
         render: function(insert){
-            var node,
-                elem = this[0],
-                i = 0;
+            var elem = this[0],
+                i,
+                len,
+                node;
             
             if(insert){
                 insert = isArray(insert) ? insert : [insert];
@@ -732,13 +618,14 @@ window.app = function(window, document){
                         elem.removeChild(elem.firstChild);
                     }
                     
-                    while(node = insert[i++]){
-                        node = node.length ? node[0] : node;
-                        
-                        if(node.nodeType){
-                            elem.appendChild(node);
+                    for(i = 0, len = insert.length; i < len; i++){
+                        if(node = insert[i]){
+                            node = node.length ? node[0] : node;
 
-                            element.mountAll(node);
+                            if(node.nodeType){
+                                elem.appendChild(node);
+                                element.mountAll(node);
+                            }
                         }
                     }
                 }
@@ -763,24 +650,29 @@ window.app = function(window, document){
             return this;
         },
         replaceWith: function(insert){
-            var elem = this[0],
-                i = 0;
+            var elem = this[0];
             
             if(insert){
-                insert = insert.nodeType ? insert : insert[0] ? insert[0] : {};
+                insert = insert.nodeType ? insert : insert[0] || {};
+                
+                if(elem && elem.parentNode){
+                    element.dismountAll(elem);
 
-                if(elem){
-                    if(elem.parentNode && insert.nodeType){
-                        element.dismountAll(elem);
-            
-                        elem.parentNode.replaceChild(insert, elem);
-
-                        element.mountAll(insert);
-                    }
+                    elem.parentNode.replaceChild(insert, elem);
+                    element.mountAll(insert);
                 }
             }
             
             return this;
+        },
+        on: function(type, listener){
+            var elem,
+                i = 0;
+            while(elem = this[i++]){
+                if(elem.addEventListener){
+                    elem.addEventListener(type, listener);
+                }
+            }
         },
         method: function(name, props){
             var elem,
@@ -952,11 +844,9 @@ window.app = function(window, document){
             return new element.init(value);
         },
         event: function(eventName, props){
-            var events = app.events[eventName], key, item;
-            
-            props = props || {};
-            
-            if(!events) return;
+            var events = app.events[eventName] || {},
+                key,
+                item;
             
             for(key in events){
                 item = events[key];
@@ -1123,6 +1013,21 @@ app.svgIcon = function(window, document, app){
                 )
             )
         },
+        ping: function(){
+            return (
+                createElement("svg", {viewBox: "0 0 16 16", class: "svgIcon"},
+                    createElement("path", {d: "M4.16 6.672a.69.69 0 00.513.246h6.667c.368 0 .667-.282.667-.63 0-.347-.3-.628-.667-.628H5.953l2.04-1.924a.61.61 0 00.215-.625.653.653 0 00-.492-.464.692.692 0 00-.663.203L4.027 5.703a.602.602 0 000 .887c.04.033.085.06.133.082zM8 0C3.582 0 0 3.38 0 7.547s3.582 7.546 8 7.546 8-3.38 8-7.546C16 3.38 12.418 0 8 0zM1.333 7.547c0-3.474 2.985-6.29 6.667-6.29s6.667 2.816 6.667 6.29c0 3.468-2.977 6.28-6.654 6.288-3.695 0-6.68-2.815-6.68-6.288zm10.494.874a.686.686 0 00-.514-.245H4.647c-.37 0-.667.282-.667.63 0 .347.298.628.667.628h5.393L8 11.358a.609.609 0 00-.215.624c.06.23.25.41.493.465a.69.69 0 00.662-.203l3.027-2.855a.606.606 0 000-.888.626.626 0 00-.14-.08z"})
+                )
+            )
+        },
+        jitter: function(){
+            return (
+                createElement("svg", {viewBox: "0 0 24 24", class: "svgIcon"},
+                    createElement("path", {d: "M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm0 22C6.4 22 2 17.5 2 12S6.4 2 12 2s10 4.4 10 10-4.5 10-10 10z"}),
+                    createElement("path", {d: "M14.7 14.2c-1.6 0-2.7-.9-3.4-1.8-1.4-2.1-4.3-2.1-4.5.6 0 .4-.3.8-.8.8-.3 0-.8-.3-.8-.8 0-2.9 2.2-3.6 3.8-3.6 1.8 0 2.7.9 3.4 1.9 1.1 1.5 4.2 2.6 4.7-.9 0-.4.3-.8.8-.8.4 0 .8.3.8.8.1 3.5-2.9 3.8-4 3.8z"})
+                )
+            )
+        },
         downlink: function(){
             return (
                 createElement("svg", {viewBox: "0 0 16 16", class: "svgIcon downlinkIcon"},
@@ -1241,34 +1146,36 @@ var createElement = app.createElement,
     svgIcon       = app.svgIcon,
     $             = app.$;
 
-/* harmony default export */ __webpack_exports__["default"] = (app);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (app);
 
 
 /***/ }),
 /* 2 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
 /* harmony import */ var _assets_js_App__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
 
 
 function MainHeader(){
     var elem = {
-        logoIcon:     Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span"),
-        switchButton: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("button"),
-        testNav: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-        toggleButton: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("button"),
-        settingsButton: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("button"),
-        settingsMenu:  Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-        testOptions:  Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-        testServer:  Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("select"),
-        testTime:  Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("input"),
-        testConnections:  Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("select"),
-        testEnableBuffer: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("input"),
-        testOutputSpeed: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("select"),
-        testMode: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("select"),
-        testPrecision: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("select")
+        logoIcon:     (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span"),
+        switchButton: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("button"),
+        testNav: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+        toggleButton: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("button"),
+        settingsButton: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("button"),
+        settingsMenu:  (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+        testOptions:  (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+        testServer:  (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("select"),
+        testTime:  (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("input"),
+        testConnections:  (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("select"),
+        testEnableBuffer: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("input"),
+        testOutputSpeed: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("select"),
+        testMode: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("select"),
+        testPrecision: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("select")
     },
         consoleOpened = false,
         initialPage;
@@ -1311,8 +1218,7 @@ function MainHeader(){
         _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].event("setConnectionsNumber", parseInt(elem.testConnections.value()));
     }
     elem.testServer.handleOnchange = function(){
-        test.selectedServerId = parseInt(elem.testServer.value());
-        test.selectedServer = test.servers[test.selectedServerId];
+        test.selectedServer = test.servers[parseInt(elem.testServer.value())];
         _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].event("testChangeServer");
     }
     
@@ -1344,7 +1250,10 @@ function MainHeader(){
         closestServer: function(){
             elem.testServer.render(
                 test.servers.map(function(item, index){
-                    return Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: index, selected: index == test.selectedServerId, textContent: item.name})
+                    if(index == 1 && !isLocal || !item.download || !item.upload){
+                        return null;
+                    }
+                    return (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: index, "data-id": index, selected: index == test.selectedServer.id, textContent: item.name})
                 })
             );
         }
@@ -1355,89 +1264,89 @@ function MainHeader(){
 
     this.render = function(){
     return (
-        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("header", {className:"mainHeader"},
-            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "container"},
-                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "headerContents"}, 
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "logoWrapper"},
-                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.logoIcon, {className: "logoIcon", onclick: elem.logoIcon.handleClick}, Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("button", {}, Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["svgIcon"])("testLogo"))),
-                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", {className: "logoText", textContent: "SPEEDTEST", onclick: function(){ isLocal && location.reload() }}),
-                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", {className: "divider-fGntc", textContent: "•"})
+        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("header", {className:"mainHeader"},
+            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "container"},
+                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "headerContents"}, 
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "logoWrapper"},
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.logoIcon, {className: "logoIcon", onclick: elem.logoIcon.handleClick}, (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {}, (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.svgIcon)("testLogo"))),
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {className: "logoText", textContent: "SPEEDTEST", onclick: function(){ isLocal && location.reload() }}),
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {className: "divider-fGntc", textContent: "•"})
                     ),
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "nav-gAfej"},
-                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.switchButton, {className: "button-r8eYj",
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "nav-gAfej"},
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.switchButton, {className: "button-r8eYj",
                                                           textContent: initialPage != "ping" ? "Ping Test" : "< Back",
                                                           onclick: elem.switchButton.handleClick}),
-                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.testNav, {className: "testNav-zMcl" + (initialPage != "main" ? " unseen-u" : "")},
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.toggleButton, {className: "consoleToggleButton", textContent: "Show console", onclick: elem.toggleButton.handleClick}),
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "testSettings-pwLy"},
-                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.settingsButton, {className: "settingsButton-rKfy", onclick: toggleSettingsMenu}, Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["svgIcon"])("menu")),
-                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.settingsMenu, {className: "menu-jrbk", style: "display: none;"},
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "menuInner-jrbk"},
-                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.testOptions, {className: "content-rtbh"},
-                                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "menuItem-jrbk"},
-                                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("label", {},
-                                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", {textContent: "Server: "}),
-                                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.testServer, {onchange: elem.testServer.handleOnchange},
-                                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "", textContent: "Loading server list...", selected: true})
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.testNav, {className: "testNav-zMcl" + (initialPage != "main" ? " unseen-u" : "")},
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.toggleButton, {className: "consoleToggleButton", textContent: "Show console", onclick: elem.toggleButton.handleClick}),
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "testSettings-pwLy"},
+                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.settingsButton, {className: "settingsButton-rKfy", onclick: toggleSettingsMenu}, (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.svgIcon)("menu")),
+                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.settingsMenu, {className: "menu-jrbk", style: "display: none;"},
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "menuInner-jrbk"},
+                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.testOptions, {className: "content-rtbh"},
+                                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "menuItem-jrbk"},
+                                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", {},
+                                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {textContent: "Server: "}),
+                                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.testServer, {onchange: elem.testServer.handleOnchange},
+                                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "", textContent: "Loading server list...", selected: true})
                                                     )
                                                 )
                                             ),
-                                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "menuItem-jrbk"},
-                                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("label", {},
-                                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", {textContent: "Test time: "}),
-                                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.testTime, {type: "number", min: "1", max: "60", value: test.runTime / 1000})
+                                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "menuItem-jrbk"},
+                                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", {},
+                                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {textContent: "Test time: "}),
+                                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.testTime, {type: "number", min: "1", max: "60", value: test.runTime / 1000})
                                                 )
                                             ),
-                                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "menuItem-jrbk"},
-                                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("label", {},
-                                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", {textContent: "Connections: "}),
-                                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.testConnections, {onchange: elem.testConnections.handleOnchange},
-                                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "1", textContent: "1", selected: test.connections.count == 1}),
-                                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "2", textContent: "2", selected: test.connections.count == 2}),
-                                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "3", textContent: "3", selected: test.connections.count == 3}),
-                                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "4", textContent: "4", selected: test.connections.count == 4}),
-                                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "5", textContent: "5", selected: test.connections.count == 5}),
-                                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "6", textContent: "6", selected: test.connections.count == 6})
+                                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "menuItem-jrbk"},
+                                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", {},
+                                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {textContent: "Connections: "}),
+                                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.testConnections, {onchange: elem.testConnections.handleOnchange},
+                                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "1", textContent: "1", selected: test.connections.count == 1}),
+                                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "2", textContent: "2", selected: test.connections.count == 2}),
+                                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "3", textContent: "3", selected: test.connections.count == 3}),
+                                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "4", textContent: "4", selected: test.connections.count == 4}),
+                                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "5", textContent: "5", selected: test.connections.count == 5}),
+                                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "6", textContent: "6", selected: test.connections.count == 6})
                                                     )
                                                 )
                                             ),
-                                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "menuItem-jrbk"},
-                                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("label", {},
-                                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", {textContent: "Enable buffer: "}),
-                                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.testEnableBuffer, {type: "checkbox", checked: test.bufferEnabled})
+                                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "menuItem-jrbk"},
+                                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", {},
+                                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {textContent: "Enable buffer: "}),
+                                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.testEnableBuffer, {type: "checkbox", checked: test.bufferEnabled})
                                                 )
                                             ),
-                                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "menuItem-jrbk"},
-                                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("label", {},
-                                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", {textContent: "Output speed: "}),
-                                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.testOutputSpeed, {},
-                                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "instant", textContent: "Instant speed"}),
-                                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "average", selected: true, textContent: "Average speed"})
+                                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "menuItem-jrbk"},
+                                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", {},
+                                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {textContent: "Output speed: "}),
+                                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.testOutputSpeed, {},
+                                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "instant", textContent: "Instant speed"}),
+                                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "average", selected: true, textContent: "Average speed"})
                                                     )
                                                 )
                                             ),
-                                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "menuItem-jrbk"},
-                                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("label", {},
-                                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", {textContent: "Test mode: "}),
-                                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.testMode, {},
-                                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "1", textContent: "Download - Upload", selected: test.mode == "1"}),
-                                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "2", textContent: "Only Download", selected: test.mode == "2"}),
-                                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "3", textContent: "Only Upload", selected: test.mode == "3"})
+                                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "menuItem-jrbk"},
+                                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", {},
+                                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {textContent: "Test mode: "}),
+                                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.testMode, {},
+                                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "1", textContent: "Download - Upload", selected: test.mode == "1"}),
+                                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "2", textContent: "Only Download", selected: test.mode == "2"}),
+                                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "3", textContent: "Only Upload", selected: test.mode == "3"})
                                                     )
                                                 )
                                             ),
-                                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "menuItem-jrbk"},
-                                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("label", {},
-                                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", {textContent: "Results precision: "}),
-                                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.testPrecision, {},
-                                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "1", textContent: "1", checked: test.resultsPrecision == "1"}),
-                                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "2", textContent: "2", checked: test.resultsPrecision == "2"})
+                                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "menuItem-jrbk"},
+                                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", {},
+                                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {textContent: "Results precision: "}),
+                                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.testPrecision, {},
+                                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "1", textContent: "1", checked: test.resultsPrecision == "1"}),
+                                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "2", textContent: "2", checked: test.resultsPrecision == "2"})
                                                     )
                                                 )
                                             )
                                         )
                                     ),
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "menuOverlay-jrbk", onclick: toggleSettingsMenu})
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "menuOverlay-jrbk", onclick: toggleSettingsMenu})
                                 )
                             )
                         )
@@ -1449,14 +1358,16 @@ function MainHeader(){
     }
 }
 
-/* harmony default export */ __webpack_exports__["default"] = (MainHeader);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (MainHeader);
 
 /***/ }),
 /* 3 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
 /* harmony import */ var _assets_js_App__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
 /* harmony import */ var _TestConfig__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4);
 /* harmony import */ var _TestStage__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(5);
@@ -1470,8 +1381,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 function MainContent(){
-    var container   = Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-        testWrapper = Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div");
+    var container   = (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+        testWrapper = (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div");
     
     function pageView(name, regex, result, view){
         name  = "view";
@@ -1502,39 +1413,40 @@ function MainContent(){
     
     this.render = function(){
     return (
-        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "pageContent"},
-            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(container, {className: "container test--" + pageView()},
-                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(testWrapper, {className: "testWrapper"},
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(_TestStage__WEBPACK_IMPORTED_MODULE_2__["default"]),
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(_PingStage__WEBPACK_IMPORTED_MODULE_3__["default"]),
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(_NetworkStage__WEBPACK_IMPORTED_MODULE_4__["default"])
+        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "pageContent"},
+            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(container, {className: "container test--" + pageView()},
+                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(testWrapper, {className: "testWrapper"},
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(_TestStage__WEBPACK_IMPORTED_MODULE_2__["default"]),
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(_PingStage__WEBPACK_IMPORTED_MODULE_3__["default"]),
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(_NetworkStage__WEBPACK_IMPORTED_MODULE_4__["default"])
                 ),
-                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "log valueNumber-vgKp", textContent: "0.123456789"}),
-                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "log icrementNumber-vgKp", textContent: "0.123456789"})
+                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "log valueNumber-vgKp", textContent: "0.123456789"}),
+                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "log icrementNumber-vgKp", textContent: "0.123456789"})
             )
         )
     )
     }
 };
 
-/* harmony default export */ __webpack_exports__["default"] = (MainContent);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (MainContent);
 
 /***/ }),
 /* 4 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
 /* harmony import */ var _assets_js_App__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
 
 
 var test = window.test = (function(){
-    var test,
+    var http = window.location.protocol == "http:",
+        test,
         fbStaticUrl,
         mmgWsUrl,
-        http = window.location.protocol == "http:",
-        servers,
-        testServers;
+        servers;
     
     function uploadData(){
         var str  = "111111111111111",
@@ -1580,22 +1492,40 @@ var test = window.test = (function(){
     
     fbStaticUrl = "https://z-m-static.xx.fbcdn.net/rsrc.php/yb/r/hLRJ1GG_y0J.ico";
     
-    mmgWsUrl = "https://mmg.whatsapp.net/v/t62.7119-24/11297606_3190396214524304_4050008936901149188_n.enc?ccb=11-4&oh=01_AVzK-Aa7M65BA11hoTuJZvq9gAdyQb2a_wwHesiITQkiIg&oe=6229790F&hash=wySJY3Im0FYT0kxtsxAL-1uc5rDS922WqkTkERmADdo%3D&mode=manual&mms-type=document&__wa-mms=";
+    mmgWsUrl = "https://mmg.whatsapp.net/v/t62.7119-24/40895583_953423365545486_6554171171410307689_n.enc?ccb=11-4&oh=01_AVwy5taBj8V_yMv1-iJxiO01I-vyAOf-8sDFb_2Swx9pQA&oe=6248AEA5&hash=4WQ79Ml0lBKYLHgtJcgvYTNyCpIjU7c1FYMnSuU4ezM%3D&mode=manual&mms-type=document&__wa-mms=";
     
     
     servers = [{
+        name: "Custom Url",
+        download: "",
+        ping: "",
+        latitude: null, longitude: null,
+        distance: -1
+    }, {
         name: "Local",
         download: URL_BASE + "/xx-download.file",
         upload: URL_BASE,
         ping: URL_BASE + "/index.html",
         latitude: null, longitude: null,
-        distance: -2
+        distance: -1
     }, {
-        name: "Cachefly.net",
-        http: true,
-        download: "https://open.cachefly.net/downloading",
+        name: "Akamai Network",
+        download: "https://speedtest-download-btwholesale.akamaized.net/PT/1000MB.bin",
         upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true",
-        ping: "https://open.cachefly.net/downloading",
+        ping: "https://speedtest-download-btwholesale.akamaized.net/PT/1000MB.bin",
+        latitude: null, longitude: null,
+        distance: -1
+    }, {
+        name: "Cachefly Network",
+        http: true,
+        download: "https://cachefly.cachefly.net/100mb.test",
+        upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true",
+        ping: "https://cachefly.cachefly.net/100mb.test",
+        latitude: null, longitude: null,
+        distance: -1
+    }, {
+        name: "Cloudflare Network",
+        wsping: "wss://speedtest.eti.cfdata.org:8080/ws",
         latitude: null, longitude: null,
         distance: -1
     }, {
@@ -1606,23 +1536,25 @@ var test = window.test = (function(){
         ping: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true",
         wsping: "wss://nyc.speedtest.clouvider.net.prod.hosts.ooklaserver.net:8080/ws",
         latitude: 40.7177, longitude: -74.0083,
-        distance: null
+        distance: null,
+        countryCode: "US"
     }, {
         name: "New Jersey, US - Vultr",
         download: "https://nyc.veeapps.com/100MB.bin",
         upload: "https://nyc.veeapps.com/upload.php",
         ping: "https://nyc.veeapps.com/ping.txt",
         latitude: 40.5569, longitude: -74.4847,
-        distance: null
+        distance: null,
+        countryCode: "US"
     }, {
-        name: "Virginia, US - Clouvider",
-        download: "https://ash.speedtest.clouvider.net/backend/garbage.php?cors=true&ckSize=100",
-        upload: "https://ash.speedtest.clouvider.net/backend/empty.php?cors=true",
-        ping: "https://ash.speedtest.clouvider.net/backend/empty.php?cors=true",
+        name: "Virginia, US - OVH",
+        download: "https://riverside.rocks/speedtest/garbage.php?cors=true&ckSize=100",
+        upload: "https://riverside.rocks/speedtest/empty.php?cors=true",
+        ping: "https://riverside.rocks/speedtest/empty.php?cors=true",
         wsping: "wss://va.na.speedtest.i3d.net.prod.hosts.ooklaserver.net:8080/ws",
-        http: 0,
-        latitude: 39.0378, longitude: -77.4772,
-        distance: null
+        latitude: 38.9555, longitude: -77.3643,
+        distance: null,
+        countryCode: "US"
     }, {
         name: "Chicago, US - Vultr",
         download: "https://chi.veeapps.com/100MB.bin",
@@ -1630,7 +1562,8 @@ var test = window.test = (function(){
         ping: "https://chi.veeapps.com/ping.txt",
         wsping: "wss://speedtest.chicago.xiber.net.prod.hosts.ooklaserver.net:8080/ws",
         latitude: 41.9943, longitude: -87.962,
-        distance: null
+        distance: null,
+        countryCode: "US"
     }, {
         name: "Atlanta, US - Clouvider",
         http: true,
@@ -1639,15 +1572,17 @@ var test = window.test = (function(){
         ping: "https://atl.speedtest.clouvider.net/backend/empty.php?cors=true",
         wsping: "wss://atl.speedtest.clouvider.net.prod.hosts.ooklaserver.net:8080/ws",
         latitude: 33.749, longitude: -84.388,
-        distance: null
+        distance: null,
+        countryCode: "US"
     }, {
         name: "Miami, US - Vultr",
         download: "https://mia2.veeapps.com/100MB.bin",
         upload: "https://mia2.veeapps.com/100MB.bin",
         ping: "https://mia2.veeapps.com/ping.txt",
-        wsping: "wss://speedtest1.mia.fl.us.convergia.net.prod.hosts.ooklaserver.net:8080/ws",
+        wsping: "wss://lg-mia.fdcservers.net:8080/ws",
         latitude: 25.7975, longitude: -80.2301,
-        distance: null
+        distance: null,
+        countryCode: "US"
     }, {
         name: "Dallas, US - Vultr",
         download: "https://dal.veeapps.com/100MB.bin",
@@ -1655,16 +1590,8 @@ var test = window.test = (function(){
         ping: "https://dal.veeapps.com/ping.txt",
         wsping: "wss://tx.na.speedtest.i3d.net.prod.hosts.ooklaserver.net:8080/ws",
         latitude: 32.7872, longitude: -96.7942,
-        distance: null
-    }, {
-        name: "Arizona, US - Clouvider",
-        download: "https://phx.speedtest.clouvider.net/backend/garbage.php?cors=true&ckSize=100",
-        upload: "https://phx.speedtest.clouvider.net/backend/empty.php?cors=true",
-        ping: "https://phx.speedtest.clouvider.net/backend/empty.php?cors=true",
-        wsping: "wss://speedtest.1gservers.com.prod.hosts.ooklaserver.net:8080/ws",
-        http: 0,
-        latitude: 33.4484, longitude: -112.074,
-        distance: null
+        distance: null,
+        countryCode: "US"
     }, {
         name: "Los Angeles, US - Clouvider",
         download: "https://la.speedtest.clouvider.net/backend/garbage.php?cors=true&ckSize=100",
@@ -1673,7 +1600,8 @@ var test = window.test = (function(){
         wsping: "wss://la.speedtest.clouvider.net.prod.hosts.ooklaserver.net:8080/ws",
         http: true,
         latitude: 34.0522, longitude: -118.244,
-        distance: null
+        distance: null,
+        countryCode: "US"
     }, {
         name: "Seattle, US - Vultr",
         download: "https://seattle.veeapps.com/100MB.bin",
@@ -1682,14 +1610,26 @@ var test = window.test = (function(){
         wsping: "wss://seattle.speedtest.bluespanwireless.com.prod.hosts.ooklaserver.net:8080/ws",
         latitude: 47.6143, longitude: -122.339,
         distance: null,
+        countryCode: "US"
+    }, {
+        name: "Toronto, CA - Vultr",
+        download: "https://toronto.veeapps.com/100MB.bin",
+        upload: "https://toronto.veeapps.com/upload.php",
+        ping: "https://toronto.veeapps.com/ping.txt",
+        wsping: "wss://speedtest01.fibernetics.ca:8080/ws",
+        latitude: 43.6509, longitude: -79.3618,
+        distance: null,
+        countryCode: "CA"
     }, {
         name: "Bogota, Colombia - Edgeuno",
-        download: http ? "http://open.cachefly.net/downloading" : "https://speedtest.bog.edgeuno.com/backend/garbage.php?cors=true&ckSize=100",
+        download: "https://speedtest.bog.edgeuno.com/backend/garbage.php?cors=true&ckSize=100",
         upload: "https://speedtest.bog.edgeuno.com/backend/empty.php?cors=true",
         ping: "https://speedtest.bog.edgeuno.com/backend/empty.php?cors=true",
         wsping: "wss://spt-bog1.edgeuno.com:8080/ws",
         latitude: 4.68097, longitude: -74.0413,
-        distance: null
+        distance: null,
+        countryCode: "CO",
+        autoselect: false
     }, {
         name: "Quito, Ecuador - Edgeuno",
         download: "https://speedtest.uio1.edgeuno.com/backend/garbage.php?cors=true&ckSize=100",
@@ -1697,7 +1637,9 @@ var test = window.test = (function(){
         ping: "https://speedtest.uio1.edgeuno.com/backend/empty.php?cors=true",
         wsping: "wss://spt-uio.edgeuno.com.prod.hosts.ooklaserver.net:8080/ws",
         latitude: -0.180653, longitude: -78.4678,
-        distance: null
+        distance: null,
+        countryCode: "EC",
+        autoselect: false
     }, {
         name: "Ciudad De Mexico, Mexico - Vultr",
         download: "https://mx.veeapps.com/100MB.bin",
@@ -1705,14 +1647,17 @@ var test = window.test = (function(){
         ping: "https://mx.veeapps.com/ping.txt",
         wsping: "wss://spt-qro1.edgeuno.com.prod.hosts.ooklaserver.net:8080/ws",
         latitude: 20.5888, longitude: -100.39,
-        distance: null
+        distance: null,
+        countryCode: "MX"
     }, {
         name: "Lima, Peru - Edgeuno",
         download: "https://speedtest.lim.edgeuno.com/backend/garbage.php?cors=true&ckSize=100",
         upload: "https://speedtest.lim.edgeuno.com/backend/empty.php?cors=true",
         ping: "https://speedtest.lim.edgeuno.com/backend/empty.php?cors=true",
         latitude: -12.0464, longitude: -77.0428,
-        distance: null
+        distance: null,
+        countryCode: "PE",
+        autoselect: false
     }, {
         name: "Buenos Aires, Argentina - Edgeuno",
         download: "https://speedtest.eze1.edgeuno.com/backend/garbage.php?cors=true&ckSize=100",
@@ -1720,7 +1665,9 @@ var test = window.test = (function(){
         ping: "https://speedtest.eze1.edgeuno.com/backend/empty.php?cors=true",
         wsping: "wss://spt-eze1.edgeuno.com:8080/ws",
         latitude: -34.5967, longitude: -58.3798,
-        distance: null
+        distance: null,
+        countryCode: "AR",
+        autoselect: false
     }, {
         name: "Santiago, Chile - Edgeuno",
         download: "https://speedtest.scl1.edgeuno.com/backend/garbage.php?cors=true&ckSize=100",
@@ -1728,23 +1675,18 @@ var test = window.test = (function(){
         ping: "https://speedtest.scl1.edgeuno.com/backend/empty.php?cors=true",
         wsping: "wss://spt-scl1.edgeuno.com:8080/ws",
         latitude: -33.4489, longitude: -70.6693,
-        distance: null
-    },/* {
-        name: "Rio de Janeiro, Brazil - Edgeuno.com",
-        download: "https://speedtest.rio1.edgeuno.com/backend/garbage.php?cors=true&ckSize=100",
-        upload: "https://speedtest.rio1.edgeuno.com/backend/empty.php?cors=true",
-        ping: "https://speedtest.rio1.edgeuno.com/backend/empty.php?cors=true",
-        wsping: "wss://spt-rio.edgeuno.com:8080/ws",
-        latitude: -22.9068, longitude: -43.1729,
-        distance: null
-    }, */{
+        distance: null,
+        countryCode: "CL",
+        autoselect: false
+    }, {
         name: "Sao Paulo, Brazil - Oneprovider",
         download: "https://saopaulo.veeapps.com/100MB.bin",
         upload: "https://saopaulo.veeapps.com/upload.php",
         ping: "https://saopaulo.veeapps.com/ping.txt",
-        wsping: "wss://spt-sao1.edgeuno.com:8080/ws",
+        wsping: "wss://velocidade-spo.algartelecom.com.br:8080/ws",
         latitude: -23.5505, longitude: -46.6333,
-        distance: null
+        distance: null,
+        countryCode: "BR"
     }, {
         name: "Madrid - Movispeed",
         download: "https://m0012.movispeed.es/apolo/data/a100m.dat",
@@ -1752,16 +1694,18 @@ var test = window.test = (function(){
         ping: "https://m0012.movispeed.es/apolo/data/a1b.dat",
         wsping: "wss://speedtest.digimobil.es:8080/ws",
         latitude: 40.5167, longitude: -3.66479,
-        distance: null
+        distance: null,
+        countryCode: "ES"
     }, {
         name: "London, England - Clouvider",
         download: "https://lon.speedtest.clouvider.net/backend/garbage.php?cors=true&ckSize=100",
         upload: "https://lon.speedtest.clouvider.net/backend/empty.php?cors=true",
         ping: "https://lon.speedtest.clouvider.net/backend/empty.php?cors=true",
-        wsping: "wss://lon.speedtest.clouvider.net.prod.hosts.ooklaserver.net:8080:/ws",
-        http: 0,
+        wsping: "wss://lon.speedtest.clouvider.net.prod.hosts.ooklaserver.net:8080/ws",
+        http: true,
         latitude: 51.5164, longitude: -0.0888135,
-        distance: null
+        distance: null,
+        countryCode: "GB"
     }, {
         name: "Paris, France - Vultr",
         download: "https://paris.veeapps.com/100MB.bin",
@@ -1770,25 +1714,28 @@ var test = window.test = (function(){
         wsping: "wss://perf.keyyo.net:8080/ws",
         latitude: 48.9068, longitude: 2.37011,
         distance: null,
+        countryCode: "FR",
         checked: true
     }, {
         name: "Amsterdam, Netherlands - Clouvider",
         download: "https://ams.speedtest.clouvider.net/backend/garbage.php?cors=true&ckSize=100",
         upload: "https://ams.speedtest.clouvider.net/backend/empty.php?cors=true",
         ping: "https://ams.speedtest.clouvider.net/backend/empty.php?cors=true",
-        wsping: "wss://ams.speedtest.clouvider.net.prod.hosts.ooklaserver.net:8080:/ws",
-        http: 0,
+        wsping: "wss://ams.speedtest.clouvider.net.prod.hosts.ooklaserver.net:8080/ws",
+        http: true,
         latitude: 52.3702, longitude: 4.89517,
-        distance: null
+        distance: null,
+        countryCode: "NL"
     }, {
         name: "Frankfurt, Germany - Clouvider",
         download: "https://fra.speedtest.clouvider.net/backend/garbage.php?cors=true&ckSize=100",
         upload: "https://fra.speedtest.clouvider.net/backend/empty.php?cors=true",
         ping: "https://fra.speedtest.clouvider.net/backend/empty.php?cors=true",
-        wsping: "wss://fra.speedtest.clouvider.net.prod.hosts.ooklaserver.net:8080:/ws",
-        http: 0,
+        wsping: "wss://fra.speedtest.clouvider.net.prod.hosts.ooklaserver.net:8080/ws",
+        http: true,
         latitude: 50.1109, longitude: 8.68213,
-        distance: null
+        distance: null,
+        countryCode: "DE"
     }, {
         name: "Sydney - HostHatch",
         download: "https://sydney.veeapps.com/100MB.bin",
@@ -1796,7 +1743,8 @@ var test = window.test = (function(){
         ping: "https://sydney.veeapps.com/ping.txt",
         wsping: "wss://speedtest-syd.apac-tools.ovh.prod.hosts.ooklaserver.net:8080/ws",
         latitude: 27.5433, longitude: 153.203,
-        distance: null
+        distance: null,
+        countryCode: "AU"
     }, {
         name: "Singapore - Vultr",
         download: "https://sg.veeapps.com/100MB.bin",
@@ -1805,24 +1753,39 @@ var test = window.test = (function(){
         wsping: "wss://speedtest-sgp.apac-tools.ovh.prod.hosts.ooklaserver.net:8080/ws",
         latitude: 1.35208, longitude: 103.82,
         distance: null,
+        countryCode: "SG",
         checked: true
+    }, {
+        name: "WhatsApp",
+        download: mmgWsUrl,
+        upload: mmgWsUrl,
+        ping: mmgWsUrl,
+        latitude: null, longitude: null,
+        distance: 100000
+    }, {
+        name: "Facebook Zero",
+        upload: fbStaticUrl,
+        ping: fbStaticUrl,
+        latitude: null, longitude: null,
+        distance: 100000
+    }, {
+        name: "Custom Url",
+        download: "",
+        ping: "",
+        latitude: null, longitude: null,
+        distance: 100000
     }];
     
-    if (!isLocal) servers.splice(0, 1);
-    
-    servers = servers.map(function(item){
-        
+    servers = servers.map(function(item, index){
         if(http && item.http){
             if(item.preconnect) item.preconnect = item.preconnect.replace("https://", "http://");
             if(item.download)   item.download = item.download.replace("https://", "http://");
             if(item.upload)     item.upload = item.upload.replace("https://", "http://");
         }
-        
+        item.id = index;
         return item;
     });
-    
-    testServers = servers.map(function(item, index){ return servers[index]; });
-    
+        
     test = {
         started: false,
         opened: false,
@@ -1836,67 +1799,38 @@ var test = window.test = (function(){
         bufferEnabled: true,
         resultsPrecision: 1,
         user: {
+            ip: null,
             isp: null,
-            ip: null
+            org: null
         },
-        servers: testServers,
+        servers: servers,
         getDistance: getDistance,
         uploadData: uploadData(),
         runType: {
+            current: "none",
             download: false,
-            upload: false,
-            current: null
+            upload: false
         },
-        selectedServer: testServers[isLocal ? 1 : 0],
-        selectedServerId: isLocal ? 1 : 0,
-        closestSuccess: false
+        selectedServer: servers[2],
+        closestDone: false
     };
 
     test.network = (function(){
-        var urls = [{name: "Custom url", download: "", upload: "", distance: -3}];
-        
-        urls = urls.concat(
-            servers.concat([
-                {
-                    name: "WhatsApp",
-                    download: mmgWsUrl,
-                    upload: mmgWsUrl,
-                    distance: 100001
-                },
-                {
-                    name: "Facebook Zero",
-                    download: "",
-                    upload: fbStaticUrl,
-                    distance: 100002
-                }
-            ])
-        );
-        
         return {
-            selectedServers: [isLocal ? 2 : 1],
-            urls: urls
+            selectedServers: [2]
         }
     })();
     
     test.ping = (function(){
-        var graphItems = [], graphItemsLen = 100, index, pingServers;
+        var graphItems = [], graphItemsLen = 100, index;
         for(index = 0; index < graphItemsLen; index++){
             graphItems.push(index);
-        }
-        
-        pingServers = servers.concat([
-            { name: "mmg.whatsapp.net", ping: mmgWsUrl, download: mmgWsUrl, distance: 100001 },
-            { name: "Facebook Static", ping: fbStaticUrl, distance: 100002 },
-            { name: "Custom Url", download: "", distance: 100003 }
-        ]);
-        
+        }        
         return {
             results: 100,
             completeAll: true,
             wsping: true,
-            servers: pingServers,
-            selectedServer: pingServers[isLocal ? 1 : 0],
-            selectedServerId: isLocal ? 1 : 0,
+            selectedServer: servers[2],
             runTime: 10000,
             graphItemsVisible: [0, 2, 4, 6, 8, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49, 52, 55, 58, 61, 64, 67, 70, 73, 76, 79, 82, 85, 88, 91, 94, 97],
             graphItems: graphItems
@@ -1907,14 +1841,16 @@ var test = window.test = (function(){
 })();
 
 
-/* harmony default export */ __webpack_exports__["default"] = (test);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (test);
 
 /***/ }),
 /* 5 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
 /* harmony import */ var _assets_js_App__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
 /* harmony import */ var _StartButton__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(6);
 /* harmony import */ var _GaugeContainer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(7);
@@ -1927,26 +1863,28 @@ __webpack_require__.r(__webpack_exports__);
 
 function TestStage(props){
     var elem = {
-        testStage: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-        stageMain: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-        stageClose: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("button"),
-        testEngine: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-        resultsContainer: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-        resultDownload: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-        speedDownloadNumber: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-        resultUpload: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-        speedUploadNumber: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-        consoleWrapper: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-        console: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("textarea"),
-        selectedServerName: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-        ispName: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-        publicIp: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-        multiModeButton: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("button"),
-        singleModeButton: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("button")
+        testStage: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+        stageMain: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+        stageClose: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("button"),
+        testEngine: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+        resultsContainer: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+        pingValue: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span"),
+        jitterValue: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span"),
+        resultDownload: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+        speedDownloadNumber: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+        resultUpload: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+        speedUploadNumber: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+        consoleWrapper: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+        console: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("textarea"),
+        selectedServerName: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+        ispName: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+        publicIp: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+        multiModeButton: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("button"),
+        singleModeButton: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("button")
     },
     timer = {},
     fixNumber = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].fixNumber,
-    graph, interval,
+    graph, ping, interval,
     connections,
     testConsole;
     
@@ -2003,6 +1941,112 @@ function TestStage(props){
             }
         }
     })();
+    ping = (function(){
+        var callback,
+            xhr,
+            url,
+            urlPrefix,
+            sendTime,
+            sendCount,
+            result,
+            jitter,
+            startedTime,
+            started = false,
+            timeout = null;
+        
+        function finished(){
+            if(started){
+                callback({
+                    min: result.count > 0 ? result.min : "--",
+                    jitter: result.count > 1 ? parseFloat(jitter.value.toFixed(1)) : "--"
+                });
+                started = false;
+            }
+        }
+        function handlePing(){
+            result.count++;
+            if(result.time < result.min){
+                result.min = result.time;
+            }
+            if(result.count > 1){
+                jitter.time = result.time > result.prev ? result.time - result.prev : result.prev - result.time;
+                jitter.count += jitter.time;
+                jitter.len += 1;
+                jitter.value = jitter.count / jitter.len;
+            }
+            result.prev = result.time;
+            if(result.count == 5 || _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time() - startedTime > 2000){
+                finished();
+            }else{
+                send();
+            }
+        }
+        function send(){
+            xhr = new XMLHttpRequest();
+            
+            xhr.open("HEAD", url + urlPrefix + _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].random(), true);
+
+            xhr.onload = function(){
+                if(xhr.status == 200){
+                    if(sendCount == 1){
+                        startedTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
+                        send();
+                        return;
+                    }
+                    
+                    result.time = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time() - sendTime;
+                    
+                    timeout = setTimeout(
+                        handlePing,
+                        60 - result.time > 0 ? 60 - result.time : 0
+                    );
+                }else{
+                    finished();
+                }
+            }
+            
+            xhr.timeout   = 10000;
+            xhr.onerror   = finished;
+            xhr.ontimeout = finished;
+
+            xhr.send();
+
+            sendTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
+            sendCount++;
+        }
+        function start(props){
+            url = props.url;
+            urlPrefix = props.url.indexOf("?") == -1 ? "?" : "&";
+            callback = props.done;
+            sendCount = 0;
+            result = {
+                min: Infinity,
+                prev: 0,
+                count: 0
+            };
+            jitter = {
+                time: 0,
+                value: 0,
+                count: 0,
+                len: 0
+            };
+            
+            started = true;
+            
+            send();
+        }
+        function stop(){
+            if(started){
+                xhr.abort();
+                clearTimeout(timeout);
+                started = false;
+            }
+        }
+        return {
+            start: start,
+            stop: stop
+        }
+    })();
     function testStatus(config){
         if(config.started != void 0) _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].started = config.started;
         if(config.opened  != void 0) _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].opened  = config.opened;
@@ -2013,7 +2057,7 @@ function TestStage(props){
             _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].runType.upload = "upload" == config.runType;
         }
         
-        var className = "stage-kbsf testStage" + " test--" + (_TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].connections.count > 1 ? "multi" : "single") + "Mode" + (_TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].opened ? " test--opened" : "") + (_TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].started ? " test--started" : "") + (_TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].started ? " test--" + _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].runType.current : "");
+        var className = "stage-kbsf testStage" + " test--" + (_TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].connections.count > 1 ? "multi" : "single") + "Mode" + (_TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].opened ? " test--opened" : "") + (_TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].started ? " test--started" : "") + (_TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].runType.current != "none" ? " test--" + _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].runType.current : "");
         
         elem.testStage.attr("class", className);
     }
@@ -2034,14 +2078,24 @@ function TestStage(props){
         speedStr = parseInt(speed).toString().length;
         return fixNumber(speed, 2 + (speedMax - speedStr));
     }
-    function showUserProvider(userIp, userIsp, userLatitude, userLongitude){
+    function showUserProvider(userIp, userIsp, userOrg, userLatitude, userLongitude){
         var index, len, server;
-        _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].user.ip = userIp;
+        _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].user.ip  = userIp;
         _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].user.isp = userIsp;
-        elem.ispName.textContent(userIsp);
-        elem.publicIp.textContent(userIp);
-        if(userIp && userIp.split("").indexOf(":") > -1){
-            elem.publicIp.addClass("hidden");
+        _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].user.org = userOrg;
+        if(userIsp && userOrg){
+            elem.ispName.textContent(
+                userIsp + (userOrg.replace(/\./g, "").toLowerCase() != userIsp.replace(/\./g, "").toLowerCase() ? "\n" + userOrg : "")
+            );
+        }
+        if(userIp){
+            elem.publicIp.textContent(userIp);
+            if(userIp.indexOf(".") == -1){
+                elem.publicIp.addClass("hidden");
+            }
+        }
+        if(isNaN(userLatitude) || isNaN(userLongitude)){
+            return;
         }
         for(index = 0, len = _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].servers.length; index < len; index++){
             server = _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].servers[index];
@@ -2049,13 +2103,20 @@ function TestStage(props){
                 server.distance = _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].getDistance(userLatitude, userLongitude, server.latitude, server.longitude);
             }
         }
-        _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].servers = _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].servers.sort(function(a, b){ return a.distance - b.distance; });
+        _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].servers = _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].servers.sort(function(a, b){ return a.distance - b.distance; }).map(function(item, index){
+            item.id = index;
+            return item;
+        });
         for(index = 0, len = _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].servers.length; index < len; index++){
             server = _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].servers[index];
             if(server.distance >= 0){
-                _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].selectedServer   = server;
-                _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].selectedServerId = index;
-                _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].closestSuccess = true;
+                _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].ping.selectedServer = server;
+                if(server.autoselect != false){
+                    _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].selectedServer = server;
+                    _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].network.selectedServers = [server.id];
+                }
+                _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].servers[2].upload = server.upload;
+                _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].servers[3].upload = server.upload;
                 break;
             }
         }
@@ -2074,6 +2135,7 @@ function TestStage(props){
         interval.stop(log);
     }
     function clearResults(){
+        elem.resultsContainer.find(".resultPing_itemValue").textContent("--");
         elem.resultsContainer.find(".resultValue").textContent("- -");
         elem.resultsContainer.find("polygon, polyline").attr("points", "");
         
@@ -2081,13 +2143,13 @@ function TestStage(props){
         testConsole.log("Starting test...");
     }
     function finishTest(){
-        testStatus({started: false});
+        testStatus({started: false, runType: "none"});
         _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].event("testFinished");
         
         elem.gauge.addClass("close-m6jh");
         
         timer.engine = setTimeout(function(){
-            elem.testEngine.render(Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(_StartButton__WEBPACK_IMPORTED_MODULE_1__["default"], {textContent: "DE NUEVO", action: 2, close: true}));
+            elem.testEngine.render((0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(_StartButton__WEBPACK_IMPORTED_MODULE_1__["default"], {textContent: "DE NUEVO", action: 2, close: true}));
             timer.engine = setTimeout(function(){ elem.testEngine.first().removeClass("close-m6jh"); }, 500);
         }, 600);
     }
@@ -2380,11 +2442,12 @@ function TestStage(props){
     function closeStage(){
         if(!elem.stageClose.isActive){
             elem.stageClose.isActive = true;
+            ping.stop();
             stopTest();
             elem.stageMain.style({opacity: 0, pointerEvents: "none"});
             setTimeout(function(){
-                testStatus({started: false, opened: false});
-                elem.testEngine.render(Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(_StartButton__WEBPACK_IMPORTED_MODULE_1__["default"], {textContent: "COMENZAR", action: 1}));
+                testStatus({started: false, opened: false, runType: "none"});
+                elem.testEngine.render((0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(_StartButton__WEBPACK_IMPORTED_MODULE_1__["default"], {textContent: "COMENZAR", action: 1}));
                 testConsole.clear();
                 testConsole.log("Waiting to start the test...");
                 _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].event("testFinished");
@@ -2408,39 +2471,49 @@ function TestStage(props){
     
     this.events = {
         initializeTest: function(){
-            var runType;
+            var runType = _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].mode == "1" || _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].mode == "2" ? "download" : "upload";
             
             clearResults();
             
             _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].event("speedTestSettings");
-            
-            runType = _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].mode == "1" || _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].mode == "2" ? "download" : "upload";
                         
-            elem.gauge = Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(_GaugeContainer__WEBPACK_IMPORTED_MODULE_2__["default"], {loadType: runType, open: true});
+            elem.gauge = (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(_GaugeContainer__WEBPACK_IMPORTED_MODULE_2__["default"], {loadType: runType, open: true});
             
             elem.testEngine.first().addClass("open-m6jh");
             
             timer.engine = setTimeout(function(){
                 elem.testEngine.render(elem.gauge);
-                timer.engine = setTimeout(function(){
-                    _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].event("runTest");
-                }, 450);
             }, 500);
             
-            testStatus({opened: true, runType: runType});
+            _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].initializedTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
+            testStatus({opened: true, started: true});
+            _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].event("startTest");
         },
-        runTest: function(){
-            testStatus({started: true});
-            
-            if(!_TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].closestSuccess){
+        startTest: function(){
+            if(!_TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].closestDone){
                 return;
             }
-            
+            var runType = _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].mode == "1" || _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].mode == "2" ? "download" : "upload";
+            ping.start({
+                url: _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].selectedServer.ping,
+                done: function(result, refTime){
+                    refTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time() - _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].initializedTime;
+                    timer.ping = setTimeout(function(){
+                        elem.pingValue.textContent(result.min);
+                        elem.jitterValue.textContent(result.jitter);
+                        testStatus({runType: runType});
+                        _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].event("runTest");
+                    }, 950 - refTime > 0 ? 950 - refTime : 0);
+                }
+            });
+        },
+        runTest: function(){
             //timer.closeTest = setTimeout(function(){ finishTest(); }, 3000);
             //return;
             
             var isDownload  = _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].runType.download,
-                index, url;
+                url = {},
+                index;
             
             testConsole.state("starting measures...");
             
@@ -2457,8 +2530,7 @@ function TestStage(props){
                         xhr: function(xhr){
                             requestConfig(xhr, url);
                         },
-                        url: url,
-                        get: {v: _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].random()},
+                        url: url.url + url.prefix + _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].random(),
                         post: isDownload ? null : _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].uploadData.$99,
                         fail: function(status, xhr){
                             if(xhr.loaded < 50000) breakTest();// < 50KB
@@ -2468,13 +2540,13 @@ function TestStage(props){
                 }
             };
             
-            url = connections.server.preconnect ? connections.server.preconnect : connections.server[isDownload ? "download" : "upload"];
+            url.url = connections.server[isDownload ? "download" : "upload"];
+            url.prefix = url.url.indexOf("?") == -1 ? "?" : "&";
             
             for(index = 0; index < connections.count; index++){
                 connections.preconnect.requests.push(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].fetch({
-                    url: url,
-                    get: {v: _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].random()},
-                    type: connections.server.preconnect ? "GET" : "HEAD",
+                    url: url.url + url.prefix + _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].random(),
+                    type: "HEAD",
                     done: function(status){
                         if(status == 0){
                             return breakTest();
@@ -2492,7 +2564,7 @@ function TestStage(props){
 
                 connections.addRequest(url, false);
             }
-
+            
             sendRequests(connections.preconnect.requests);
         },
         setConnectionsNumber: function(number){
@@ -2515,18 +2587,20 @@ function TestStage(props){
         }
     }
     this.onMount = function(){
-        var url = ["https://net.etrality.com/isp", "http://ip-api.com/json/", "https://ipapi.co/json/"];
+        var url = ["https://m.clear.link/geoip", "https://net.etrality.com/isp", "http://ip-api.com/json/", "https://ipapi.co/json/"];
         _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].fetch({
-            url: url[0],
+            url: url[1],
+            dataType: "json",
             timeout: 20000,
             success: function(fetch){
-                showUserProvider(fetch.ip || fetch.query, fetch.org || fetch.isp, parseFloat(fetch.latitude || fetch.lat), parseFloat(fetch.longitude || fetch.lon));
+                showUserProvider(fetch.query, fetch.isp, fetch.org, parseFloat(fetch.lat), parseFloat(fetch.lon));
             },
             done: function(){
-                _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].event("closestServer", _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].closestSuccess);
+                _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].closestDone = true;
+                _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].event("closestServer");
                 elem.selectedServerName.textContent(_TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].selectedServer.name);
                 if(_TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].started){
-                    _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].event("runTest");
+                    _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].event("startTest");
                 }
             }
         });
@@ -2534,87 +2608,107 @@ function TestStage(props){
     
     this.render = function(){
     return (
-        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.testStage, {className: "stage-kbsf testStage test--" + (_TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].connections.count > 1 ? "multi" : "single") + "Mode"},
-            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.stageMain, {className: "stageMain-kbsf"},
-            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "testContainer-y5vpt"},
-                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("section", {className: "resultsArea"},
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "resultsContainer"},
-                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "stageClose-eJsd"},
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.stageClose, {className: "closeButton-fQtb", title: "Cerrar Prueba", "aria-label": "Cerrar Prueba", onclick: closeStage},
-                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["svgIcon"])("close")
+        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.testStage, {className: "stage-kbsf testStage test--" + (_TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].connections.count > 1 ? "multi" : "single") + "Mode"},
+            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.stageMain, {className: "stageMain-kbsf"},
+            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "testContainer-y5vpt"},
+                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("section", {className: "resultsArea"},
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.resultsContainer, {className: "resultsContainer"},
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "stageClose-eJsd"},
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.stageClose, {className: "closeButton-fQtb", title: "Cerrar Prueba", "aria-label": "Cerrar Prueba", onclick: closeStage},
+                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.svgIcon)("close")
                             )
                         ),
-                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.resultsContainer, {className: "resultsData"},
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.resultDownload, {className: "resultItem resultDownload"},
-                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "resultContainer"},
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "resultHeader"},
-                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "resultIcon"}, Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["svgIcon"])("downlink")),
-                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "resultTitle"}, Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("b", {textContent: "DESCARGAR"})),
-                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "resultUnit textHolder", textContent: "Mbps"})
-                                    ),
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "resultBody"},
-                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.speedDownloadNumber, {className: "resultValue valueNumber-vgKp", textContent: "- -"})
-                                    ),
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "resultGraph"}, Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["svgIcon"])("resultGraph"))
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "resultsData"},
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "resultType resultPing"},
+                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "resultPing_item"},
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {className: "resultPing_itemIcon iconWrapper"}, (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.svgIcon)("ping")), 
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {className: "resultPing_itemText"},
+                                        "Ping: ",
+                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.pingValue, {className: "resultPing_itemValue"}, "--"),
+                                        " ms"
+                                    )
+                                ),
+                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "resultPing_item"},
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {className: "resultPing_itemIcon iconWrapper"}, (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.svgIcon)("jitter")), 
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {className: "resultPing_itemText"},
+                                        "Jitter: ",
+                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.jitterValue, {className: "resultPing_itemValue"}, "--"),
+                                        " ms"
+                                    )
                                 )
                             ),
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.resultUpload, {className: "resultItem resultUpload"},
-                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "resultContainer"},
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "resultHeader"},
-                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "resultIcon"}, Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["svgIcon"])("uplink")),
-                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "resultTitle"}, Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("b", {textContent: "SUBIR"})),
-                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "resultUnit textHolder", textContent: "Mbps"})
-                                    ),
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "resultBody"},
-                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.speedUploadNumber, {className: "resultValue valueNumber-vgKp", textContent: "- -"})
-                                    ),
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "resultGraph"}, Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["svgIcon"])("resultGraph"))
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "resultType resultSpeed"},
+                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.resultDownload, {className: "resultItem resultDownload"},
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "resultContainer"},
+                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "resultHeader"},
+                                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "resultIcon iconWrapper"}, (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.svgIcon)("downlink")),
+                                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "resultTitle"}, (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("b", {textContent: "DESCARGAR"})),
+                                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "resultUnit textHolder", textContent: "Mbps"})
+                                        ),
+                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "resultBody"},
+                                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.speedDownloadNumber, {className: "resultValue valueNumber-vgKp", textContent: "- -"})
+                                        ),
+                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "resultGraph"}, (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.svgIcon)("resultGraph"))
+                                    )
+                                ),
+                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.resultUpload, {className: "resultItem resultUpload"},
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "resultContainer"},
+                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "resultHeader"},
+                                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "resultIcon iconWrapper"}, (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.svgIcon)("uplink")),
+                                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "resultTitle"}, (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("b", {textContent: "SUBIR"})),
+                                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "resultUnit textHolder", textContent: "Mbps"})
+                                        ),
+                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "resultBody"},
+                                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.speedUploadNumber, {className: "resultValue valueNumber-vgKp", textContent: "- -"})
+                                        ),
+                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "resultGraph"}, (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.svgIcon)("resultGraph"))
+                                    )
                                 )
                             )
                         )
                     )
                 ),
-                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.testEngine, {className: "testEngine"},
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(_StartButton__WEBPACK_IMPORTED_MODULE_1__["default"], {textContent: "COMENZAR", action: 1})
+                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.testEngine, {className: "testEngine"},
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(_StartButton__WEBPACK_IMPORTED_MODULE_1__["default"], {textContent: "COMENZAR", action: 1})
                 )
             ),
-            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.consoleWrapper, {className: "testConsoleWrapper hidden"},
-                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "console-e2Lfg"},
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("button", {className: "consoleButton-mHsq", onclick: testConsole.scroll}),
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.console, {className: "console-Sq3NP", readonly: "", spellcheck: "false", value: "Waiting to start the test..."})
+            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.consoleWrapper, {className: "testConsoleWrapper hidden"},
+                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "console-e2Lfg"},
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {className: "consoleButton-mHsq", onclick: testConsole.scroll}),
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.console, {className: "console-Sq3NP", readonly: "", spellcheck: "false", value: "Waiting to start the test..."})
                 )
             )
             ),
-            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("footer", {className: "stageFooter-kbsf"},
-                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "footerItem"},
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "footerItem-details"},
-                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "loader loader-gfkb"}),
-                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "footerItem-icon contents-vr4n"}, Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["svgIcon"])("internet")),
-                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "footerItem-content"},
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.selectedServerName, {className: "footerItem-title itemName", textContent: "Buscando el servidor más cercano..."}),
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "footerItem-description textHolder hidden", textContent: "- -"})
+            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("footer", {className: "stageFooter-kbsf"},
+                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "footerItem"},
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "footerItem-details"},
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "loader loader-gfkb"}),
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "footerItem-icon contents-vr4n"}, (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.svgIcon)("internet")),
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "footerItem-content"},
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.selectedServerName, {className: "footerItem-title itemName", textContent: "Buscando el servidor más cercano..."}),
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "footerItem-description textHolder hidden", textContent: "- -"})
                         )
                     )
                 ),
-                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "footerItem contents-vr4n"},
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "footerItem-details"},
-                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "footerItem-icon"}, Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["svgIcon"])("user")),
-                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "footerItem-content"},
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.ispName, {className: "footerItem-title itemName", textContent: "- -"}),
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.publicIp, {className: "footerItem-description textHolder", textContent: "- -"})
+                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "footerItem contents-vr4n"},
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "footerItem-details"},
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "footerItem-icon"}, (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.svgIcon)("user")),
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "footerItem-content"},
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.ispName, {className: "footerItem-title itemName", textContent: "- -"}),
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.publicIp, {className: "footerItem-description textHolder", textContent: "- -"})
                         )
                     )
                 ),
-                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "footerItem"},
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "footerItem-details"},
-                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "footerItem-icon"}, Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["svgIcon"])("connections")),
-                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "footerItem-content"},
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "footerItem-title", textContent: "Conexiones"}),
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "footerItem-description"},
-                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "testModeToggle-wrapper"},
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.multiModeButton, {className: "testModeToggle-button" + (_TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].connections.count > 1 ? " active" : ""), textContent: "Multi", onclick: function(){ toggleConnectionsMode(_TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].connections.default); }}),
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", {className: "testModeToggle-divider textHolder", textContent: "•"}),
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.singleModeButton, {className: "testModeToggle-button" + (_TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].connections.count == 1 ? " active" : ""), textContent: "Unica", onclick: function(){ toggleConnectionsMode(1); }})
+                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "footerItem"},
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "footerItem-details"},
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "footerItem-icon"}, (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.svgIcon)("connections")),
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "footerItem-content"},
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "footerItem-title", textContent: "Conexiones"}),
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "footerItem-description"},
+                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "testModeToggle-wrapper"},
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.multiModeButton, {className: "testModeToggle-button" + (_TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].connections.count > 1 ? " active" : ""), textContent: "Multi", onclick: function(){ toggleConnectionsMode(_TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].connections["default"]); }}),
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {className: "testModeToggle-divider textHolder", textContent: "•"}),
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.singleModeButton, {className: "testModeToggle-button" + (_TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].connections.count == 1 ? " active" : ""), textContent: "Unica", onclick: function(){ toggleConnectionsMode(1); }})
                                 )
                             )
                         )
@@ -2626,21 +2720,23 @@ function TestStage(props){
     }
 };
 
-/* harmony default export */ __webpack_exports__["default"] = (TestStage);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TestStage);
 
 /***/ }),
 /* 6 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
 /* harmony import */ var _assets_js_App__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
 
 
 function StartButton(props){
     var elem = {
-        startButton:  Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("button"),
-        buttonText:   Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div")
+        startButton:  (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("button"),
+        buttonText:   (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div")
     },
         action = false;
     
@@ -2654,24 +2750,26 @@ function StartButton(props){
     
     this.render = function(){
         return (
-            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.startButton, {className: "startButton" + (props.action == 2 ? " tryAgain-EuG8d" : "") + (props.close ? " close-m6jh" : ""), ariaLabel: props.textContent, onclick: this.handleClick},
-                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.buttonText, {className: "buttonText", textContent: props.textContent}),
-                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "buttonBorder"}),
-                (props.action == 1 ? Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "buttonAnimatedBorder"}) : null),
-                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "buttonBackground"})
+            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.startButton, {className: "startButton" + (props.action == 2 ? " tryAgain-EuG8d" : "") + (props.close ? " close-m6jh" : ""), ariaLabel: props.textContent, onclick: this.handleClick},
+                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.buttonText, {className: "buttonText", textContent: props.textContent}),
+                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "buttonBorder"}),
+                (props.action == 1 ? (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "buttonAnimatedBorder"}) : null),
+                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "buttonBackground"})
             )
         )
     }
 }
 
-/* harmony default export */ __webpack_exports__["default"] = (StartButton);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (StartButton);
 
 /***/ }),
 /* 7 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
 /* harmony import */ var _assets_js_App__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
 /* harmony import */ var _TestConfig__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4);
 /* harmony import */ var _StartButton__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(6);
@@ -2695,14 +2793,14 @@ function GaugeContainer(props){
         gaugeNeedleRotateRef = gaugeNeedleRotateMax - gaugeNeedleRotateMin,
         
         elem = {
-            gaugeContainer: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-            gaugeState: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-            speedDetailsNumber: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-            incrementsContainer: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-            gaugeNeedle: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-            gaugeIcon: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-            gaugeCircleSpeed: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("circle"),
-            speedDatils: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div")
+            gaugeContainer: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+            gaugeState: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+            speedDetailsNumber: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+            incrementsContainer: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+            gaugeNeedle: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+            gaugeIcon: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+            gaugeCircleSpeed: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("circle"),
+            speedDatils: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div")
         },
         
         prevSpeed = 0,
@@ -2775,37 +2873,37 @@ function GaugeContainer(props){
     
     this.render = function(){
     return (
-        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.gaugeContainer, {className: "gaugeContainer " + (props.loadType || "download") + "-QvMr" + (props.open ? " open-m6jh" : "")},
-            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.gaugeIcon, {className: "gaugeIcon"},
-                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("svg", {viewBox: "0 0 100 100", class: "svgIcon gaugeVectorIcon"},
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("circle", {class: "gaugeCircle gaugeCircleBackground", r: "42.1", cx: "50%", cy: "50%"}),
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("circle", {class: "gaugeCircle gaugeCircleLoadingBackground", r: "42.2", cx: "50%", cy: "50%"}),
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("circle", {class: "gaugeCircle gaugeCircleStrokeLeft", r: "46", cx: "50%", cy: "50%"}),
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("circle", {class: "gaugeCircle gaugeCircleStrokeRight", r: "46", cx: "50%", cy: "50%"}),
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.gaugeCircleSpeed, {class: "gaugeCircle gaugeCircleCurrentSpeed", r: "46", cx: "50%", cy: "50%", "stroke-dashoffset": "404"})
+        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.gaugeContainer, {className: "gaugeContainer " + (props.loadType || "download") + "-QvMr" + (props.open ? " open-m6jh" : "")},
+            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.gaugeIcon, {className: "gaugeIcon"},
+                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {viewBox: "0 0 100 100", class: "svgIcon gaugeVectorIcon"},
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("circle", {class: "gaugeCircle gaugeCircleBackground", r: "42.1", cx: "50%", cy: "50%"}),
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("circle", {class: "gaugeCircle gaugeCircleLoadingBackground", r: "42.2", cx: "50%", cy: "50%"}),
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("circle", {class: "gaugeCircle gaugeCircleStrokeLeft", r: "46", cx: "50%", cy: "50%"}),
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("circle", {class: "gaugeCircle gaugeCircleStrokeRight", r: "46", cx: "50%", cy: "50%"}),
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.gaugeCircleSpeed, {class: "gaugeCircle gaugeCircleCurrentSpeed", r: "46", cx: "50%", cy: "50%", "stroke-dashoffset": "404"})
                 )
             ),
-            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "gaugeInner"},
-                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.incrementsContainer, {className: "incrementsContainer"},
+            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "gaugeInner"},
+                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.incrementsContainer, {className: "incrementsContainer"},
                     increments.map(function(num, i){
-                        return Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "increment increment--" + i, textContent: num})
+                        return (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "increment increment--" + i, textContent: num})
                     })
                 ),
-                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.gaugeNeedle, {className: "gaugeNeedle"},
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("svg", {viewBox: "0 0 120 801", class: "svgIcon gaugeNeedleIcon"},
-                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("linearGradient", {id: "needleGradient", x1: "0", x2: "0", y1: "0", y2: "1"},
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("stop", {class: "stop--1", "stop-opacity": "0", "stop-color": "transparent", offset: "40%"}),
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("stop", {class: "stop--1", "stop-opacity": "0.95", "stop-color": "currentColor", offset: "100%"})
+                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.gaugeNeedle, {className: "gaugeNeedle"},
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {viewBox: "0 0 120 801", class: "svgIcon gaugeNeedleIcon"},
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("linearGradient", {id: "needleGradient", x1: "0", x2: "0", y1: "0", y2: "1"},
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("stop", {class: "stop--1", "stop-opacity": "0", "stop-color": "transparent", offset: "40%"}),
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("stop", {class: "stop--1", "stop-opacity": "0.95", "stop-color": "currentColor", offset: "100%"})
                         ),
-                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("path", {d: "M95 800.5l-34.25-.958H26.5L0 .5h120l-25 800z", fill: "url(#needleGradient)"})
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("path", {d: "M95 800.5l-34.25-.958H26.5L0 .5h120l-25 800z", fill: "url(#needleGradient)"})
                     )
                 ),
-                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.gaugeState, {className: "gaugeState"},
-                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.speedDatils, {className: "speedDetailsContainer"},
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.speedDetailsNumber, {className: "speedDetailsNumber valueNumber-vgKp"}, Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", {textContent: "0.0"})),
-                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "speedDetailsUnit"},
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", {className: "speedDetailsIcon"}, Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["svgIcon"])("uplink")),
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", {className: "textHolder", textContent: "Mbps"})
+                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.gaugeState, {className: "gaugeState"},
+                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.speedDatils, {className: "speedDetailsContainer"},
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.speedDetailsNumber, {className: "speedDetailsNumber valueNumber-vgKp"}, (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {textContent: "0.0"})),
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "speedDetailsUnit"},
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {className: "speedDetailsIcon"}, (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.svgIcon)("uplink")),
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {className: "textHolder", textContent: "Mbps"})
                         )
                     )
                 )
@@ -2815,14 +2913,16 @@ function GaugeContainer(props){
     }
 }
 
-/* harmony default export */ __webpack_exports__["default"] = (GaugeContainer);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (GaugeContainer);
 
 /***/ }),
 /* 8 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
 /* harmony import */ var _assets_js_App__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
 /* harmony import */ var _TestConfig__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4);
 
@@ -2831,33 +2931,31 @@ __webpack_require__.r(__webpack_exports__);
 
 function PingItem(props){
     var elem = {
-        pingItem: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-        minValue: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("b"),
-        avgValue: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("b"),
-        maxValue: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("b"),
-        jitterValue: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("b"),
-        graphInner: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-        graphTooltip: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-        graphTooltipItem: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-        graphTooltipValue: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-        lineWrapper: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("svg"),
-        graphLine: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("polyline")
+        pingItem: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+        minValue: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("b"),
+        avgValue: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("b"),
+        maxValue: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("b"),
+        jitterValue: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("b"),
+        graphInner: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+        graphTooltip: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+        graphTooltipItem: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+        graphTooltipValue: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+        lineWrapper: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg"),
+        graphLine: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("polyline")
     },
         graphItems = _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.graphItems.map(function(item, index){
             return (_TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.graphItemsVisible.indexOf(index) > -1 ?
-                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {index: index, a: ""})
+                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {index: index, a: ""})
                     :
-                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {index: index})
+                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {index: index})
             )
         }),
         startedTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time(),
         measures = {
-            progressMode: props.progressMode,
+            progressMode: _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.progressMode,
             server: _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.selectedServer,
             sendCount: 0,
             ping: {
-                start: 0,
-                end:   0,
                 time:  0,
                 count: 0
             },
@@ -2883,19 +2981,18 @@ function PingItem(props){
         graph,
         tooltipIndex,
         mousePosX,
-        timeout = {
-            ping: null
-        },
-        hasPerformance = window.performance && window.performance.getEntriesByType;
+        timeout = null;
     
     function finishMeasures(){
         if(measures.started){
-            measures.started = false;
-            clearTimeout(timeout.ping);
-            measures.connection && measures.connection.abort();
-            measures.wsconnection && measures.wsconnection.close();
+            clearTimeout(timeout);
+            if(measures.connectionType == "xhr"){
+                measures.connection.abort();
+            }else{
+                measures.connection.close();
+            }
             _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].event("pingTestFinished");
-            
+            measures.started = false;
         }
     }
     function updateGraphTooltip(){
@@ -2993,17 +3090,17 @@ function PingItem(props){
             measures.jitter.value = measures.jitter.count / measures.jitter.items.length;
         }
 
-        elem.minValue.textContent(measures.min.value + " ms");
-        elem.avgValue.textContent(measures.avg.value.toFixed(1) + " ms");
-        elem.maxValue.textContent(measures.max.value + " ms");
-        elem.jitterValue.textContent(measures.jitter.value.toFixed(1) + " ms");
+        elem.minValue.textContent(measures.min.value);
+        elem.avgValue.textContent(measures.avg.value.toFixed(1));
+        elem.maxValue.textContent(measures.max.value);
+        elem.jitterValue.textContent(measures.jitter.value.toFixed(1));
         
         measures.prevResult = pingTime;
 
         graph.draw(pingTime);
         updateGraphTooltip();
         
-        if((time - startedTime > (12000 + measures.max.value) && !_TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.completeAll) || measures.ping.count >= _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.results){
+        if(measures.ping.count >= _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.results || (time - startedTime > (12000 + measures.max.value) && !_TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.completeAll)){
             finishMeasures();
             return false;
         }
@@ -3012,17 +3109,18 @@ function PingItem(props){
     function httpping(){
         var xhr = new XMLHttpRequest(),
             progress = 0,
-            time, startTime, endTime, pingTime, ping0, entries, timing;
+            time,
+            sendTime,
+            pingTime;
 
-        xhr.open(measures.connectionType, measures.connectionUrl + measures.connectionPrefix + "v=" + _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].random(), true);
+        xhr.open(measures.type, measures.url + measures.prefix + _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].random(), true);
 
         if(measures.progressMode){
             xhr.onprogress = function(){
                 time = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
-                endTime = time;
                 progress += 1;
 
-                pingTime = endTime - startTime;
+                pingTime = time - sendTime;
 
                 if(progress > 2){
                     if(pingTime >= 50){
@@ -3032,43 +3130,27 @@ function PingItem(props){
                     }
                 }
 
-                startTime = time;
+                sendTime = time;
             }
             xhr.onload = finishMeasures;
         }else{
             xhr.onload = function(){
-                if(xhr.status == 200 || xhr.status == 204){
-                    endTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
-                    
-                    pingTime = endTime - startTime;
-
-                    if(hasPerformance){
-                        entries = performance.getEntriesByType("resource");
-                        if(entries.length > 0){
-                            timing = entries[entries.length - 1];
-
-                            ping0 = parseInt((timing.responseStart || timing.responseEnd) - (timing.requestStart || timing.fetchStart));
-
-                            performance.clearResourceTimings && performance.clearResourceTimings();
-                            console.log(timing);
-                            if(ping0 < pingTime){
-                                pingTime = ping0;
-                            }
-                        }
-                    }
-                    
-                    //console.log("ping 0:", ping0 + "ms", " ping 1:", ping1 + "ms");
-                    
+                if(xhr.status == 200){
                     if(measures.sendCount == 1){
-                        return httpping();
+                        httpping();
+                        return;
                     }
                     
-                    timeout.ping = setTimeout(function(){
-                        if(handlePing(pingTime)){
-                            httpping();
-                        }
-                    }, Math.max(60 - pingTime, 0));
+                    pingTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time() - sendTime;
                     
+                    timeout = setTimeout(
+                        function(){
+                            if(handlePing(pingTime)){
+                                httpping();
+                            }
+                        },
+                        Math.max(60 - pingTime, 0)
+                    );
                 }else{
                     finishMeasures();
                 }
@@ -3084,14 +3166,17 @@ function PingItem(props){
 
         if(measures.sendCount <= 2) startedTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
         measures.sendCount += 1;
-        startTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
+        sendTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
     }
     function wsping(){
-        var ws = new WebSocket(measures.wsping), message = 0, startTime, endTime, pingTime;
+        var ws = new WebSocket(measures.wsping),
+            message = 0,
+            sendTime,
+            pingTime;
         
         function send(){
             ws.send(measures.wsmessage ? measures.wsmessage : message);
-            startTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
+            sendTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
             message = message == 9 ? 0 : message + 1;
         }
 
@@ -3101,9 +3186,8 @@ function PingItem(props){
         }
 
         ws.onmessage = function(){
-            endTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
-            pingTime = endTime - startTime;
-            timeout.ping = setTimeout(function(){
+            pingTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time() - sendTime;
+            timeout = setTimeout(function(){
                 if(handlePing(pingTime)){
                     send();
                 }
@@ -3113,7 +3197,7 @@ function PingItem(props){
         ws.onerror = finishMeasures;
         ws.onclose = finishMeasures;
         
-        measures.wsconnection = ws;
+        measures.connection = ws;
     }
     function graphMouseMove(e){
         elem.graphTooltip.removeClass("unseen-u");
@@ -3140,15 +3224,15 @@ function PingItem(props){
         if(_TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.wsping && measures.server.wsping && !measures.progressMode){
             measures.wsping = measures.server.wsping;
             measures.wsmessage = measures.server.wsmessage;
-            
-            return wsping();
+            measures.connectionType = "ws";
+            wsping();
+        }else{
+            measures.url    = measures.progressMode ? measures.server.download : measures.server.ping;
+            measures.prefix = measures.url.indexOf("?") == -1 ? "?" : "&";
+            measures.type   = measures.progressMode ? "GET" : "HEAD";
+            measures.connectionType = "xhr";
+            httpping();
         }
-        
-        measures.connectionUrl    = measures.progressMode ? measures.server.download : measures.server.ping;
-        measures.connectionType   = measures.progressMode ? "GET" : "HEAD";
-        measures.connectionPrefix = measures.connectionUrl.indexOf("?") > -1 ? "&" : "?";
-        
-        httpping();
     }
     
     this.onMount = function(){
@@ -3163,31 +3247,47 @@ function PingItem(props){
     }
     this.render = function(){
     return (
-        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.pingItem, {className: "pingItem-e3Lhk"},
-            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "results-viKtf"},
-                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "serverDetails-twBep"},
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("button", {className: "closeButton-twBep", title: "Delete result", onclick: deleteResult}, Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["svgIcon"])("close")),
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "serverName-twBep", textContent: measures.server.showName ? measures.server.showName : measures.server.name})
+        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.pingItem, {className: "pingItem-e3Lhk"},
+            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "results-viKtf"},
+                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "serverDetails-twBep"},
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {className: "closeButton-twBep", title: "Delete result", onclick: deleteResult}, (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.svgIcon)("close")),
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "serverName-twBep", textContent: measures.server.showName ? measures.server.showName : measures.server.name})
                 ),
-                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "results-hn8Gk"},
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "result-x3Ayv"}, Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", {textContent: "min: "}), Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.minValue, {textContent: "-- ms"})),
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "result-x3Ayv"}, Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", {textContent: "avg: "}), Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.avgValue, {textContent: "-- ms"})),
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "result-x3Ayv"}, Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", {textContent: "max: "}), Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.maxValue, {textContent: "-- ms"})),
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "result-x3Ayv"}, Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", {textContent: "jitter: "}), Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.jitterValue, {textContent: "-- ms"}))
+                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "results-hn8Gk"},
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "result-x3Ayv"},
+                        "min: ",
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.minValue, {}, "--"),
+                        " ms"
+                    ),
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "result-x3Ayv"},
+                        "avg: ",
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.avgValue, {}, "--"),
+                        " ms"
+                    ),
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "result-x3Ayv"},
+                        "max: ",
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.maxValue, {}, "--"),
+                        " ms"
+                    ),
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "result-x3Ayv"},
+                        "jitter: ",
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.jitterValue, {}, "--"),
+                        " ms"
+                    )
                 )
             ),
-            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "graphWrapper-viKtf"},
-                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "graph-o1wfv"},
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.graphInner, {className: "graphInner-o1wfv", onmousemove: graphMouseMove, onmouseout: graphMouseOut},
-                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "graphItems-o1wfv"},
+            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "graphWrapper-viKtf"},
+                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "graph-o1wfv"},
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.graphInner, {className: "graphInner-o1wfv", onmousemove: graphMouseMove, onmouseout: graphMouseOut},
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "graphItems-o1wfv"},
                             graphItems
                         ),
-                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.lineWrapper, {class: "lineWrapper-dnXzj"},
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.graphLine, {points: ""})
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.lineWrapper, {class: "lineWrapper-dnXzj"},
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.graphLine, {points: ""})
                         ),
-                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.graphTooltip, {className: "graphTooltip-o1wfv unseen-u"},
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.graphTooltipItem, {className: "tooltipItem-o1wfv", textContent: "0"}),
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.graphTooltipValue, {className: "tooltipValue-o1wfv", textContent: "ping: undefined ms"})
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.graphTooltip, {className: "graphTooltip-o1wfv unseen-u"},
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.graphTooltipItem, {className: "tooltipItem-o1wfv", textContent: "0"}),
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.graphTooltipValue, {className: "tooltipValue-o1wfv", textContent: "ping: undefined ms"})
                         )
                     )
                 )
@@ -3199,18 +3299,18 @@ function PingItem(props){
 
 function PingStage(){
     var elem = {
-        start: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-        startButton: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("button"),
-        serverDetails: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-        selectServer: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("select"),
-        settingsButton: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("button"),
-        settingsMenu: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-        completeAll: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("input"),
-        wsping: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("input"),
-        progressMode: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("input"),
-        customUrl: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("input"),
-        resultsCount: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("select"),
-        pingItems: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div")
+        start: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+        startButton: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("button"),
+        serverDetails: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+        selectServer: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("select"),
+        settingsButton: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("button"),
+        settingsMenu: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+        completeAll: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("input"),
+        wsping: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("input"),
+        progressMode: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("input"),
+        customUrl: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("input"),
+        resultsCount: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("select"),
+        pingItems: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div")
     },
         testStarted = false,
         pingItems = [],
@@ -3235,39 +3335,39 @@ function PingStage(){
     function startTest(){
         if(testStarted) return;
         
-        var serverLast = _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.servers[_TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.servers.length - 1];
+        var serverLast = _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].servers[_TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].servers.length - 1];
         
+        _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.results = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].parseInt(elem.resultsCount.value(), {min: 50, max: 1000, default: 100});
         _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.completeAll = elem.completeAll.checked();
         _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.wsping  = elem.wsping.checked();
-        _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.results = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].parseInt(elem.resultsCount.value(), {min: 50, max: 1000, default: 100});
+        _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.progressMode = elem.progressMode.checked();
         
         serverLast.showName = extractHostname(elem.customUrl.value());
         serverLast.ping = serverLast.download = elem.customUrl.value();
         
-        if(!_TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.selectedServer.ping || (!_TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.wsping && !_TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.selectedServer.ping)) return;
-        
-        itemId += 1;
-        
-        var el = Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(PingItem, {id: itemId, progressMode: elem.progressMode.checked()});
-        
-        el.id = itemId;
-        
-        pingItems.push(el);
-        if(pingItems.length > 6){
-            pingItems[0].remove();
-            pingItems.splice(0, 1);
+        if(_TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.selectedServer.ping || (_TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.wsping && _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.selectedServer.wsping && !_TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.progressMode)){
+            itemId += 1;
+
+            var el = (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(PingItem, {id: itemId});
+
+            el.id = itemId;
+
+            pingItems.push(el);
+            if(pingItems.length > 6){
+                pingItems[0].remove();
+                pingItems.splice(0, 1);
+            }
+            elem.pingItems.prepend(el);
+
+
+            elem.start.addClass("disabled");
+            testStarted = true;
         }
-        elem.pingItems.prepend(el);
-        
-        
-        elem.start.addClass("disabled");
-        testStarted = true;
     }
     function changeServer(){
         var id = parseInt(elem.selectServer.value());
-        _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.selectedServer   = _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.servers[id];
-        _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.selectedServerId = id;
-        elem.serverDetails.textContent(_TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.servers[id].name);
+        _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.selectedServer = _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].servers[id];
+        elem.serverDetails.textContent(_TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].servers[id].name);
     }
     function toggleSettingsMenu(){
         elem.settingsMenu.style({display: elem.settingsMenu.style("display") == "none" ? "block" : "none"});
@@ -3284,47 +3384,20 @@ function PingStage(){
         elem.customUrl.value("");
     }
     
-    elem.progressMode.handleClick = function(){
-        var checked = elem.progressMode.checked(),
-            noDownload,
-            update;
-        
-        elem.selectServer.childs().forEach(function(item, index){
-            noDownload = !_TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.servers[index].download;
-            item.style({display: checked && noDownload ? "none" : "block"});
-            if(checked && index == _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.selectedServerId && noDownload){
-                update = true;
-            }
-        });
-        if(update){
-            elem.selectServer.child(isLocal ? 1 : 0).selected(true);
-            changeServer();
-        }
-    }
-    
     this.events = {
         pingTestFinished: testFinished,
         deletePingResult: deletePingResult,
-        closestServer: function(success){
-            if(success){
-                var index, len;
-
-                _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.servers = _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.servers.sort(function(a, b){ return a.distance - b.distance; });
-
-                for(index = 0, len = _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.servers.length; index < len; index++){
-                    if(_TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.servers[index].distance >= 0){
-                        _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.selectedServerId = index;
-                        break;
+        closestServer: function(){
+            elem.selectServer.render(
+                _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].servers.map(function(item, index){
+                    if(index == 0 || (index == 1 && !isLocal)){
+                        return null;
                     }
-                }
-                elem.selectServer.render(
-                    _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.servers.map(function(item, index){
-                        return Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: index, textContent: item.name, selected: index == _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.selectedServerId});
-                    })
-                );
+                    return (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: index, "data-id": index, textContent: item.name, selected: index == _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.selectedServer.id});
+                })
+            );
 
-                changeServer();
-            }
+            changeServer();
         }
     }
     this.onMount = function(){
@@ -3332,82 +3405,81 @@ function PingStage(){
     }
     this.render = function(){
     return (
-        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "stage-Kbsc8 pingStage"},
-            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.start, {className: "start-inBnq"},
-                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "contents-vr4n"},
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.startButton, {className: "startButton-twMcg", textContent: "start", onclick: startTest}),
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "selectedServer-xncHv"},
-                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.serverDetails, {className: "serverDetails-xncHv", textContent: _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.selectedServer.name}),
-                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "testSettings-qRnpi"},
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "changeServer-xncHv"},
-                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.selectServer, {className: "select-fquMx", onchange: changeServer},
-                                    _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.servers.map(function(item, index){
-                                        return Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: index, textContent: item.name, selected: index == _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.selectedServerId})
-                                    })
+        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "stage-Kbsc8 pingStage"},
+            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.start, {className: "start-inBnq"},
+                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "contents-vr4n"},
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.startButton, {className: "startButton-twMcg", textContent: "start", onclick: startTest}),
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "selectedServer-xncHv"},
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.serverDetails, {className: "serverDetails-xncHv", textContent: _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.selectedServer.name}),
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "testSettings-qRnpi"},
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "changeServer-xncHv"},
+                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.selectServer, {className: "select-fquMx", onchange: changeServer}
                                 ),
-                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("button", {className: "changeButton-xncHv", textContent: "Change server"})
+                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {className: "changeButton-xncHv", textContent: "Change server"})
                             ),
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "buttonWrapper-xvYef"},
-                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.settingsButton, {className: "button-xvYef", title: "Test settings", onclick: toggleSettingsMenu}, Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["svgIcon"])("settings")),
-                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.settingsMenu, {className: "menu-jrbk", style: "display: none;"},
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "menuInner-jrbk"},
-                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "menuItem-jrbk"},
-                                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", {textContent: "Results:"}),
-                                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.resultsCount, {},
-                                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "60", textContent: "60"}),
-                                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "100", textContent: "100", selected: true}),
-                                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "190", textContent: "190"}),
-                                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "280", textContent: "280"}),
-                                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "460", textContent: "460"}),
-                                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "1000", textContent: "1000"})
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "buttonWrapper-xvYef"},
+                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.settingsButton, {className: "button-xvYef", title: "Test settings", onclick: toggleSettingsMenu}, (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.svgIcon)("settings")),
+                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.settingsMenu, {className: "menu-jrbk", style: "display: none;"},
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "menuInner-jrbk"},
+                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "menuItem-jrbk"},
+                                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {textContent: "Results:"}),
+                                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.resultsCount, {},
+                                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "60", textContent: "60"}),
+                                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "100", textContent: "100", selected: true}),
+                                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "190", textContent: "190"}),
+                                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "280", textContent: "280"}),
+                                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "460", textContent: "460"}),
+                                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "1000", textContent: "1000"})
                                             )
                                         ),
-                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "menuItem-jrbk"},
-                                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", {textContent: "Complete all:"}),
-                                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.completeAll, {type: "checkbox", checked: true})
+                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "menuItem-jrbk"},
+                                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {textContent: "Complete all:"}),
+                                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.completeAll, {type: "checkbox", checked: true})
                                         ),
-                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "menuItem-jrbk"},
-                                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", {textContent: "WS Ping:"}),
-                                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.wsping, {type: "checkbox", checked: true})
+                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "menuItem-jrbk"},
+                                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {textContent: "WS Ping:"}),
+                                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.wsping, {type: "checkbox", checked: true})
                                         ),
-                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "menuItem-jrbk"},
-                                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", {textContent: "Progress mode:"}),
-                                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.progressMode, {type: "checkbox", onclick: elem.progressMode.handleClick})
+                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "menuItem-jrbk"},
+                                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {textContent: "Progress mode:"}),
+                                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.progressMode, {type: "checkbox"})
                                         ),
-                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "menuItem-jrbk item-gxcv"},
-                                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {textContent: "Custom Url:"}),
-                                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "inputWrapper-hgjl"},
-                                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.customUrl, {type: "text", placeholder: "Enter custom url..."}),
-                                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("button", {className: "clearButton-ehkc", onclick: clearCustomUrl}, Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["svgIcon"])("close2"))
+                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "menuItem-jrbk item-gxcv"},
+                                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {textContent: "Custom Url:"}),
+                                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "inputWrapper-hgjl"},
+                                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.customUrl, {type: "text", placeholder: "Enter custom url..."}),
+                                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {className: "clearButton-ehkc", onclick: clearCustomUrl}, (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.svgIcon)("close2"))
                                             )
                                         )
                                     ),
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "menuOverlay-jrbk", onclick: toggleSettingsMenu})
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "menuOverlay-jrbk", onclick: toggleSettingsMenu})
                                 )
                             )
                         )
                     )
                     
                 ),
-                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "selectingServer-ghtk"},
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "selectingServer_loader-ghtk loader"}),
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "selectingServer_text-ghtk", textContent: "Finding closest server..."})
+                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "selectingServer-ghtk"},
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "selectingServer_loader-ghtk loader"}),
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "selectingServer_text-ghtk", textContent: "Finding closest server..."})
                 )
             ),
-            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.pingItems, {className: "pingItems-id3Lk"})
+            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.pingItems, {className: "pingItems-id3Lk"})
         )
     )
     }
 };
 
-/* harmony default export */ __webpack_exports__["default"] = (PingStage);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PingStage);
 
 /***/ }),
 /* 9 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
 /* harmony import */ var _assets_js_App__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
 /* harmony import */ var _TestConfig__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4);
 /* harmony import */ var _GaugeContainer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(7);
@@ -3418,24 +3490,24 @@ __webpack_require__.r(__webpack_exports__);
 
 function NetworkStage(props){
     var elem = {
-        networkStage:    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-        start:           Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-        urlInput:        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("input"),
-        selectUrlMenu:   Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-        requestsCount:   Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("select"),
-        persistentMode:  Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("input"),
-        preventClose:    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("input"),
-        uploadMode:      Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("input"),
-        selectedServersText: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-        gauge:           Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(_GaugeContainer__WEBPACK_IMPORTED_MODULE_2__["default"]),
-        console:         Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("textarea"),
-        doneRequests:  Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span"),
-        doneRequestsMenu:  Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-        doneRequestsSwitch:  Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("input"),
-        doneRequestsUrls: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div"),
-        doneRequestsLoaded: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("textarea"),
-        currentRequests: Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span"),
-        activeRequests:  Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span")
+        networkStage:    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+        start:           (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+        urlInput:        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("input"),
+        selectUrlMenu:   (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+        requestsCount:   (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("select"),
+        persistentMode:  (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("input"),
+        preventClose:    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("input"),
+        uploadMode:      (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("input"),
+        selectedServersText: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+        gauge:           (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(_GaugeContainer__WEBPACK_IMPORTED_MODULE_2__["default"]),
+        console:         (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("textarea"),
+        doneRequests:  (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span"),
+        doneRequestsMenu:  (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+        doneRequestsSwitch:  (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("input"),
+        doneRequestsUrls: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
+        doneRequestsLoaded: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("textarea"),
+        currentRequests: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span"),
+        activeRequests:  (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span")
     },
         currentRequestsCount,
         measures = {
@@ -3446,7 +3518,7 @@ function NetworkStage(props){
         },
         mconsole,
         getTime   = Date.now,
-        random    = Math.random,
+        random    = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].random,
         fixNumber = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].fixNumber,
         reqId = 0,
         currentRequests = {},
@@ -3527,7 +3599,7 @@ function NetworkStage(props){
             for(index = 0; index < len; index++){
                 if(updateItems){
                     elem.doneRequestsUrls.append(
-                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "textUrl-bvzp", textContent: requests[index].url})
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "textUrl-bvzp", textContent: requests[index].url})
                     )
                 }
                 inner += (index != 0 ? "\n" : "") + loadedData(requests[index].loaded);
@@ -3672,16 +3744,12 @@ function NetworkStage(props){
     })();
     function preconnectRequests(requests, callback){
         var count = 0,
-            first = true,
-            prefix;
+            first = true;
         
         requests.forEach(function(item){
-            var xhr = new XMLHttpRequest(), url;
-            
-            url = typeof item.preconnect == "string" ? item.preconnect : item.url;
-            prefix = url.indexOf("?") > -1 ? "&" : "?";
+            var xhr = new XMLHttpRequest();
 
-            xhr.open(typeof item.preconnect == "string" ? "GET" : "HEAD", url + prefix + "vr=" + random(), true);
+            xhr.open("HEAD", item.url + item.prefix + random(), true);
             
             function done(){
                 count += 1;
@@ -3720,7 +3788,7 @@ function NetworkStage(props){
         
         xhr._id = "_" + (reqId += 1);
         
-        xhr.open(post ? "POST" : "GET", props.url + props.prefix + "vr=" + random(), true);
+        xhr.open(post ? "POST" : "GET", props.url + props.prefix + random(), true);
         
         target.onprogress = function(e){
             loaded = e.loaded;
@@ -3805,16 +3873,16 @@ function NetworkStage(props){
         currentRequests = {};
         currentRequestsCount = 0;
         
-        _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].network.urls[0].download = _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].network.urls[0].upload = inputUrl;
+        _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].servers[0].download = _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].servers[0].upload = inputUrl;
         
         _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].network.selectedServers.forEach(function(id, node, nodeUrl){
-            node = _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].network.urls[id];
+            node = _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].servers[id];
             nodeUrl = node[measures.uploadMode ? "upload" : "download"];
             if(nodeUrl){
                 measures.urls.push({
                     url: nodeUrl,
                     id: measures.urls.length,
-                    prefix: nodeUrl.indexOf("?") > -1 ? "&" : "?",
+                    prefix: nodeUrl.indexOf("?") == -1 ? "?" : "&",
                     preconnect: node.preconnect,
                     requestsCount: _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].parseInt(node.requestsCount, {min: 1, default: 6}),
                     loaded: 0
@@ -3873,12 +3941,12 @@ function NetworkStage(props){
     function selectedServersText(){
         var selected = [];
         _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].network.selectedServers.forEach(function(id){
-            selected.push(_TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].network.urls[id].name);
+            selected.push(_TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].servers[id].name);
         });
         elem.selectedServersText.textContent(selected.join(", ") + " ");
     }
     function selectUrl(props){
-        props.elem = Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["$"])(props.elem).closest("menuItem-jrbk");
+        props.elem = (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.$)(props.elem).closest("menuItem-jrbk");
         props.isSelected = props.elem.hasClass("selected-wrpb");
         props.select = !props.isSelected;
         
@@ -3917,40 +3985,31 @@ function NetworkStage(props){
     }
     
     this.events = {
-        closestServer: function(success){
-            if(success){
-                var index, len;
-
-                _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].network.urls = _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].network.urls.sort(function(a, b){ return a.distance - b.distance; });
-
-                for(index = 0, len = _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].network.urls.length; index < len; index++){
-                    if(_TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].network.urls[index].distance >= 0){
-                        _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].network.selectedServers = [index];
-                        break;
+        closestServer: function(){
+            elem.selectUrlMenu.find(".itemsContainer-tpvb").render(
+                _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].servers.map(function(item, index, isSelected){
+                    if(index > 0 && ((index == 1 && !isLocal) || (!item.download && !item.upload))){
+                        return null;
                     }
-                }
-                elem.selectUrlMenu.find(".itemsContainer-tpvb").render(
-                    _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].network.urls.map(function(item, index, isSelected){
-                        isSelected = _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].network.selectedServers.indexOf(index) > -1;
-                        return (
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "menuItem-jrbk" + (isSelected ? " selected-wrpb" : ""), "data-index": index},
-                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "itemInner-ghrt", onclick: index == 0 ? null : function(){ selectUrl({index: index, elem: this, multi: false}) }},
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("button", {className: "selectedIcon-wrpb", onclick: index == 0 ? function(){ selectUrl({index: index, elem: this, multi: false}) } : null}, Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["svgIcon"])("checked")),
-                                        index == 0 ?
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "inputWrapper-ghjk"},
-                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.urlInput, {className: "inputUrl-sdsf", type: "text", name: "__url", placeholder: "Enter custom url..."}),
-                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("button", {className: "clearButton-artp", onclick: clearUrlInput}, Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["svgIcon"])("close2"))
-                                    )
-                                        :
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "textUrl-sdsf", textContent: item.name})
-                                ),
-                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("button", {className: "multiSelect-cbgh", onclick: function(){ selectUrl({index: index, elem: this, multi: true}) }}, Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["svgIcon"])("radioButtonOn"))
-                            )
-                        );
-                    })
-                );
-                selectedServersText();
-            }
+                    isSelected = _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].network.selectedServers.indexOf(index) > -1;
+                    return (
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "menuItem-jrbk" + (isSelected ? " selected-wrpb" : ""), "data-id": index},
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "itemInner-ghrt", onclick: index == 0 ? null : function(){ selectUrl({index: index, elem: this, multi: false}) }},
+                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {className: "selectedIcon-wrpb", onclick: index == 0 ? function(){ selectUrl({index: index, elem: this, multi: false}) } : null}, (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.svgIcon)("checked")),
+                                    index == 0 ?
+                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "inputWrapper-ghjk"},
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.urlInput, {className: "inputUrl-sdsf", type: "text", name: "__url", placeholder: "Enter custom url..."}),
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {className: "clearButton-artp", onclick: clearUrlInput}, (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.svgIcon)("close2"))
+                                )
+                                    :
+                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "textUrl-sdsf", textContent: item.name})
+                            ),
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {className: "multiSelect-cbgh", onclick: function(){ selectUrl({index: index, elem: this, multi: true}) }}, (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.svgIcon)("radioButtonOn"))
+                        )
+                    );
+                })
+            );
+            selectedServersText();
         }
     }
     this.onMount = function(){
@@ -3963,121 +4022,121 @@ function NetworkStage(props){
     }
     this.render = function(){
     return (
-        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.networkStage, {className: "stage-Kbsc8 networkStage"},
-            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.start, {className: "start-inBnq"},
-                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "contents-vr4n"},
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "buttonWrapper-jM8zj"},
-                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("button", {className: "startButton-x4Jsv", onclick: startMeasures},
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", {textContent: "start"}),
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", {textContent: "stop"})
+        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.networkStage, {className: "stage-Kbsc8 networkStage"},
+            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.start, {className: "start-inBnq"},
+                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "contents-vr4n"},
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "buttonWrapper-jM8zj"},
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {className: "startButton-x4Jsv", onclick: startMeasures},
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {textContent: "start"}),
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {textContent: "stop"})
                         )
                     ),
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "configOptions-cs8qH"},
-                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "group-bjFqx option-dfsj"},
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.selectUrlMenu, {className: "menu-jrbk menu-fgcv" , style: "display: none;"},
-                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "menuInner-jrbk"},
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "itemsContainer-tpvb"})
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "configOptions-cs8qH"},
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "group-bjFqx option-dfsj"},
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.selectUrlMenu, {className: "menu-jrbk menu-fgcv" , style: "display: none;"},
+                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "menuInner-jrbk"},
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "itemsContainer-tpvb"})
                                 ),
-                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "menuOverlay-jrbk", onclick: toggleUrlMenu})
+                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "menuOverlay-jrbk", onclick: toggleUrlMenu})
                             ),
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "item-Z9hxm"},
-                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("button", {className: "urlButton-rdhw", onclick: toggleUrlMenu},
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "text-cghl", textContent: "Select Servers Or Url... "}),
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "selectButton-zGsn"}, Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["svgIcon"])("arrowDown"))
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "item-Z9hxm"},
+                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {className: "urlButton-rdhw", onclick: toggleUrlMenu},
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "text-cghl", textContent: "Select Servers Or Url... "}),
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "selectButton-zGsn"}, (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.svgIcon)("arrowDown"))
                                 )
                             ),
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "item-Z9hxm"},
-                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.requestsCount, {className: "select-crth"}, 
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "", textContent: "", selected: true}),
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "1", textContent: "1"}),
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "2", textContent: "2"}),
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "3", textContent: "3"}),
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "4", textContent: "4"}),
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "5", textContent: "5"}),
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "6", textContent: "6"}),
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "10", textContent: "10"}),
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "20", textContent: "20"}),
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "30", textContent: "30"}),
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "50", textContent: "50"}),
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "60", textContent: "60"}),
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "80", textContent: "80"}),
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("option", {value: "100", textContent: "100"})
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "item-Z9hxm"},
+                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.requestsCount, {className: "select-crth"}, 
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "", textContent: "", selected: true}),
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "1", textContent: "1"}),
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "2", textContent: "2"}),
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "3", textContent: "3"}),
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "4", textContent: "4"}),
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "5", textContent: "5"}),
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "6", textContent: "6"}),
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "10", textContent: "10"}),
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "20", textContent: "20"}),
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "30", textContent: "30"}),
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "50", textContent: "50"}),
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "60", textContent: "60"}),
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "80", textContent: "80"}),
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("option", {value: "100", textContent: "100"})
                                 )
                             )
                         ),
-                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "group-bjFqx"},
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "item-Z9hxm option-dfsj"},
-                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("label", {className: "switch-dU4km"},
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.persistentMode, {className: "input-dU4km", type: "checkbox", checked: true}),
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", {className: "slider-dU4km"}),
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", {className: "text-dU4km", textContent: "Persistent measures"})
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "group-bjFqx"},
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "item-Z9hxm option-dfsj"},
+                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", {className: "switch-dU4km"},
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.persistentMode, {className: "input-dU4km", type: "checkbox", checked: true}),
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {className: "slider-dU4km"}),
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {className: "text-dU4km", textContent: "Persistent measures"})
                                 )
                             ),
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "item-Z9hxm option-dfsj"},
-                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("label", {className: "switch-dU4km"},
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.uploadMode, {className: "input-dU4km", type: "checkbox", onclick: elem.uploadMode.handleClick}),
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", {className: "slider-dU4km"}),
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", {className: "text-dU4km", textContent: "Upload mode"})
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "item-Z9hxm option-dfsj"},
+                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", {className: "switch-dU4km"},
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.uploadMode, {className: "input-dU4km", type: "checkbox", onclick: elem.uploadMode.handleClick}),
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {className: "slider-dU4km"}),
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {className: "text-dU4km", textContent: "Upload mode"})
                                 )
                             ),
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "item-Z9hxm"},
-                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("label", {className: "switch-dU4km"},
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.preventClose, {className: "input-dU4km", type: "checkbox", onclick: elem.preventClose.handleClick}),
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", {className: "slider-dU4km"}),
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", {className: "text-dU4km", textContent: "Prevent close"})
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "item-Z9hxm"},
+                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", {className: "switch-dU4km"},
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.preventClose, {className: "input-dU4km", type: "checkbox", onclick: elem.preventClose.handleClick}),
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {className: "slider-dU4km"}),
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {className: "text-dU4km", textContent: "Prevent close"})
                                 )
                             )
                         ),
-                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "group-bjFqx selectedServers-jgc"},
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "item-Z9hxm"},
-                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["svgIcon"])("info"), Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.selectedServersText, {className: "text-fgh", textContent: " "})
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "group-bjFqx selectedServers-jgc"},
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "item-Z9hxm"},
+                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.svgIcon)("info"), (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.selectedServersText, {className: "text-fgh", textContent: " "})
                             )
                         )
                     )
                 ),
-                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "selectingServer-ghtk"},
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "selectingServer_loader-ghtk loader"}),
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "selectingServer_text-ghtk", textContent: "Finding closest server..."})
+                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "selectingServer-ghtk"},
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "selectingServer_loader-ghtk loader"}),
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "selectingServer_text-ghtk", textContent: "Finding closest server..."})
                 )
             ),
-            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "content-LJepA"},
-                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "engine-d3WGk "},
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "header-cSqe2"},
-                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "measuresDetails-Cs7YH"},
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.doneRequestsMenu, {className: "menu-jrbk doneRequestsMenu-rsgl", style: "display: none;"},
-                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "menuInner-jrbk"},
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "optionWrapper-ktwf item-Z9hxm"},
-                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("label", {className: "switch-dU4km"},
-                                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.doneRequestsSwitch, {className: "input-dU4km", type: "checkbox", checked: true, onclick: doneRequests.switch}),
-                                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", {className: "slider-dU4km"}),
-                                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("span", {className: "text-dU4km", textContent: "Group requests"})
+            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "content-LJepA"},
+                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "engine-d3WGk "},
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "header-cSqe2"},
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "measuresDetails-Cs7YH"},
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.doneRequestsMenu, {className: "menu-jrbk doneRequestsMenu-rsgl", style: "display: none;"},
+                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "menuInner-jrbk"},
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "optionWrapper-ktwf item-Z9hxm"},
+                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", {className: "switch-dU4km"},
+                                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.doneRequestsSwitch, {className: "input-dU4km", type: "checkbox", checked: true, onclick: doneRequests.switch}),
+                                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {className: "slider-dU4km"}),
+                                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {className: "text-dU4km", textContent: "Group requests"})
                                         )
                                     ),
-                                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "requests-bvzp"},
-                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.doneRequestsUrls, {className: "requestsUrls-bvzp"}),
-                                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.doneRequestsLoaded, {className: "requestsLoaded-bvzp", readonly: "", value: ""})
+                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "requests-bvzp"},
+                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.doneRequestsUrls, {className: "requestsUrls-bvzp"}),
+                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.doneRequestsLoaded, {className: "requestsLoaded-bvzp", readonly: "", value: ""})
                                     )
                                 ),
-                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "menuOverlay-jrbk", onclick: toggleDoneRequestsMenu})
+                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "menuOverlay-jrbk", onclick: toggleDoneRequestsMenu})
                             ),
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("button", {className: "item-Cs7YH", textContent: "Done requests: ", onclick: toggleDoneRequestsMenu},
-                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.doneRequests, {textContent: 0})
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {className: "item-Cs7YH", textContent: "Done requests: ", onclick: toggleDoneRequestsMenu},
+                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.doneRequests, {textContent: 0})
                             ),
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "item-Cs7YH", textContent: "Current requests: "},
-                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.currentRequests, {textContent: 0})
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "item-Cs7YH", textContent: "Current requests: "},
+                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.currentRequests, {textContent: 0})
                             ),
-                            Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "item-Cs7YH", textContent: "Active requests: "},
-                                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.activeRequests, {textContent: 0})
+                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "item-Cs7YH", textContent: "Active requests: "},
+                                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.activeRequests, {textContent: 0})
                             )
                         )
                     ),
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "consoleWrapper-rWFEZ console-e2Lfg"},
-                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("button", {className: "consoleButton-mHsq", onclick: mconsole.scroll}),
-                        Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.console, {className: "console-r4XGp console-Sq3NP", readonly: "", value: ""})
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "consoleWrapper-rWFEZ console-e2Lfg"},
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {className: "consoleButton-mHsq", onclick: mconsole.scroll}),
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.console, {className: "console-r4XGp console-Sq3NP", readonly: "", value: ""})
                     )
                 ),
-                Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "wrapper-tKbg"},
-                    Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])("div", {className: "gauge-dJ3hc"}, Object(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["createElement"])(elem.gauge))
+                (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "wrapper-tKbg"},
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "gauge-dJ3hc"}, (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.gauge))
                 )
             )
         )
@@ -4085,7 +4144,105 @@ function NetworkStage(props){
     }
 }
 
-/* harmony default export */ __webpack_exports__["default"] = (NetworkStage);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (NetworkStage);
 
 /***/ })
-/******/ ]);
+/******/ 	]);
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+(() => {
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _assets_js_App__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
+/* harmony import */ var _components_MainHeader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
+/* harmony import */ var _components_MainContent__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3);
+
+
+
+
+
+(function(w, d, app){
+    var $html = (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.$)("html"),
+        maxWidth = 850,
+        fontSize = 15,
+        num, width;
+    
+    function resize(){
+        width = window.innerWidth;
+        num = width / maxWidth;
+        num = num < 1 ? num : 1;
+        num = num + ((1 - num) / 1.5);
+        if(width < 350){
+            num = num * (width / 350);
+        }
+        $html.style({fontSize: (fontSize * num) + "px"});
+    }
+    
+    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.$)(window).on("resize", resize);
+    resize();
+    
+    $html.addClass(app.isMobile ? "mobile" : "desktop");
+    
+    
+    // ========= Page Output - Render Page ===========
+    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.$)("#app-render").render(app.createElement("div", {}, app.createElement(_components_MainHeader__WEBPACK_IMPORTED_MODULE_1__["default"]), app.createElement(_components_MainContent__WEBPACK_IMPORTED_MODULE_2__["default"])));
+
+})(window, document, _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"]);
+})();
+
+/******/ })()
+;
