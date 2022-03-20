@@ -2471,20 +2471,13 @@ function TestStage(props){
     
     this.events = {
         initializeTest: function(){
-            var runType = _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].mode == "1" || _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].mode == "2" ? "download" : "upload";
-            
-            clearResults();
-            
             _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].event("speedTestSettings");
-                        
-            elem.gauge = (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(_GaugeContainer__WEBPACK_IMPORTED_MODULE_2__["default"], {loadType: runType, open: true});
-            
+            clearResults();     
+            elem.gauge = (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(_GaugeContainer__WEBPACK_IMPORTED_MODULE_2__["default"], {loadType: _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].mode == "1" || _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].mode == "2" ? "download" : "upload", open: true});
             elem.testEngine.first().addClass("open-m6jh");
-            
             timer.engine = setTimeout(function(){
                 elem.testEngine.render(elem.gauge);
             }, 500);
-            
             _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].initializedTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
             testStatus({opened: true, started: true});
             _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].event("startTest");
