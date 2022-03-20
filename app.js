@@ -2083,7 +2083,7 @@ function TestStage(props){
         _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].user.ip  = userIp;
         _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].user.isp = userIsp;
         _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].user.org = userOrg;
-        if(userIsp && userOrg){
+        if(typeof userIsp == "string" && typeof userOrg == "string"){
             elem.ispName.textContent(
                 userIsp + (userOrg.replace(/\./g, "").toLowerCase() != userIsp.replace(/\./g, "").toLowerCase() ? "\n" + userOrg : "")
             );
