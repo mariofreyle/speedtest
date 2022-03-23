@@ -1492,7 +1492,7 @@ var test = window.test = (function(){
     
     fbStaticUrl = "https://z-m-static.xx.fbcdn.net/rsrc.php/yb/r/hLRJ1GG_y0J.ico";
     
-    mmgWsUrl = "https://mmg.whatsapp.net/v/t62.7119-24/40895583_953423365545486_6554171171410307689_n.enc?ccb=11-4&oh=01_AVwy5taBj8V_yMv1-iJxiO01I-vyAOf-8sDFb_2Swx9pQA&oe=6248AEA5&hash=4WQ79Ml0lBKYLHgtJcgvYTNyCpIjU7c1FYMnSuU4ezM%3D&mode=manual&mms-type=document&__wa-mms=";
+    mmgWsUrl = "https://mmg.whatsapp.net/v/t62.7119-24/30573183_365632238763244_2946220950893053816_n.enc?ccb=11-4&oh=01_AVz0w6IZwSQ61-0GWfC6bD16gCo2Gj5aVZph4bAuwCXR6g&oe=625FF95B&hash=2A3gSLfyGWMvqyv5P3YwLvNrM9QN4g0R2UtPkR94xTQ%3D&mode=manual&mms-type=document&__wa-mms=";
     
     
     servers = [{
@@ -1551,6 +1551,15 @@ var test = window.test = (function(){
         download: "https://riverside.rocks/speedtest/garbage.php?cors=true&ckSize=100",
         upload: "https://riverside.rocks/speedtest/empty.php?cors=true",
         ping: "https://riverside.rocks/speedtest/empty.php?cors=true",
+        wsping: "wss://va.na.speedtest.i3d.net.prod.hosts.ooklaserver.net:8080/ws",
+        latitude: 38.9555, longitude: -77.3643,
+        distance: null,
+        countryCode: "US"
+    }, {
+        name: "Virginia, US - AWS",
+        download: "https://nvirginia.bandwidthplace.com/s/102400.jpg",
+        upload: "https://nvirginia.bandwidthplace.com/uploader/upload.cgi",
+        ping: "https://nvirginia.bandwidthplace.com/s/128.jpg",
         wsping: "wss://va.na.speedtest.i3d.net.prod.hosts.ooklaserver.net:8080/ws",
         latitude: 38.9555, longitude: -77.3643,
         distance: null,
@@ -1789,7 +1798,7 @@ var test = window.test = (function(){
     test = {
         started: false,
         opened: false,
-        runTime: isLocal ? (10 * 1000) : 15000,
+        runTime: isLocal ? (10 * 1000) : 12000,
         hearbeatTime: 80,
         connections: {
             default: 4,
@@ -1984,7 +1993,7 @@ function TestStage(props){
         function send(){
             xhr = new XMLHttpRequest();
             
-            xhr.open("HEAD", url + urlPrefix + _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].random(), true);
+            xhr.open("HEAD", url + urlPrefix + "v=" + _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].random(), true);
 
             xhr.onload = function(){
                 if(xhr.status == 200){
@@ -2005,7 +2014,7 @@ function TestStage(props){
                 }
             }
             
-            xhr.timeout   = 10000;
+            xhr.timeout   = sendCount == 0 ? 8000 : 2000;
             xhr.onerror   = finished;
             xhr.ontimeout = finished;
 
@@ -2436,7 +2445,7 @@ function TestStage(props){
             prev.progressTime = time;
         });
         target.addEventListener("load", function(){
-            connections.addRequest(url, true);
+            connections.addRequest(url, true, true);
         });
     }
     function closeStage(){
@@ -2518,12 +2527,12 @@ function TestStage(props){
                 loaded: 0,
                 loadStartTime: 0,
                 speedRate: 0,
-                addRequest: function(url, send){
+                addRequest: function(url, send, isAdded){
                     connections.requests.push(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].fetch({
                         xhr: function(xhr){
-                            requestConfig(xhr, url);
+                            requestConfig(xhr, url, isAdded);
                         },
-                        url: url.url + url.prefix + _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].random(),
+                        url: url.url + url.prefix + "v=" + _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].random(),
                         post: isDownload ? null : _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].uploadData.$99,
                         fail: function(status, xhr){
                             if(xhr.loaded < 50000) breakTest();// < 50KB
@@ -2538,7 +2547,7 @@ function TestStage(props){
             
             for(index = 0; index < connections.count; index++){
                 connections.preconnect.requests.push(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].fetch({
-                    url: url.url + url.prefix + _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].random(),
+                    url: url.url + url.prefix + "v=" + _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].random(),
                     type: "HEAD",
                     done: function(status){
                         if(status == 0){
@@ -3106,7 +3115,7 @@ function PingItem(props){
             sendTime,
             pingTime;
 
-        xhr.open(measures.type, measures.url + measures.prefix + _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].random(), true);
+        xhr.open(measures.type, measures.url + measures.prefix + "v=" + _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].random(), true);
 
         if(measures.progressMode){
             xhr.onprogress = function(){
@@ -3742,7 +3751,7 @@ function NetworkStage(props){
         requests.forEach(function(item){
             var xhr = new XMLHttpRequest();
 
-            xhr.open("HEAD", item.url + item.prefix + random(), true);
+            xhr.open("HEAD", item.url + item.prefix + "v=" + random(), true);
             
             function done(){
                 count += 1;
@@ -3781,7 +3790,7 @@ function NetworkStage(props){
         
         xhr._id = "_" + (reqId += 1);
         
-        xhr.open(post ? "POST" : "GET", props.url + props.prefix + random(), true);
+        xhr.open(post ? "POST" : "GET", props.url + props.prefix + "v=" + random(), true);
         
         target.onprogress = function(e){
             loaded = e.loaded;
@@ -3823,8 +3832,8 @@ function NetworkStage(props){
         }else{
             target.onload  = done;
         }
-        target.onerror = done;
-        target.ontimeout = done;
+        xhr.onerror = done;
+        xhr.ontimeout = done;
         
         currentRequests[xhr._id] = xhr;
         currentRequestsCount += 1;
