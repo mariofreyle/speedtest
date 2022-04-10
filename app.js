@@ -824,7 +824,7 @@ window.app = function(window, document){
             
             xhr.ontimeout = fail;
             xhr.onerror = fail;
-            xhr._send = function(){
+            xhr.sendRequest = function(){
                 xhr.send(postData);
             };
             
@@ -832,7 +832,7 @@ window.app = function(window, document){
                 xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             }
             if(send){
-                xhr._send();
+                xhr.sendRequest();
             }
 
             return xhr;
@@ -1509,6 +1509,14 @@ var test = window.test = (function(){
         latitude: null, longitude: null,
         distance: -1
     }, {
+        name: "Cachefly Network",
+        download: "https://cachefly.cachefly.net/100mb.test",
+        upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true",
+        ping: "https://cachefly.cachefly.net/100mb.test",
+        http: true,
+        latitude: null, longitude: null,
+        distance: -1
+    }, {
         name: "Akamai Network",
         download: "https://speedtest-download-btwholesale.akamaized.net/PT/1000MB.bin",
         upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true",
@@ -1516,25 +1524,21 @@ var test = window.test = (function(){
         latitude: null, longitude: null,
         distance: -1
     }, {
-        name: "Cachefly Network",
-        http: true,
-        download: "https://cachefly.cachefly.net/100mb.test",
-        upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true",
-        ping: "https://cachefly.cachefly.net/100mb.test",
-        latitude: null, longitude: null,
-        distance: -1
-    }, {
         name: "Cloudflare Network",
+        download: "https://uk1.loadingtest.com/image31.jpg",
+        upload: "https://uk1.loadingtest.com/upload.php",
+        ping: "https://uk1.loadingtest.com/image31.jpg",
         wsping: "wss://speedtest.eti.cfdata.org:8080/ws",
+        http: true,
         latitude: null, longitude: null,
         distance: -1
     }, {
         name: "New York, US - Clouvider",
-        http: true,
         download: "https://nyc.speedtest.clouvider.net/backend/garbage.php?cors=true&ckSize=100",
         upload: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true",
         ping: "https://nyc.speedtest.clouvider.net/backend/empty.php?cors=true",
         wsping: "wss://nyc.speedtest.clouvider.net.prod.hosts.ooklaserver.net:8080/ws",
+        http: true,
         latitude: 40.7177, longitude: -74.0083,
         distance: null,
         countryCode: "US"
@@ -1548,18 +1552,9 @@ var test = window.test = (function(){
         countryCode: "US"
     }, {
         name: "Virginia, US - OVH",
-        download: "https://riverside.rocks/speedtest/garbage.php?cors=true&ckSize=100",
-        upload: "https://riverside.rocks/speedtest/empty.php?cors=true",
-        ping: "https://riverside.rocks/speedtest/empty.php?cors=true",
-        wsping: "wss://va.na.speedtest.i3d.net.prod.hosts.ooklaserver.net:8080/ws",
-        latitude: 38.9555, longitude: -77.3643,
-        distance: null,
-        countryCode: "US"
-    }, {
-        name: "Virginia, US - AWS",
-        download: "https://nvirginia.bandwidthplace.com/s/102400.jpg",
-        upload: "https://nvirginia.bandwidthplace.com/uploader/upload.cgi",
-        ping: "https://nvirginia.bandwidthplace.com/s/128.jpg",
+        download: "https://speedtest.uswdc01.shadow.tech/garbage.php?cors=true&ckSize=100",
+        upload: "https://speedtest.uswdc01.shadow.tech/empty.php?cors=true",
+        ping: "https://speedtest.uswdc01.shadow.tech/empty.php?cors=true",
         wsping: "wss://va.na.speedtest.i3d.net.prod.hosts.ooklaserver.net:8080/ws",
         latitude: 38.9555, longitude: -77.3643,
         distance: null,
@@ -1575,18 +1570,27 @@ var test = window.test = (function(){
         countryCode: "US"
     }, {
         name: "Atlanta, US - Clouvider",
-        http: true,
         download: "https://atl.speedtest.clouvider.net/backend/garbage.php?cors=true&ckSize=100",
         upload: "https://atl.speedtest.clouvider.net/backend/empty.php?cors=true",
         ping: "https://atl.speedtest.clouvider.net/backend/empty.php?cors=true",
         wsping: "wss://atl.speedtest.clouvider.net.prod.hosts.ooklaserver.net:8080/ws",
+        http: true,
         latitude: 33.749, longitude: -84.388,
         distance: null,
         countryCode: "US"
     }, {
         name: "Miami, US - Vultr",
+        download: "https://miami.bandwidthplace.com/s/102400.jpg",
+        upload: "https://miami.bandwidthplace.com/uploader/upload.cgi",
+        ping: "https://miami.bandwidthplace.com/echo.php",
+        wsping: "wss://lg-mia.fdcservers.net:8080/ws",
+        latitude: 25.7975, longitude: -80.2301,
+        distance: null,
+        countryCode: "US"
+    }, {
+        name: "Miami, US - Speedsmart - Vultr",
         download: "https://mia2.veeapps.com/100MB.bin",
-        upload: "https://mia2.veeapps.com/100MB.bin",
+        upload: "https://mia2.veeapps.com/upload.php",
         ping: "https://mia2.veeapps.com/ping.txt",
         wsping: "wss://lg-mia.fdcservers.net:8080/ws",
         latitude: 25.7975, longitude: -80.2301,
@@ -1634,7 +1638,7 @@ var test = window.test = (function(){
         download: "https://speedtest.bog.edgeuno.com/backend/garbage.php?cors=true&ckSize=100",
         upload: "https://speedtest.bog.edgeuno.com/backend/empty.php?cors=true",
         ping: "https://speedtest.bog.edgeuno.com/backend/empty.php?cors=true",
-        wsping: "wss://spt-bog1.edgeuno.com:8080/ws",
+        wsping: "wss://lg-bg.fdcservers.net:8080/ws" || 0,
         latitude: 4.68097, longitude: -74.0413,
         distance: null,
         countryCode: "CO",
@@ -1678,15 +1682,14 @@ var test = window.test = (function(){
         countryCode: "AR",
         autoselect: false
     }, {
-        name: "Santiago, Chile - Edgeuno",
-        download: "https://speedtest.scl1.edgeuno.com/backend/garbage.php?cors=true&ckSize=100",
-        upload: "https://speedtest.scl1.edgeuno.com/backend/empty.php?cors=true",
-        ping: "https://speedtest.scl1.edgeuno.com/backend/empty.php?cors=true",
+        name: "Santiago, Chile - Oracle",
+        download: "https://santiago.bandwidthplace.com/s/102400.jpg",
+        upload: "https://santiago.bandwidthplace.com/uploader/upload.cgi",
+        ping: "https://santiago.bandwidthplace.com/echo.php",
         wsping: "wss://spt-scl1.edgeuno.com:8080/ws",
         latitude: -33.4489, longitude: -70.6693,
         distance: null,
-        countryCode: "CL",
-        autoselect: false
+        countryCode: "CL"
     }, {
         name: "Sao Paulo, Brazil - Oneprovider",
         download: "https://saopaulo.veeapps.com/100MB.bin",
@@ -1750,8 +1753,8 @@ var test = window.test = (function(){
         download: "https://sydney.veeapps.com/100MB.bin",
         upload: "https://sydney.veeapps.com/upload.php",
         ping: "https://sydney.veeapps.com/ping.txt",
-        wsping: "wss://speedtest-syd.apac-tools.ovh.prod.hosts.ooklaserver.net:8080/ws",
-        latitude: 27.5433, longitude: 153.203,
+        wsping: "wss://speedtest-vds1.tasmanet.com.au:8080/ws",
+        latitude: -33.91208, longitude: 151.19315,
         distance: null,
         countryCode: "AU"
     }, {
@@ -1759,8 +1762,8 @@ var test = window.test = (function(){
         download: "https://sg.veeapps.com/100MB.bin",
         upload: "https://sg.veeapps.com/upload.php",
         ping: "https://sg.veeapps.com/ping.txt",
-        wsping: "wss://speedtest-sgp.apac-tools.ovh.prod.hosts.ooklaserver.net:8080/ws",
-        latitude: 1.35208, longitude: 103.82,
+        wsping: "wss://speedtest.singnet.com.sg:8080/ws",
+        latitude: 1.29041, longitude: 103.85211,
         distance: null,
         countryCode: "SG",
         checked: true
@@ -1895,9 +1898,9 @@ function TestStage(props){
     fixNumber = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].fixNumber,
     graph, ping, interval,
     connections,
-    testConsole;
+    mconsole;
     
-    testConsole = (function(){
+    mconsole = (function(){
         var consoleLines = [],
             consoleLen   = 0,
             consoleInner = "",
@@ -1951,103 +1954,103 @@ function TestStage(props){
         }
     })();
     ping = (function(){
-        var callback,
-            xhr,
-            url,
-            urlPrefix,
-            sendTime,
-            sendCount,
-            result,
-            jitter,
-            startedTime,
+        var xhr,
+            results,
+            timing,
+            performance = window.performance,
             started = false,
-            timeout = null;
+            delayTimeout = null;
         
         function finished(){
             if(started){
-                callback({
-                    min: result.count > 0 ? result.min : "--",
-                    jitter: result.count > 1 ? parseFloat(jitter.value.toFixed(1)) : "--"
+                results.done({
+                    min: results.count > 0 ? results.min : null,
+                    jitter: results.count > 1 ? parseFloat(results.jitter.value.toFixed(1)) : null
                 });
                 started = false;
             }
         }
-        function handlePing(){
-            result.count++;
-            if(result.time < result.min){
-                result.min = result.time;
+        function handlePing(time){
+            results.count++;
+            if(time < results.min){
+                results.min = time;
             }
-            if(result.count > 1){
-                jitter.time = result.time > result.prev ? result.time - result.prev : result.prev - result.time;
-                jitter.count += jitter.time;
-                jitter.len += 1;
-                jitter.value = jitter.count / jitter.len;
+            if(results.count > 1){
+                results.jitter.time = time > results.prevTime ? time - results.prevTime : results.prevTime - time;
+                results.jitter.count += results.jitter.time;
+                results.jitter.len += 1;
+                results.jitter.value = results.jitter.count / results.jitter.len;
             }
-            result.prev = result.time;
-            if(result.count == 5 || _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time() - startedTime > 2000){
-                finished();
-            }else{
-                send();
-            }
+            results.prevTime = time;
+            delayTimeout = setTimeout(function(){
+                if(results.count == 10 || _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time() - results.startedTime > 2000){
+                    finished();
+                }else{
+                    send();
+                }
+            }, 60 - time > 0 ? 60 - time : 0);
         }
         function send(){
             xhr = new XMLHttpRequest();
-            
-            xhr.open("HEAD", url + urlPrefix + "v=" + _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].random(), true);
-
+            xhr.url = results.url + results.urlPrefix + "v=" + _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].random();
+            xhr.open(results.method, xhr.url, true);
             xhr.onload = function(){
                 if(xhr.status == 200){
-                    if(sendCount == 1){
-                        startedTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
+                    results.sendCount++;
+                    if(results.sendCount == 1){
+                        results.startedTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
                         send();
                         return;
                     }
-                    
-                    result.time = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time() - sendTime;
-                    
-                    timeout = setTimeout(
-                        handlePing,
-                        60 - result.time > 0 ? 60 - result.time : 0
-                    );
+                    xhr.pingTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time() - xhr.sendTime;
+                    if(performance){
+                        if(timing = performance.getEntriesByName(xhr.url)[0]){
+                            xhr.pingTime2 = parseInt(
+                                (timing.responseStart || timing.responseEnd) - (timing.requestStart || timing.fetchStart)
+                            );
+                        }
+                        performance.clearResourceTimings && performance.clearResourceTimings();
+                        if(xhr.pingTime2 < xhr.pingTime){
+                            xhr.pingTime = xhr.pingTime2;
+                        }
+                    }
+                    handlePing(xhr.pingTime);
                 }else{
                     finished();
                 }
             }
-            
-            xhr.timeout   = sendCount == 0 ? 8000 : 2000;
+            xhr.timeout   = 8000;
             xhr.onerror   = finished;
             xhr.ontimeout = finished;
-
             xhr.send();
-
-            sendTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
-            sendCount++;
+            xhr.sendTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
         }
         function start(props){
-            url = props.url;
-            urlPrefix = props.url.indexOf("?") == -1 ? "?" : "&";
-            callback = props.done;
-            sendCount = 0;
-            result = {
-                min: Infinity,
-                prev: 0,
-                count: 0
-            };
-            jitter = {
-                time: 0,
-                value: 0,
-                count: 0,
-                len: 0
-            };
-            
-            started = true;
-            
-            send();
+            if(!started){
+                results = {
+                    url: props.url,
+                    urlPrefix: props.url.indexOf("?") == -1 ? "?" : "&",
+                    method: props.url.indexOf("nohead") == -1 ? "HEAD" : "GET",
+                    done: props.done,
+                    sendCount: 0,
+                    min: Infinity,
+                    prev: 0,
+                    count: 0,
+                    jitter: {
+                        time: 0,
+                        value: 0,
+                        count: 0,
+                        len: 0
+                    }
+                };
+                started = true;
+                send();
+            }
         }
         function stop(){
             if(started){
                 xhr.abort();
-                clearTimeout(timeout);
+                clearTimeout(delayTimeout);
                 started = false;
             }
         }
@@ -2087,21 +2090,36 @@ function TestStage(props){
         speedStr = parseInt(speed).toString().length;
         return fixNumber(speed, 2 + (speedMax - speedStr));
     }
+    function string(value){
+        if(typeof value == "string"){
+            return value;
+        }
+        if(typeof value == "number"){
+            return value.toString();
+        }
+        return "";
+    }
     function showUserProvider(userIp, userIsp, userOrg, userLatitude, userLongitude){
-        var index, len, server;
+        var index, len, server, orgLen;
+        userIp = string(userIp);
+        userIsp = string(userIsp);
+        userOrg = string(userOrg);
+        userLatitude = parseFloat(userLatitude);
+        userLongitude = parseFloat(userLongitude);
         _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].user.ip  = userIp;
         _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].user.isp = userIsp;
         _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].user.org = userOrg;
-        if(typeof userIsp == "string" && typeof userOrg == "string"){
+        orgLen = userIsp.length > userOrg.length ? userOrg.length : userIsp.length;
+        if(userIsp != "" || userOrg != ""){
             elem.ispName.textContent(
-                userIsp + (userOrg.replace(/\./g, "").toLowerCase() != userIsp.replace(/\./g, "").toLowerCase() ? "\n" + userOrg : "")
+                userIsp + (
+                    userOrg.slice(0, orgLen).toLowerCase() != userIsp.slice(0, orgLen).toLowerCase() ? (userOrg != "" ? "\n" : "") + userOrg : ""
+                )
             );
         }
-        if(userIp){
-            elem.publicIp.textContent(userIp);
-            if(userIp.indexOf(".") == -1){
-                elem.publicIp.addClass("hidden");
-            }
+        elem.publicIp.textContent(userIp);
+        if(userIp.indexOf(".") == -1){
+            elem.publicIp.addClass("hidden");
         }
         if(isNaN(userLatitude) || isNaN(userLongitude)){
             return;
@@ -2118,12 +2136,20 @@ function TestStage(props){
         });
         for(index = 0, len = _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].servers.length; index < len; index++){
             server = _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].servers[index];
+            if((server.distance >= 0 || server.autoselect) && server.autoselect != false){
+                _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].selectedServer = server;
+                _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].network.selectedServers = [server.id];
+                break;
+            }
+        }
+        for(index = 0, len = _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].servers.length; index < len; index++){
+            server = _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].servers[index];
             if(server.distance >= 0){
                 _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].ping.selectedServer = server;
-                if(server.autoselect != false){
-                    _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].selectedServer = server;
-                    _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].network.selectedServers = [server.id];
-                }
+                /*if(server.autoselect != false){
+                    test.selectedServer = server;
+                    test.network.selectedServers = [server.id];
+                }*/
                 _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].servers[2].upload = server.upload;
                 _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].servers[3].upload = server.upload;
                 break;
@@ -2136,10 +2162,10 @@ function TestStage(props){
             clearTimeout(timer[key]);
         }
         connections && connections.requests && connections.requests.forEach(function(req){
-            req.abort && req.abort();
+            req.xhr && req.xhr.abort();
         });
-        connections && connections.preconnect && connections.preconnect.requests.forEach(function(req){
-            req.abort && req.abort();
+        connections && connections.preconnectRequests && connections.preconnectRequests.forEach(function(req){
+            req.abort();
         });
         interval.stop(log);
     }
@@ -2148,8 +2174,8 @@ function TestStage(props){
         elem.resultsContainer.find(".resultValue").textContent("- -");
         elem.resultsContainer.find("polygon, polyline").attr("points", "");
         
-        testConsole.clear();
-        testConsole.log("Starting test...");
+        mconsole.clear();
+        mconsole.log("Starting test...");
     }
     function finishTest(){
         testStatus({started: false, runType: "none"});
@@ -2178,7 +2204,7 @@ function TestStage(props){
     function breakTest(){
         stopTest();
         connections.speedRate && graph.draw(connections.speedRate, _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].runTime, 0);
-        testConsole.state("measures error");
+        mconsole.state("Measures error");
         timer.breakTest = setTimeout(progressEnd, 1300);
     }
     graph = (function(){
@@ -2306,7 +2332,7 @@ function TestStage(props){
             speed.rate = _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].outputSpeed == "average" ? speed.average : speed.instant;
             speed.rateFixed = fixNumber(speed.rate, speed.rate < 1 ? 2 : resultsPrecision);
             
-            testConsole.state("instant: " + consoleSpeed(speed.instant, speed.instantMax) + "mbps, average: " + consoleSpeed(speed.average, speed.averageMax) + "mbps, time: " + consoleTime(loadTime) + "s, loaded: " + loadedData(loaded) + ", transf: " + transferredData(transfer.transferred));
+            mconsole.state("instant: " + consoleSpeed(speed.instant, speed.instantMax) + "mbps, average: " + consoleSpeed(speed.average, speed.averageMax) + "mbps, time: " + consoleTime(loadTime) + "s, loaded: " + loadedData(loaded) + ", transf: " + transferredData(transfer.transferred));
             
             speedNumberElem.textContent(speed.rateFixed);
             elem.gauge.method("updateNumber", {number: speed.rateFixed});
@@ -2327,16 +2353,11 @@ function TestStage(props){
             }
             interval.initialized = false;
             interval.started = false;
-            
             if(log){
-                time = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
-
                 connections.requests.forEach(function(req, index){
-                    if(req.id > connections.count) return;
-
-                    testConsole.state("request " + req.id + " loaded: " + loadedData(req.loaded) + ", max time: " + req.maxTransferTime + "ms" + (req.firstProgressTime ? ", avg time: " + Math.round((req.lastProgressTime - req.firstProgressTime) / (req.progressCount || 1)) + "ms" : ""));
+                    mconsole.state("request " + (index + 1) + " loaded: " + loadedData(req.totalLoaded));
                 });
-                testConsole.state("final speed: " + fixNumber((loaded / (loadTime / 1000)) / 125000, 2) + "mbps, buffer speed: " + fixNumber(buffer.speed, 2) + "mbps (" + (time - buffer.startTime) + "ms), max time: " + transfer.maxTime + "ms");
+                mconsole.state("final speed: " + fixNumber((loaded / (loadTime / 1000)) / 125000, 2) + "mbps, buffer speed: " + fixNumber(buffer.speed, 2) + "mbps (" + (time - buffer.startTime) + "ms), max time: " + transfer.maxTime + "ms");
             }
         }
         function run(){
@@ -2407,46 +2428,72 @@ function TestStage(props){
             stop: stop
         }
     })();
-    function requestConfig(req, url, isAdded){
-        var target = _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].runType.download ? req : req.upload,
+    function request(props){
+        var req = {
+                initialUrl: props.url,
+                initialUrlPrefix: props.prefix,
+                currentLoaded: 0,
+                totalLoaded: 0,
+                xhr: null
+            },
+            uploadData = _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].runType.download ? null : _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].uploadData.$99,
             progressCount = 0,
-            prev = {loaded: 0, progressTime: 0},
-            transfer = {transferred: 0, time: 0},
-            firstLoad = _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].runType.download || isAdded,
-            time;
+            target,
+            transferred,
+            prevLoaded;
         
-        req.loaded = 0;
-        req.id = connections.requests.length + 1;
-        req.maxTransferTime = 0;
-        req.firstProgressTime = 0;
-        req.lastProgressTime = 0;
-        req.progressCount = 0;
-        
-        target.addEventListener("progress", function(e){
-            time = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
-            progressCount++;
-            if(!connections.loadStartTime) connections.loadStartTime = time;
-            if(!interval.initialized) interval.init();
-            transfer.transferred = e.loaded - prev.loaded;
-            transfer.time        = time - (prev.progressTime || time);
-            if(transfer.time > req.maxTransferTime) req.maxTransferTime = transfer.time;
-            connections.loaded += transfer.transferred;
-            req.lastProgressTime = time;
-            req.progressCount    = progressCount;
-            req.loaded          += transfer.transferred;
-            
-            if(!interval.started && progressCount == 6) interval.start();
-            if(progressCount == 1){
-                !isAdded && testConsole.state("request " + req.id + " first transfer: " + transferredData(e.loaded) + ", time: " + consoleTime(time - connections.loadStartTime) + "s");
-                req.firstProgressTime = time;
+        function done(){
+            if(req.xhr.readyState != 4){
+                req.xhr.abort();
             }
-            
-            prev.loaded       = e.loaded;
-            prev.progressTime = time;
-        });
-        target.addEventListener("load", function(){
-            connections.addRequest(url, true, true);
-        });
+            if(req.currentLoaded > 50000){
+                send();
+            }else{
+                breakTest();
+            }
+        }
+        function consoleTime(time){
+            if(time < 1000){
+                return time + "ms";
+            }else{
+                return time.toFixed(2) + "s";
+            }
+        }
+        function onprogress(e){
+            progressCount++;
+            transferred = e.loaded - prevLoaded;
+            connections.loaded += transferred;
+            req.currentLoaded += transferred;
+            req.totalLoaded += transferred;
+            if(!interval.initialized){
+                if(!connections.loadStartTime){
+                    connections.loadStartTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
+                }
+                interval.init();
+            }
+            if(!interval.started && progressCount == 6){
+                interval.start();
+            }
+            if(progressCount == 1){
+                mconsole.state("request " + (props.index + 1) + " first transfer: " + transferredData(e.loaded) + ", time: " + consoleTime(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time() - connections.loadStartTime));
+            }
+            prevLoaded = e.loaded;
+        }
+        function send(){
+            req.xhr = new XMLHttpRequest();
+            target = _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].runType.download ? req.xhr : req.xhr.upload;
+            prevLoaded = 0;
+            req.currentLoaded = 0;
+            req.xhr.open(uploadData ? "POST" : "GET", props.url + props.prefix + "v=" + _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].random(), true);
+            target.onprogress = onprogress;
+            target.onload = done;
+            req.xhr.ontimeout = done;
+            req.xhr.onerror = done;
+            req.xhr.send(uploadData);
+        }
+        req.send = send;
+        
+        return req;
     }
     function closeStage(){
         if(!elem.stageClose.isActive){
@@ -2457,8 +2504,8 @@ function TestStage(props){
             setTimeout(function(){
                 testStatus({started: false, opened: false, runType: "none"});
                 elem.testEngine.render((0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(_StartButton__WEBPACK_IMPORTED_MODULE_1__["default"], {textContent: "COMENZAR", action: 1}));
-                testConsole.clear();
-                testConsole.log("Waiting to start the test...");
+                mconsole.clear();
+                mconsole.log("Waiting to start the test...");
                 _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].event("testFinished");
                 elem.stageMain.style({opacity: 1, pointerEvents: "auto"});
                 elem.stageClose.isActive = false;
@@ -2470,12 +2517,44 @@ function TestStage(props){
             _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].event("setConnectionsNumber", number);
         }
     }
-    function sendRequests(requests){
-        var len = requests.length, index;
-        len = requests.length;
-        for(index = 0; index < len; index++){
-            requests[index]._send();
+    function preconnectRequests(requests, callback){
+        var count = 0;
+        function preconnectDone(){
+            if(_TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].runType.upload){
+                connections.loadStartTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
+            }
+            callback();
         }
+        requests.forEach(function(item){
+            if(item.initialUrl.indexOf("nopreconnect") != -1){
+                return;
+            }
+            var xhr = new XMLHttpRequest();
+            xhr.open("HEAD", item.initialUrl + item.initialUrlPrefix + "v=" + _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].random(), true);
+            function done(){
+                count += 1;
+                if(xhr.status == 0){
+                    breakTest();
+                    return;
+                }
+                if(count == connections.preconnectRequests.length){
+                    preconnectDone();
+                }
+            }
+            xhr.onload  = done;
+            xhr.onerror = done;
+            xhr.ontimeout = done;
+            xhr.send();
+            connections.preconnectRequests.push(xhr);
+        });
+        if(connections.preconnectRequests.length == 0){
+            preconnectDone();
+        }
+    }
+    function sendRequests(){
+        connections.requests.forEach(function(item){
+            item.send();
+        });
     }
     
     this.events = {
@@ -2498,14 +2577,14 @@ function TestStage(props){
             var runType = _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].mode == "1" || _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].mode == "2" ? "download" : "upload";
             ping.start({
                 url: _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].selectedServer.ping,
-                done: function(result, refTime){
-                    refTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time() - _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].initializedTime;
+                done: function(result){
+                    var refTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time() - _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].initializedTime;
                     timer.ping = setTimeout(function(){
-                        elem.pingValue.textContent(result.min);
-                        elem.jitterValue.textContent(result.jitter);
+                        elem.pingValue.textContent(result.min != null ? result.min : "--");
+                        elem.jitterValue.textContent(result.jitter != null ? result.jitter : "--");
                         testStatus({runType: runType});
                         _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].event("runTest");
-                    }, 950 - refTime > 0 ? 950 - refTime : 0);
+                    }, 1000 - refTime > 0 ? 1000 - refTime : 0);
                 }
             });
         },
@@ -2514,60 +2593,36 @@ function TestStage(props){
             //return;
             
             var isDownload  = _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].runType.download,
-                url = {},
+                url = _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].selectedServer[isDownload ? "download" : "upload"],
+                prefix = url.indexOf("?") == -1 ? "?" : "&",
                 index;
             
-            testConsole.state("starting measures...");
+            mconsole.state("Starting measures...");
             
             connections = {
                 server: _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].selectedServer,
-                preconnect: {requests: [], success: 0},
+                preconnectRequests: [],
                 requests: [],
                 count: _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].connections.count,
                 loaded: 0,
                 loadStartTime: 0,
                 speedRate: 0,
-                addRequest: function(url, send, isAdded){
-                    connections.requests.push(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].fetch({
-                        xhr: function(xhr){
-                            requestConfig(xhr, url, isAdded);
-                        },
-                        url: url.url + url.prefix + "v=" + _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].random(),
-                        post: isDownload ? null : _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].uploadData.$99,
-                        fail: function(status, xhr){
-                            if(xhr.loaded < 50000) breakTest();// < 50KB
-                        },
-                        send: send
-                    }));
+                addRequest: function(){
+                    connections.requests.push(
+                        request({
+                            url: url,
+                            prefix: prefix,
+                            index: connections.requests.length
+                        })
+                    );
                 }
             };
             
-            url.url = connections.server[isDownload ? "download" : "upload"];
-            url.prefix = url.url.indexOf("?") == -1 ? "?" : "&";
-            
             for(index = 0; index < connections.count; index++){
-                connections.preconnect.requests.push(_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].fetch({
-                    url: url.url + url.prefix + "v=" + _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].random(),
-                    type: "HEAD",
-                    done: function(status){
-                        if(status == 0){
-                            return breakTest();
-                        }
-                        connections.preconnect.success += 1;
-                        if(connections.preconnect.success == connections.count){
-                            setTimeout(function(){
-                                sendRequests(connections.requests);
-                                if(!isDownload) connections.loadStartTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
-                            }, 1);
-                        }
-                    },
-                    send: false
-                }));
-
                 connections.addRequest(url, false);
             }
             
-            sendRequests(connections.preconnect.requests);
+            preconnectRequests(connections.requests, sendRequests);
         },
         setConnectionsNumber: function(number){
             if(_TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].opened){
@@ -2589,21 +2644,51 @@ function TestStage(props){
         }
     }
     this.onMount = function(){
-        var url = ["https://m.clear.link/geoip", "https://net.etrality.com/isp", "http://ip-api.com/json/", "https://ipapi.co/json/"];
-        _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].fetch({
-            url: url[1],
-            dataType: "json",
-            timeout: 20000,
-            success: function(fetch){
-                showUserProvider(fetch.query, fetch.isp, fetch.org, parseFloat(fetch.lat), parseFloat(fetch.lon));
-            },
-            done: function(){
+        var url = ["https://net.etrality.com/isp", "https://m.clear.link/geoip", "http://ip-api.com/json/", "https://ipapi.co/json/"],
+            selected = 0,
+            ready = 0,
+            server = _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].servers[2],
+            fetch;
+        
+        function handleFetch(){
+            ready++;
+            if(ready == 3){
+                if(fetch){
+                    if(selected == 0){
+                        showUserProvider(fetch.query, fetch.isp, fetch.org, fetch.lat, fetch.lon);
+                    }else if(selected == 1){
+                        showUserProvider(fetch.data.ip, fetch.data.isp, fetch.data.organization, fetch.data.latitude, fetch.data.longitude);
+                    }
+                }
+                
                 _TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].closestDone = true;
                 _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].event("closestServer");
                 elem.selectedServerName.textContent(_TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].selectedServer.name);
                 if(_TestConfig__WEBPACK_IMPORTED_MODULE_3__["default"].started){
                     _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].event("startTest");
                 }
+            }
+        }
+        
+        _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].fetch({
+            url: url[selected],
+            dataType: "json",
+            timeout: 20000,
+            success: function(data){
+                fetch = data;
+                handleFetch();
+            },
+            done: handleFetch
+        });
+        
+        ping.start({
+            url: server.ping,
+            done: function(result){
+                if(!isNaN(result.min) && result.min < 80){
+                    server.autoselect = true;
+                    console.log("[" + server.name + "] ping: " + result.min + " ms");
+                }
+                handleFetch();
             }
         });
     }
@@ -2676,7 +2761,7 @@ function TestStage(props){
             ),
             (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.consoleWrapper, {className: "testConsoleWrapper hidden"},
                 (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "console-e2Lfg"},
-                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {className: "consoleButton-mHsq", onclick: testConsole.scroll}),
+                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {className: "consoleButton-mHsq", onclick: mconsole.scroll}),
                     (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.console, {className: "console-Sq3NP", readonly: "", spellcheck: "false", value: "Waiting to start the test..."})
                 )
             )
@@ -2952,37 +3037,38 @@ function PingItem(props){
                 (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {index: index})
             )
         }),
-        startedTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time(),
-        measures = {
-            progressMode: _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.progressMode,
-            server: _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.selectedServer,
-            sendCount: 0,
-            ping: {
-                time:  0,
-                count: 0
-            },
-            min: {
-                value: Infinity
-            },
+        ping = {
+            time:  0,
+            count: 0,
+            prevTime: 0,
+            min: Infinity,
+            max: 0,
             avg: {
                 value: 0,
                 items: [],
                 count: 0
             },
-            max: {
-                value: 0
-            },
             jitter: {
+                time: 0,
                 value: 0,
                 items: [],
                 count: 0
-            },
-            prevResult: 0,
+            }
+        },
+        measures = {
+            progressMode: _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.progressMode,
+            server: _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.selectedServer,
+            started: false,
+            startedTime: 0,
+            sendTime: 0,
+            sendCount: 0,
             connection: null
         },
         graph,
         tooltipIndex,
         mousePosX,
+        performance = window.performance,
+        timing,
         timeout = null;
     
     function finishMeasures(){
@@ -3061,78 +3147,74 @@ function PingItem(props){
         }
         
     })();
-    function handlePing(pingTime){
-        var time = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time(), jitter;
+    function handlePing(){
+        ping.count += 1;
         
-        measures.ping.count += 1;
-        
-        if(pingTime < measures.min.value){
-            measures.min.value = pingTime; 
+        if(ping.time < ping.min){
+            ping.min = ping.time; 
         }
-        if(pingTime > measures.max.value){
-            measures.max.value = pingTime;
+        if(ping.time > ping.max){
+            ping.max = ping.time;
         }
         
-        measures.avg.items.push(pingTime);
-        measures.avg.count += pingTime;
-        if(measures.avg.items.length > 100){
-            measures.avg.count -= measures.avg.items[0];
-            measures.avg.items.splice(0, 1);
+        ping.avg.items.push(ping.time);
+        ping.avg.count += ping.time;
+        if(ping.avg.items.length > 100){
+            ping.avg.count -= ping.avg.items[0];
+            ping.avg.items.splice(0, 1);
         }
-        measures.avg.value = measures.avg.count / measures.avg.items.length;
+        ping.avg.value = ping.avg.count / ping.avg.items.length;
         
-        if(measures.ping.count > 1){
-            jitter = pingTime > measures.prevResult ? pingTime - measures.prevResult : measures.prevResult - pingTime;
-            measures.jitter.items.push(jitter);
-            measures.jitter.count += jitter;
-            if(measures.jitter.items.length > 100){
-                measures.jitter.count -= measures.jitter.items[0];
-                measures.jitter.items.splice(0, 1);
+        if(ping.count > 1){
+            ping.jitter.time = ping.time > ping.prevTime ? ping.time - ping.prevTime : ping.prevTime - ping.time;
+            ping.jitter.items.push(ping.jitter.time);
+            ping.jitter.count += ping.jitter.time;
+            if(ping.jitter.items.length > 100){
+                ping.jitter.count -= ping.jitter.items[0];
+                ping.jitter.items.splice(0, 1);
             }
-            measures.jitter.value = measures.jitter.count / measures.jitter.items.length;
+            ping.jitter.value = ping.jitter.count / ping.jitter.items.length;
         }
 
-        elem.minValue.textContent(measures.min.value);
-        elem.avgValue.textContent(measures.avg.value.toFixed(1));
-        elem.maxValue.textContent(measures.max.value);
-        elem.jitterValue.textContent(measures.jitter.value.toFixed(1));
+        elem.minValue.textContent(ping.min);
+        elem.avgValue.textContent(ping.avg.value.toFixed(1));
+        elem.maxValue.textContent(ping.max);
+        elem.jitterValue.textContent(ping.jitter.value.toFixed(1));
         
-        measures.prevResult = pingTime;
+        ping.prevTime = ping.time;
 
-        graph.draw(pingTime);
+        graph.draw(ping.time);
         updateGraphTooltip();
         
-        if(measures.ping.count >= _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.results || (time - startedTime > (12000 + measures.max.value) && !_TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.completeAll)){
+        if(ping.count >= _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.results || (_assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time() - measures.startedTime > 12000 && !_TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.completeAll)){
             finishMeasures();
-            return false;
         }
-        return true;
     }
     function httpping(){
         var xhr = new XMLHttpRequest(),
             progress = 0,
-            time,
-            sendTime,
-            pingTime;
-
-        xhr.open(measures.type, measures.url + measures.prefix + "v=" + _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].random(), true);
+            time;
+        
+        xhr.url = measures.url + measures.prefix + "v=" + _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].random();
+        
+        xhr.open(measures.method, xhr.url, true);
 
         if(measures.progressMode){
             xhr.onprogress = function(){
                 time = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
                 progress += 1;
 
-                pingTime = time - sendTime;
+                ping.time = time - measures.sendTime;
 
                 if(progress > 2){
-                    if(pingTime >= 50){
-                        handlePing(pingTime);
+                    if(ping.time >= 50){
+                        handlePing();
                     }else{
                         finishMeasures();
                     }
                 }
 
-                sendTime = time;
+                measures.sendTime = time;
             }
             xhr.onload = finishMeasures;
         }else{
@@ -3143,15 +3225,28 @@ function PingItem(props){
                         return;
                     }
                     
-                    pingTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time() - sendTime;
+                    ping.time = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time() - measures.sendTime;
+                    
+                    if(performance){
+                        if(timing = performance.getEntriesByName(xhr.url)[0]){
+                            ping.time2 = parseInt(
+                                (timing.responseStart || timing.responseEnd) - (timing.requestStart || timing.fetchStart)
+                            );
+                        }
+                        performance.clearResourceTimings && performance.clearResourceTimings();
+                        if(ping.time2 < ping.time){
+                            ping.time = ping.time2;
+                        }
+                    }
                     
                     timeout = setTimeout(
                         function(){
-                            if(handlePing(pingTime)){
+                            handlePing();
+                            if(measures.started){
                                 httpping();
                             }
                         },
-                        Math.max(60 - pingTime, 0)
+                        Math.max(60 - ping.time, 0)
                     );
                 }else{
                     finishMeasures();
@@ -3166,34 +3261,33 @@ function PingItem(props){
 
         xhr.send();
 
-        if(measures.sendCount <= 2) startedTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
+        if(measures.sendCount <= 2) measures.startedTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
         measures.sendCount += 1;
-        sendTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
+        measures.sendTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
     }
     function wsping(){
         var ws = new WebSocket(measures.wsping),
-            message = 0,
-            sendTime,
-            pingTime;
+            message = 0;
         
         function send(){
             ws.send(measures.wsmessage ? measures.wsmessage : message);
-            sendTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
+            measures.sendTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
             message = message == 9 ? 0 : message + 1;
         }
 
         ws.onopen = function(){
-            startedTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
+            measures.startedTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
             send();
         }
 
         ws.onmessage = function(){
-            pingTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time() - sendTime;
+            ping.time = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time() - measures.sendTime;
             timeout = setTimeout(function(){
-                if(handlePing(pingTime)){
+                handlePing();
+                if(measures.started){
                     send();
                 }
-            }, Math.max(60 - pingTime, 0));
+            }, Math.max(60 - ping.time, 0));
         }
         
         ws.onerror = finishMeasures;
@@ -3221,7 +3315,7 @@ function PingItem(props){
     }
     function startMeasures(){
         measures.started = true;
-        startedTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
+        measures.startedTime = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time();
         
         if(_TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].ping.wsping && measures.server.wsping && !measures.progressMode){
             measures.wsping = measures.server.wsping;
@@ -3231,7 +3325,7 @@ function PingItem(props){
         }else{
             measures.url    = measures.progressMode ? measures.server.download : measures.server.ping;
             measures.prefix = measures.url.indexOf("?") == -1 ? "?" : "&";
-            measures.type   = measures.progressMode ? "GET" : "HEAD";
+            measures.method = measures.progressMode || measures.url.indexOf("nohead") != -1 ? "GET" : "HEAD";
             measures.connectionType = "xhr";
             httpping();
         }
@@ -3505,28 +3599,23 @@ function NetworkStage(props){
         console:         (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("textarea"),
         doneRequests:  (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span"),
         doneRequestsMenu:  (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
-        doneRequestsSwitch:  (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("input"),
         doneRequestsUrls: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div"),
         doneRequestsLoaded: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("textarea"),
         currentRequests: (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span"),
         activeRequests:  (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span")
     },
-        currentRequestsCount,
         measures = {
             loaded: 0,
             speedRate: 0,
             uploadMode: false,
-            groupRequests: true
+            requests: []
         },
-        mconsole,
         getTime   = Date.now,
         random    = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].random,
         fixNumber = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].fixNumber,
-        reqId = 0,
-        currentRequests = {},
-        interval,
-        preconnectTimeout = null,
-        doneRequests;
+        mconsole,
+        doneRequests,
+        interval;
 
     mconsole = function(){
         var consoleLines = [],
@@ -3570,7 +3659,6 @@ function NetworkStage(props){
             }
         }
     }();
-    
     function transferredData(value){
         if(value == 0) return "0KB";
         value = value / 1000;
@@ -3589,54 +3677,49 @@ function NetworkStage(props){
         return fixNumber(speed, 2 + (speedMax - speedStr));
     }
     doneRequests = (function(){
-        var len, index, requests, inner;
+        var inner, len, index;
         
-        function update(updateItems){
+        function update(updateUrls){
             inner = "";
-            requests = measures[measures.groupRequests ? "urls" : "requestsUrls"] || [];
-            len = requests.length < 20 ? requests.length : 20;
-            if(updateItems){
+            len = measures.requests.length < 20 ? measures.requests.length : 20;
+            if(updateUrls){
                 elem.doneRequestsUrls.empty();
             }
             for(index = 0; index < len; index++){
-                if(updateItems){
+                if(updateUrls){
                     elem.doneRequestsUrls.append(
-                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "textUrl-bvzp", textContent: requests[index].url})
-                    )
+                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "textUrl-bvzp", textContent: measures.requests[index].initialUrl})
+                    );
                 }
-                inner += (index != 0 ? "\n" : "") + loadedData(requests[index].loaded);
+                inner += (index != 0 ? "\n" : "") + loadedData(measures.requests[index].totalLoaded);
             }
             elem.doneRequestsLoaded.value(inner);
         }
-        function handleSwitch(){
-            measures.groupRequests = elem.doneRequestsSwitch.checked();
-            
-            update(true);
-        }
         
         return {
-            update: update,
-            switch: handleSwitch
+            update: update
         }
     })();
-    function stopMeasures(){
+    function stopMeasures(type){
         if(measures.started){
-            var prop, req;
-            measures.started = false;
             measures.preconnectRequests.forEach(function(req){
                 req.abort();
             });
-            for(prop in currentRequests){
-                req = currentRequests[prop];
-                req.abort();
-            }
-            clearTimeout(preconnectTimeout);
-            measures.activeRequests = 0;
-            currentRequestsCount    = 0;
+            measures.requests.forEach(function(req){
+                req.xhr && req.xhr.abort();
+            });
+            measures.currentRequests = 0;
+            measures.activeRequests  = 0;
             interval.stop();
+            elem.currentRequests.textContent("0");
+            elem.activeRequests.textContent("0");
             elem.gauge.method("clear");
             elem.networkStage.removeClass("started-P5Hym");
+            if(type == "error"){
+                mconsole.state("Measures error");
+            }
             mconsole.log("Finished measures.");
+            measures.started = false;
         }
     }
     interval = (function(){
@@ -3647,7 +3730,7 @@ function NetworkStage(props){
             intervalId, count,
             resultsPrecision;
         
-        function callback(last){
+        function callback(){
             time = getTime();
             loadTime     = time - measures.loadStartTime;
             transferred  = measures.loaded - prev.loaded;
@@ -3679,20 +3762,16 @@ function NetworkStage(props){
                 speed.rateMax = speed.rate > speed.rateMax ? speed.rate : speed.rateMax;
                 speed.rateFixed = fixNumber(speed.rate, speed.rate < 1 ? 2 : resultsPrecision);
                 
-                mconsole.state("speed: " + consoleSpeed(speed.rate, speed.rateMax) + "mbps, time: " + consoleTime(loadTime) + "s, loaded: " + loadedData(measures.loaded) + (!last ? ", transferred: " + transferredData(transferred) : ""));
-                if(!last){
-                    elem.gauge.method("updateNumber", {number: speed.rateFixed});
-                    if(count % 4 == 0){
-                        elem.gauge.method("updateIcon", {speedRate: speed.rate});
-                    }
+                mconsole.state("speed: " + consoleSpeed(speed.rate, speed.rateMax) + "mbps, time: " + consoleTime(loadTime) + "s, loaded: " + loadedData(measures.loaded) + ", transferred: " + transferredData(transferred));
+                elem.gauge.method("updateNumber", {number: speed.rateFixed});
+                if(count % 4 == 0){
+                    elem.gauge.method("updateIcon", {speedRate: speed.rate});
                 }
-                if(count % 2 == 0 || last){
+                if(count % 2 == 0){
                     doneRequests.update();
                 }
-
+                elem.currentRequests.textContent(measures.currentRequests);
                 elem.activeRequests.textContent(measures.activeRequests);
-                elem.currentRequests.textContent(currentRequestsCount);
-                
                 count++;
             }
             
@@ -3731,9 +3810,7 @@ function NetworkStage(props){
         }
         function stop(){
             if(interval.started){
-                callback(true);
                 clearInterval(intervalId);
-                
                 interval.started = false;
             }
         }
@@ -3745,193 +3822,181 @@ function NetworkStage(props){
         }
     })();
     function preconnectRequests(requests, callback){
-        var count = 0,
-            first = true;
-        
+        var count = 0;
+        function preconnectDone(){
+            if(measures.uploadMode){
+                measures.loadStartTime = getTime();
+            }
+            callback();
+        }
         requests.forEach(function(item){
+            if(item.initialUrl.indexOf("nopreconnect") != -1){
+                return;
+            }
             var xhr = new XMLHttpRequest();
-
-            xhr.open("HEAD", item.url + item.prefix + "v=" + random(), true);
-            
+            xhr.open("HEAD", item.initialUrl + item.initialUrlPrefix + "v=" + random(), true);
             function done(){
                 count += 1;
                 if(xhr.status == 0){
-                    return stopMeasures();
+                    stopMeasures("error");
+                    return;
                 }
-                if(first){
+                if(count == 1){
                     mconsole.state("Preconnect start...");
-                    first = false;
                 }
-                if(count == requests.length){
-                    if(measures.uploadMode){
-                        measures.loadStartTime = getTime();
-                    }
-                    preconnectTimeout = setTimeout(callback, 1);
+                if(count == measures.preconnectRequests.length){
+                    preconnectDone();
                 }
             }
-
             xhr.onload  = done;
             xhr.onerror = done;
             xhr.ontimeout = done;
-
             xhr.send();
-
             measures.preconnectRequests.push(xhr);
         });
-    }
-    function request(props, isInitial){
-        var xhr = new XMLHttpRequest(),
-            prevLoaded  = 0,
-            first       = true,
-            transferred = 0,
-            loaded = 0,
-            post   = measures.uploadMode ? _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].uploadData.$99 : null,
-            target = measures.uploadMode ? xhr.upload : xhr;
-        
-        xhr._id = "_" + (reqId += 1);
-        
-        xhr.open(post ? "POST" : "GET", props.url + props.prefix + "v=" + random(), true);
-        
-        target.onprogress = function(e){
-            loaded = e.loaded;
-            transferred = loaded - prevLoaded;
-        
-            if(isInitial && first){
-                if(!measures.loadStartTime) measures.loadStartTime = getTime();
-                if(!interval.started) mconsole.state("Load start..."), interval.start();
-            }
-            
-            measures.loaded += transferred;
-            
-            measures.urls[props.urlId].loaded += transferred;
-            measures.requestsUrls[props.requestId].loaded += transferred;
-            prevLoaded = e.loaded;
-            
-            if(first) measures.activeRequests += 1, first = false;
+        if(measures.preconnectRequests.length == 0){
+            preconnectDone();
         }
+    }
+    function request(props){
+        var req = {
+                initialUrl: props.url,
+                initialUrlPrefix: props.prefix,
+                currentLoaded: 0,
+                totalLoaded: 0,
+                xhr: null
+            },
+            uploadData = measures.uploadMode ? _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].uploadData.$99 : null,
+            target,
+            isActive,
+            prevLoaded,
+            transferred;
+        
         function done(){
-            measures.doneRequests   += 1;
-            measures.activeRequests -= first ? 0 : 1;
-            
-            elem.doneRequests.textContent(measures.doneRequests);
-            
-            delete currentRequests[xhr._id];
-                   currentRequestsCount -= 1;
-            
-            if(measures.persistentMode && loaded > 50000){ // > 50KB
-                request(props).sendRequest();
+            if(req.xhr.readyState != 4){
+                req.xhr.abort();
             }
-            
-            if(currentRequestsCount == 0){
+            measures.doneRequests    += 1;
+            measures.activeRequests  -= isActive ? 1 : 0;
+            measures.currentRequests -= 1;
+            elem.doneRequests.textContent(measures.doneRequests);
+            if(measures.persistentMode && req.currentLoaded > 50000){ // > 50KB
+                send();
+            }
+            if(measures.currentRequests == 0){
                 stopMeasures();
             }
         }
-        
-        if(measures.uploadMode){
-            xhr.onload = done;
-        }else{
-            target.onload  = done;
+        function onprogress(e){
+            transferred = e.loaded - prevLoaded;
+            if(!interval.started){
+                if(!measures.loadStartTime){
+                    measures.loadStartTime = getTime();
+                }
+                mconsole.state("Load start...");
+                interval.start();
+            }
+            req.currentLoaded += transferred;
+            req.totalLoaded += transferred;
+            measures.loaded += transferred;
+            prevLoaded = e.loaded;
+            if(!isActive){
+                measures.activeRequests += 1;
+                isActive = true;
+            }
         }
-        xhr.onerror = done;
-        xhr.ontimeout = done;
+        function send(){
+            req.xhr = new XMLHttpRequest();
+            target = measures.uploadMode ? req.xhr.upload : req.xhr;
+            isActive   = false;
+            prevLoaded = 0;
+            req.xhr.open(uploadData ? "POST" : "GET", props.url + props.prefix + "v=" + random(), true);
+            target.onprogress = onprogress;
+            target.onload  = done;
+            req.xhr.onerror = done;
+            req.xhr.ontimeout = done;
+            req.xhr.send(uploadData);
+            req.currentLoaded = 0;
+            measures.currentRequests += 1;
+        }
+        req.send = send;
         
-        currentRequests[xhr._id] = xhr;
-        currentRequestsCount += 1;
-        
-        xhr.sendRequest = function(){
-            xhr.send(post);
-        };
-        
-        return xhr;
+        return req;
     }
     function startMeasures(){
-        if(measures.actionTime && (getTime() - measures.actionTime) < 500){
+        if(measures.startTime && (getTime() - measures.startTime) < 500){
             return;
         }
-        
-        measures.actionTime = getTime();
-        
+        measures.startTime = getTime();
         if(measures.started){
             return stopMeasures();
         }
         
+        var inputUrl      = elem.urlInput.value().trim(),
+            requestsCount = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].parseInt(elem.requestsCount.value(), {min: 1, max: 100, default: 0}),
+            uploadMode    = elem.uploadMode.checked(),
+            urls = [],
+            index,
+            urlsLen;
+        
+        _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].servers[0].download = _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].servers[0].upload = inputUrl;
+        
+        _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].network.selectedServers.forEach(function(serverId){
+            var node, nodeUrl;
+            node = _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].servers[serverId];
+            nodeUrl = node[uploadMode ? "upload" : "download"];
+            if(nodeUrl){
+                urls.push({
+                    url: nodeUrl,
+                    prefix: nodeUrl.indexOf("?") == -1 ? "?" : "&"
+                });
+            }
+        });
+        
+        if(urls.length == 0){
+            return;
+        }else if(requestsCount != 0 && urls.length > requestsCount){
+            urls.splice((urls.length - requestsCount) * -1);
+        }
+        
+        measures.started        = true;
         measures.loaded         = 0;
         measures.loadStartTime  = 0;
         measures.speedRate      = 0;
         measures.activeRequests = 0;
         measures.doneRequests   = 0;
+        measures.currentRequests = 0;
         measures.preconnectRequests = [];
-        
         measures.persistentMode = elem.persistentMode.checked();
-        measures.uploadMode     = elem.uploadMode.checked();
+        measures.uploadMode     = uploadMode;
+        measures.requests = [];
         
-        measures.urls = [];
-        measures.requestsUrls = [];
-        
-        var inputUrl = elem.urlInput.value().trim(),
-            requestsCount = _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].parseInt(elem.requestsCount.value(), {min: 1, max: 100, default: 0}),
-            index, item, len, urlsLen;
-        
-        currentRequests = {};
-        currentRequestsCount = 0;
-        
-        _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].servers[0].download = _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].servers[0].upload = inputUrl;
-        
-        _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].network.selectedServers.forEach(function(id, node, nodeUrl){
-            node = _TestConfig__WEBPACK_IMPORTED_MODULE_1__["default"].servers[id];
-            nodeUrl = node[measures.uploadMode ? "upload" : "download"];
-            if(nodeUrl){
-                measures.urls.push({
-                    url: nodeUrl,
-                    id: measures.urls.length,
-                    prefix: nodeUrl.indexOf("?") == -1 ? "?" : "&",
-                    preconnect: node.preconnect,
-                    requestsCount: _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].parseInt(node.requestsCount, {min: 1, default: 6}),
-                    loaded: 0
-                });
-            }
-        });
-        
-        if(measures.urls.length == 0){
-            return;
-        }else if(requestsCount != 0 && measures.urls.length > requestsCount){
-            measures.urls.splice((measures.urls.length - requestsCount) * -1);
-        }
-        
-        urlsLen = Math.ceil(requestsCount / measures.urls.length);
+        urlsLen = Math.ceil(requestsCount / urls.length);
             
-        measures.urls.forEach(function(url){
-            if(requestsCount == 0) urlsLen = url.requestsCount;
+        urls.forEach(function(url){
+            if(requestsCount == 0) urlsLen = 6;
             for(index = 0; index < urlsLen; index++){
-                if(requestsCount != 0 && measures.requestsUrls.length >= requestsCount) return;
-                item = {
-                    url: url.url,
-                    urlId: url.id,
-                    requestId: measures.requestsUrls.length,
-                    prefix: url.prefix,
-                    preconnect: url.preconnect,
-                    requestsCount: url.requestsCount,
-                    loaded: 0
-                };
-                request(item, true);
-                measures.requestsUrls.push(item);
+                if(requestsCount != 0 && measures.requests.length >= requestsCount) return;
+                measures.requests.push(
+                    request({
+                        url: url.url,
+                        prefix: url.prefix
+                    })
+                );
             }
         });
 
         function sendRequests(){
-            for(item in currentRequests){
-                currentRequests[item].sendRequest();
-            }
+            measures.requests.forEach(function(item){
+                item.send();
+            });
         }
         
-        measures.started = true;
-        mconsole.log("Starting measures...");
+        preconnectRequests(measures.requests, sendRequests);
+        
+        mconsole.state("Starting measures...");
         elem.networkStage.addClass("started-P5Hym");
         elem.doneRequests.textContent("0");
-        elem.currentRequests.textContent("0");
-        
-        preconnectRequests(measures.requestsUrls, sendRequests);
-        
         doneRequests.update(true);
     }
     function toggleUrlMenu(){
@@ -4019,7 +4084,7 @@ function NetworkStage(props){
             elem.console.value("");
             elem.uploadMode.handleClick();
             elem.preventClose.handleClick();
-            doneRequests.update();
+            doneRequests.update(true);
         }, 1);
     }
     this.render = function(){
@@ -4107,13 +4172,6 @@ function NetworkStage(props){
                         (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "measuresDetails-Cs7YH"},
                             (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.doneRequestsMenu, {className: "menu-jrbk doneRequestsMenu-rsgl", style: "display: none;"},
                                 (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "menuInner-jrbk"},
-                                    (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "optionWrapper-ktwf item-Z9hxm"},
-                                        (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", {className: "switch-dU4km"},
-                                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.doneRequestsSwitch, {className: "input-dU4km", type: "checkbox", checked: true, onclick: doneRequests.switch}),
-                                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {className: "slider-dU4km"}),
-                                            (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {className: "text-dU4km", textContent: "Group requests"})
-                                        )
-                                    ),
                                     (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {className: "requests-bvzp"},
                                         (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.doneRequestsUrls, {className: "requestsUrls-bvzp"}),
                                         (0,_assets_js_App__WEBPACK_IMPORTED_MODULE_0__.createElement)(elem.doneRequestsLoaded, {className: "requestsLoaded-bvzp", readonly: "", value: ""})
