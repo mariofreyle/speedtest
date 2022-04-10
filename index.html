@@ -3,14 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <title>SpeedTest</title>
+    <script type="text/javascript">
+        if(window.location.search.indexOf("noredir") == -1){
+            window.stop();
+            //window.location.href = "http://ispeedtest.epizy.com/";
+        }
+    </script>
     <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=5, minimum-scale=1">
     <meta name="description" content="Test your internet speed!">
     <meta property="og:title" content="SpeedTest">
     <meta property="og:description" content="Test your internet speed!">
     <meta property="og:image" content="//mariofreyle.github.io/speedtest/og-image.png">
+    <link rel="stylesheet" href="app.css?v=9568732437">
     <link rel="shortcut icon" href="favicon.png" type="image/png">
 </head>
 <body>
-  <img src="http://ispeedtest.epizy.com/"></img>
+    <div id="app-render"></div>
 </body>
+<script type="text/javascript">window.isLocal = false;window.URL_BASE = "https://mariofreyle.github.io/speedtest";</script>
+<script type="text/javascript" src="app.js?v=9568732437"></script>
 </html>
