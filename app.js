@@ -1963,11 +1963,11 @@ function TestStage(props){
         
         function finished(){
             if(started){
+                started = false;
                 results.done({
                     min: results.count > 0 ? results.min : null,
                     jitter: results.count > 1 ? parseFloat(results.jitter.value.toFixed(1)) : null
                 });
-                started = false;
             }
         }
         function handlePing(time){
@@ -1983,7 +1983,7 @@ function TestStage(props){
             }
             results.prevTime = time;
             delayTimeout = setTimeout(function(){
-                if(results.count == 10 || _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time() - results.startedTime > 2000){
+                if((results.count == 10 || _assets_js_App__WEBPACK_IMPORTED_MODULE_0__["default"].time() - results.startedTime > 1000) && results.count > 4){
                     finished();
                 }else{
                     send();
@@ -2027,6 +2027,7 @@ function TestStage(props){
         }
         function start(props){
             if(!started){
+                started = true;
                 results = {
                     url: props.url,
                     urlPrefix: props.url.indexOf("?") == -1 ? "?" : "&",
@@ -2043,15 +2044,14 @@ function TestStage(props){
                         len: 0
                     }
                 };
-                started = true;
                 send();
             }
         }
         function stop(){
             if(started){
+                started = false;
                 xhr.abort();
                 clearTimeout(delayTimeout);
-                started = false;
             }
         }
         return {
