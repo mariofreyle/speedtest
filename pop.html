@@ -6,7 +6,7 @@
 </head>
 <script type="text/javascript">
     function done(pop){
-        window.parent && window.parent.cdnPop && window.top.cdnPop(pop);
+        window.top && window.top.postMessage && window.top.postMessage('cdnPop:' + (pop || ""), '*');
     }
     var xhr = new XMLHttpRequest();
     xhr.open("HEAD", "download.bin", true);
