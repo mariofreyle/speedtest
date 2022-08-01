@@ -4,5 +4,17 @@
     <meta charset="UTF-8">
     <title>iSpeedTest</title>
 </head>
-<script type="text/javascript"></script>
+<script type="text/javascript">
+    function done(pop){
+        window.top && window.top.postMessage && window.top.postMessage("cdn-pop", pop);
+    }
+    var xhr = new XMLHttpRequest();
+    xhr.open("HEAD", "download.bin", true);
+    xhr.onload = function(){
+        done((xhr.getResponseHeader("x-served-by") || "").slice(-3));
+    }
+    xhr.onerror   = done;
+    xhr.ontimeout = done;
+    xhr.send();
+</script>
 </html>
