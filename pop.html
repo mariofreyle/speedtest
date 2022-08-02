@@ -9,7 +9,7 @@
         window.top && window.top.postMessage && window.top.postMessage(pop || "", '*');
     }
     var xhr = new XMLHttpRequest();
-    xhr.open("HEAD", "download.bin?v-" + Math.random().toString().slice(2), true);
+    xhr.open("HEAD", "pop.html?v-" + Math.random().toString().slice(2), true);
     xhr.onload = function(){
         done((xhr.getResponseHeader("x-served-by") || "").slice(-3));
     }
@@ -17,7 +17,5 @@
     xhr.onerror   = done;
     xhr.ontimeout = done;
     xhr.send();
-    
-    window.popUtilLoaded = true;
 </script>
 </html>
