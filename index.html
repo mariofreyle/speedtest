@@ -1,25 +1,24 @@
 <!DOCTYPE html>
-<html dir="ltr" style="background-color: #0f171e;">
+<html dir="ltr" class="notranslate" translate="no" style="background-color: #0f171e;">
 <head>
     <meta charset="UTF-8">
-    <title>SpeedTest</title>
-    <script type="text/javascript">
-        if(window.location.search.indexOf("noredir") == -1){
-            window.stop();
-            window.location.href = "http://ispeedtest.epizy.com/";
-        }
-    </script>
+    <meta name="google" content="notranslate">
+    <title>iSpeedTest</title>
     <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=5, minimum-scale=1">
     <meta name="description" content="Test your internet speed!">
-    <meta property="og:title" content="SpeedTest">
+    <meta property="og:title" content="iSpeedTest">
     <meta property="og:description" content="Test your internet speed!">
-    <meta property="og:image" content="//mariofreyle.github.io/speedtest/og-image.png">
-    <link rel="stylesheet" href="app.css?v=9568732437">
-    <link rel="shortcut icon" href="favicon.png" type="image/png">
+    <meta property="og:image" content="https://raw.githubusercontent.com/mariofreyle/speedtest/master/og-image.png">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="app.css?v=1667955987">
 </head>
 <body>
     <div id="app-render"></div>
 </body>
-<script type="text/javascript">window.isLocal = false;window.URL_BASE = "https://mariofreyle.github.io/speedtest";</script>
-<script type="text/javascript" src="app.js?v=9568732437"></script>
+<script type="text/javascript">
+    window.URL_BASE = "http://ispeedtest.epizy.com";
+    window.URL_BASE = window.URL_BASE.replace(/https?\:/, window.location.protocol).replace(/\/$/, "");
+    window.APP_META = {};
+</script>
+<script type="text/javascript" src="app.js?v=1669775725"></script>
 </html>
