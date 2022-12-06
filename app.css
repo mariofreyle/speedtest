@@ -269,6 +269,10 @@ input, button, textarea, select, svg {
     color: #f9f9f9;
     user-select: none;
 }
+.main-header_icon {
+    padding: 0.466rem;
+    margin-left: -0.466rem;
+}
 .main-header_icon svg {
     width: 1.333rem;
     height: 1.333rem;
@@ -276,7 +280,6 @@ input, button, textarea, select, svg {
 .main-header_text {
     font-size: 1.4rem;
     font-weight: 500;
-    margin-left: 0.466rem;
 }
 .main-header_divider {
     margin: 0 .6rem;
@@ -1043,31 +1046,32 @@ input, button, textarea, select, svg {
 }
 .ping-graph_items div {
     display: flex;
+    justify-content: center;
     position: relative;
     width: 1%;
     padding-bottom: 14px;
 }
 .ping-graph_items div:before {
     content: "";
+    width: 1px;
     height: 100%;
-    border-left: 1px solid rgba(255, 255, 255, 0.1);
-    position: relative;
-    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.1);
 }
 .ping-graph_items div[a]:before {
-    border-left: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.2);
 }
 .ping-graph_items div:hover:before {
-    border-left: 3px solid rgba(0, 0, 0, 1);
+    width: 3px;
+    background: rgba(0, 0, 0, 1);
 }
 .ping-graph_items div[a]:after {
     content: attr(index);
     position: absolute;
-    left: 0;
+    left: 50%;
     bottom: 1px;
     transform: translateX(-50%);
-    font-weight: 500;
     font-size: 9px;
+    font-weight: 500;
     pointer-events: none;
 }
 .ping-graph_tooltip {
@@ -1439,7 +1443,14 @@ input, button, textarea, select, svg {
     }
 }
 
-
+@media screen and (max-width: 500px){
+    .ping-graph {
+        padding: 8px 5px 0 5px;
+        border-width: 1px 0 1px 0;
+        border-radius: 0;
+        margin: 0 -1rem;
+    }
+}
 
 @media screen and (max-width: 390px){
     html {
