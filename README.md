@@ -1,5 +1,5 @@
 # iSpeedTest
-The Simplest, Fastest and most Accurate speed test tool.
+The Simplest, Fastest and most Accurate speed test tool
 
 ## Try It
 [Take a Speedtest](https://ispeedtest.xyz/)
