@@ -1,4 +1,5 @@
 # iSpeedTest
+![Screenshot](https://raw.githubusercontent.com/mariofreyle/speedtest/master/screenshots/main-1.jpg)
 The Simplest, Fastest and most Accurate speed test tool
 
 ## Try It
