@@ -767,7 +767,7 @@ body:not(.store-data) .store-data_button svg {
     position: relative;
     width: 50%;
     padding: 0.666rem;
-    padding-bottom: 48px;
+    padding-bottom: 2.9rem;
 }
 .test-results_item:first-child {
     margin-right: 0.8rem;
@@ -805,7 +805,7 @@ body:not(.store-data) .store-data_button svg {
     left: 0;
     bottom: 0;
     width: 100%;
-    height: 45px;
+    height: 2.8rem;
     border-bottom-left-radius: 6px;
     border-bottom-right-radius: 6px;
     overflow: hidden;
