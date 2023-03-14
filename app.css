@@ -324,6 +324,11 @@ body:not(.view-test) .test-option {
     top: 100%;
     right: 0;
 }
+.test-settings_list .menu_item {
+    display: flex;
+    min-height: 2.5rem;
+    align-items: center;
+}
 .test-settings_menu input[type=number] {
     min-width: 3.66rem;
     background: transparent;
