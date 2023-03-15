@@ -235,6 +235,9 @@ path, text {
     border-radius: 5px;
     z-index: 101;
 }
+.menu_colum:first-child {
+    padding-right: 0.666rem;
+}
 .menu_item {
     padding: 0.533rem 0.666rem;
 }
@@ -324,7 +327,10 @@ body:not(.view-test) .test-option {
     top: 100%;
     right: 0;
 }
-.test-settings_list .menu_item {
+.test-settings_list {
+    padding: 0 0.666rem;
+}
+.test-settings_list .list-item {
     display: flex;
     min-height: 2.5rem;
     align-items: center;
