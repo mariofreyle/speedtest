@@ -1151,7 +1151,7 @@ body:not(.ready) .stage-loader {
 .ping-graph_line polyline {
     fill: transparent;
     stroke: #d00000;
-    stroke-width: 3px;
+    stroke-width: 2px;
 }
 
 /*
@@ -1406,9 +1406,6 @@ body:not(.store-data) .refresh-data {
     }
     .ping-graph_items div {
         padding-bottom: 9px;
-    }
-    .ping-graph_line polyline {
-        stroke-width: 2px;
     }
 }
 
