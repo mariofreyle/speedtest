@@ -1360,6 +1360,10 @@ body:not(.view-ping) .stage-ping .stage-loader:before {
     border-top-right-radius: 5px;
     border-bottom: 0;
 }
+.refresh-data.active {
+    cursor: default;
+    color: rgba(255, 255, 255, 0.5);
+}
 body:not(.store-data) .refresh-data {
     display: none;
 }
