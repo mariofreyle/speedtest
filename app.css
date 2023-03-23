@@ -997,7 +997,6 @@ body:not(.ready) .stage-loader {
 .ping_servers-menu {
     left: 0;
     margin-top: -2px;
-    width: 22rem;
 }
 .ping-settings_menu-button {
     padding: 0.4rem 0.66rem;
@@ -1210,7 +1209,7 @@ body:not(.ready) .test-select-server,
     width: 100%;
     top: 100%;
     left: 0;
-    max-width: 350px;
+    max-width: 20rem;
     margin-top: -2px;
 }
 .servers-select_list {
@@ -1229,7 +1228,7 @@ body:not(.ready) .test-select-server,
     overflow: hidden;
 }
 .servers-select.single .servers-select_single-button {
-    padding-right: 0.66rem;
+    padding-right: 1.32rem;
 }
 .servers-select_check-icon,
 .servers-select_multi-button {
