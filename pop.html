@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>iSpeedTest</title>
-</head>
 <script type="text/javascript">
 function done(pop){
     top && top.postMessage && top.postMessage(typeof pop == "string" ? pop : "", "*");
@@ -18,4 +17,5 @@ xhr.onerror   = done;
 xhr.ontimeout = done;
 xhr.send();
 </script>
+</head>
 </html>
