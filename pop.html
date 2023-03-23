@@ -16,6 +16,7 @@ xhr.timeout   = 10000;
 xhr.onerror   = done;
 xhr.ontimeout = done;
 xhr.send();
+window.onmessage = function(e){ console.log(e.data); };
 </script>
 </head>
 </html>
