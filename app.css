@@ -1206,10 +1206,8 @@ body:not(.ready) .test-select-server,
     padding: 1px 0 1px 1px;
 }
 .network-settings_menu {
-    width: 100%;
-    top: 100%;
     left: 0;
-    max-width: 21rem;
+    top: 100%;
     margin-top: -2px;
 }
 .servers-select_list {
