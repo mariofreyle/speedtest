@@ -1209,7 +1209,7 @@ body:not(.ready) .test-select-server,
     width: 100%;
     top: 100%;
     left: 0;
-    max-width: 20rem;
+    max-width: 21rem;
     margin-top: -2px;
 }
 .servers-select_list {
