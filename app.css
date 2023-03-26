@@ -125,11 +125,17 @@ input, button, textarea, select, svg {
 .shrink-0 {
     flex-shrink: 0;
 }
-.spacing-standard > *:not(:last-child) {
+.spacing-small > *:not(:last-child) {
     margin-right: 0.3rem;
 }
 .spacing-medium > *:not(:last-child) {
-    margin-right: 0.4rem;
+    margin-right: 0.5rem;
+}
+.spacing-extra > *:not(:last-child) {
+    margin-right: 0.6rem;
+}
+.spacing-large > *:not(:last-child) {
+    margin-right: 1rem;
 }
 .relative {
     position: relative;
@@ -788,9 +794,6 @@ body:not(.store-data) .store-data_button svg {
     opacity: 0;
     transition: opacity .3s linear;
 }
-.test-results_header span, .test-results_ping span {
-    margin-left: 6px;
-}
 .test-results_download .test-results_header svg, .gauge_download .gauge_speed-unit svg {
     color: #6afff3;
 }
@@ -1209,6 +1212,7 @@ body:not(.ready) .test-select-server,
     left: 0;
     top: 100%;
     margin-top: -2px;
+    min-width: 20rem;
 }
 .servers-select_list {
     height: 400px;
@@ -1440,6 +1444,9 @@ body:not(.store-data) .refresh-data {
     .test-results_ping {
         flex-direction: column;
         align-items: flex-end;
+    }
+    .test-results_ping .test-results_heading {
+        margin-right: 0;
     }
     .test-results_heading {
         margin-bottom: 3px;
