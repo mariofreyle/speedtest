@@ -1347,8 +1347,40 @@ body:not(.view-ping) .stage-ping .stage-loader:before {
     z-index: 1;
 }
 .main-footer_container {
-    padding-top: 0.4rem;
-    padding-bottom: 0.4rem;
+    height: 2rem;
+}
+.load-meta {
+    position: relative;
+    font-size: 0.8em;
+    border-radius: 3px;
+}
+.load-meta.download, .load-meta.upload {
+    padding: 0.2rem 0.3rem;
+    padding-bottom: 0.26rem;
+    background: #1a2834;
+}
+.load-meta.download:before, .load-meta.upload:after {
+    content: "";
+    display: block;
+    position: absolute;
+    left: 50%;
+    margin-left: -1.5px;
+    bottom: 1px;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+}
+.load-meta.download:before {
+    background: #6afff3;
+}
+.load-meta.upload:after {
+    background: #bf71ff;
+}
+.load-meta.download.upload:before {
+    transform: translateX(-3px);
+}
+.load-meta.download.upload:after {
+    transform: translateX(3px);
 }
 .refresh-data {
     position: absolute;
