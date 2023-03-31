@@ -317,10 +317,11 @@ body:not(.view-test) .test-option {
     user-select: none;
 }
 .test-settings {
-    padding-left: 0.66rem;
+    margin-left: 0.3rem;
 }
 .test-settings_button {
     color: #c2c9cf;
+    padding: 0.4rem;
 }
 .desktop .test-settings_button:hover {
     color: #fff;
