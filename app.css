@@ -141,7 +141,7 @@ input, button, textarea, select, svg {
     position: relative;
 }
 .text-holder {
-    color: #818ca9;
+    color: #7e8288;
 }
 .select-none {
     user-select: none;
@@ -879,12 +879,12 @@ body:not(.store-data) .store-data_button svg {
     width: 38px;
     height: 38px;
     border-radius: 50%;
-    border: 1.5px solid #818ca9;
+    border: 1.5px solid #7e8288;
 }
 .test-footer_icon svg {
     width: 15px;
     height: 15px;
-    color: #818ca9;
+    color: #7e8288;
 }
 .test-footer_content {
     margin-left: 8px;
