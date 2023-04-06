@@ -5,7 +5,7 @@
 <title>iSpeedTest</title>
 <script type="text/javascript">
 function done(pop){
-    top && top.postMessage && top.postMessage(typeof pop == "string" ? pop : "", "*");
+    top && top.postMessage && top.postMessage({pop: typeof pop == "string" ? pop : ""}, "*");
 }
 var xhr = new XMLHttpRequest();
 xhr.open("HEAD", "pop.html?v-" + Math.random().toString().slice(2), true);
