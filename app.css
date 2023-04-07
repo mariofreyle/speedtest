@@ -879,7 +879,7 @@ body:not(.store-data) .store-data_button svg {
     width: 38px;
     height: 38px;
     border-radius: 50%;
-    border: 1.5px solid #7e8288;
+    border: 1px solid #7e8288;
 }
 .test-footer_icon svg {
     width: 15px;
@@ -1190,7 +1190,7 @@ body:not(.ready) .test-select-server,
     flex-wrap: wrap;
 }
 .network-settings_group:not(:first-child) .network-settings_item {
-    margin-top: 1rem;
+    margin-top: 0.8rem;
 }
 .network-settings_item:not(:last-child) {
     margin-right: 1rem;
@@ -1273,12 +1273,12 @@ body:not(.ready) .test-select-server,
     opacity: 0;
 }
 
-.network-settings_selected {
+.network-settings_meta {
     color: #7e8288;
 }
-.network-settings_selected svg {
-    width: 1.2rem;
-    height: 1.2rem;
+.network-settings_meta svg {
+    width: 1rem;
+    height: 1rem;
     margin-right: 0.5rem;
     flex-shrink: 0;
 }
@@ -1322,7 +1322,7 @@ body:not(.ready) .test-select-server,
 .network-measures_item {
     color: #8d8f94;
     font-weight: 500;
-    padding: 6px 0;
+    padding: 0.4rem 0;
 }
 .network-measures_item:not(:last-child) {
     margin-right: 1rem;
