@@ -1398,7 +1398,7 @@ body:not(.view-ping) .stage-ping .stage-loader:before {
     cursor: default;
     color: rgba(255, 255, 255, 0.5);
 }
-body:not(.store-data) .refresh-data {
+body:not(.ready) .refresh-data {
     display: none;
 }
 
