@@ -1378,10 +1378,10 @@ body:not(.view-ping) .stage-ping .stage-loader:before {
     background: #bf71ff;
 }
 .load-meta.download.upload:before {
-    transform: translateX(-3px);
+    transform: translateX(-4px);
 }
 .load-meta.download.upload:after {
-    transform: translateX(3px);
+    transform: translateX(4px);
 }
 .refresh-data {
     position: absolute;
