@@ -154,9 +154,10 @@ input, button, textarea, select, svg {
     font-family: 'Roboto Condensed', sans-serif;
     font-weight: 300;
 }
-.svgIcon, .svg-icon {
+.svg-icon {
     width: 13px;
     height: 13px;
+    overflow: visible;
 }
 path, text {
     fill: currentColor;
