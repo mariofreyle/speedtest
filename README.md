@@ -9,10 +9,10 @@ The Simplest, Fastest and most Accurate speed test tool
 * Test with the closest server
 * Multiple servers around the world
 
-![Screenshot](https://raw.githubusercontent.com/mariofreyle/speedtest/master/screenshots/main-1.jpg)
+![Screenshot](https://raw.githubusercontent.com/mariofreyle/speedtest/master/screenshots/main-2.jpg)
 
 ## Ping test section
 * See your network performance in detail
 * Test with the closest server or anyone around the world
 
-![Screenshot](https://raw.githubusercontent.com/mariofreyle/speedtest/master/screenshots/ping-1.jpg)
+![Screenshot](https://raw.githubusercontent.com/mariofreyle/speedtest/master/screenshots/ping-2.jpg)
