@@ -1597,7 +1597,11 @@ body:not(.ready) .refresh-data {
 .bull-divider {
     margin: 0 0.3rem;
 }
-.hidden {
+.display-none {
     display: none;
-    display: none !important;
+}
+.hidden {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
 }
