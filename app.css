@@ -1550,9 +1550,9 @@ body:not(.ready) .refresh-data {
     }
 }
 
-@media screen and (max-width: 390px){
-    html {
-        font-size: 11px;
+@media screen and (max-width: 400px){
+    .main-footer_item:first-child {
+        font-size: 0.9em;
     }
 }
 
