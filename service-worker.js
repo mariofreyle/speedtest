@@ -28,7 +28,9 @@
                 caches.open(CACHE_NAME).then(function(cache){
                     return cache.match(e.request, {ignoreSearch: true}).then(function(res){
                         if(res && (e.request.url.indexOf("refresh=1") != -1 || location.search.indexOf("store=0") || location.hostname == "ispeedtest.epizy.com")){
-                            return fetch(e.request).then(function(response){
+                            var url = e.request.url.replace(/#(.*)/, "");
+                            url += (url.indexOf("?") == -1 ? "?" : "&") + "v=" + Math.random();
+                            return fetch(url).then(function(response){
                                 if(response.ok){
                                     cache.delete(e.request, {ignoreSearch: true}).then(function(status){
                                         console.log(status);
