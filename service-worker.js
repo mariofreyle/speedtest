@@ -2,7 +2,7 @@
     
     var CACHE_NAME = "v1_cache_app",
         resourcesToCache = [
-            "/"
+            location.hostname == "ispeedtest.epizy.com" ? "/app" : "/"
         ];
     
     self.addEventListener("install", function(e){
@@ -15,6 +15,7 @@
                 console.log("Error registering to cache", err);
             })
         )
+        console.log("Worker installed!");
     });
 
     self.addEventListener("activate", function(){
@@ -23,33 +24,32 @@
     
     self.addEventListener("fetch", function(e){
         if(e.request.mode === "navigate"){
-            if(e.request.url.indexOf("refresh=1") != -1){
-                async function respond(){
-                    try {
-                        var response = await fetch(e.request),
-                            cache;
-                        if(response.ok){
-                            cache = await caches.open(CACHE_NAME);
-                            cache.put(e.request, response.clone());
-                        }
-                        return response;
-                    }catch(error){
-                        
-                    }
-                    return await caches.match(e.request, {ignoreSearch: true});
-                }
-                e.respondWith(
-                    respond()
-                );
-                return;
-            }
             e.respondWith(
-                caches.match(e.request, {ignoreSearch: true}).then(function(res){
-                    if(res){
-                        return res;
-                    }
+                caches.open(CACHE_NAME).then(function(cache){
+                    return cache.match(e.request, {ignoreSearch: true}).then(function(res){
+                        if(res && (e.request.url.indexOf("refresh=1") != -1 || location.search.indexOf("store=0") || location.hostname == "ispeedtest.epizy.com")){
+                            return fetch(e.request).then(function(response){
+                                if(response.ok){
+                                    cache.delete(e.request, {ignoreSearch: true}).then(function(status){
+                                        console.log(status);
+                                    });
+                                    cache.put(e.request, response.clone());
+                                    cache.matchAll(e.request, {ignoreSearch: true}).then(function(matchs){
+                                        console.log(matchs);
+                                    });
+                                    return response;
+                                }
+                                return res;
+                            }).catch(function(){
+                                return res;
+                            });
+                        }
+                        if(res){
+                            return res;
+                        }
 
-                    return fetch(e.request);
+                        return fetch(e.request);
+                    })
                 })
             );
         }
