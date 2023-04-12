@@ -27,7 +27,7 @@
             e.respondWith(
                 caches.open(CACHE_NAME).then(function(cache){
                     return cache.match(e.request, {ignoreSearch: true}).then(function(res){
-                        if(res && (e.request.url.indexOf("refresh=1") != -1 || location.search.indexOf("store=0") || location.hostname == "ispeedtest.epizy.com")){
+                        if(res && (e.request.url.indexOf("refresh=1") != -1 || location.search.indexOf("store=0") != -1 || location.hostname == "ispeedtest.epizy.com")){
                             var url = e.request.url.replace(/#(.*)/, "");
                             url += (url.indexOf("?") == -1 ? "?" : "&") + "v=" + Math.random();
                             return fetch(url).then(function(response){
