@@ -33,6 +33,7 @@ em {
 }
 select {
     outline: 0;
+    padding: 1px 4px;
 }
 button {
     background: 0 0;
@@ -261,9 +262,6 @@ input, button, textarea, select, svg {
 .menu_item span {
     padding-right: 8px;
     white-space: nowrap;
-}
-.menu_item select {
-    padding: 0 0.2rem;
 }
 .menu_overlay {
     position: fixed;
@@ -1215,10 +1213,6 @@ body:not(.ready) .test-select-server,
 }
 .network-settings_servers-button svg {
     margin-left: 6px;
-}
-.network-settings_number-select {
-    width: 55px;
-    padding: 1px 0 1px 1px;
 }
 .network-settings_menu {
     left: 0;
