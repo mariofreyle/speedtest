@@ -679,7 +679,7 @@ body:not(.store-data) .store-data_button svg {
         r: 0;
     }
     100% {
-        r: 42.2;
+        r: 42.8;
     }
 }
 @keyframes open-circle-left {
@@ -716,7 +716,7 @@ body:not(.store-data) .store-data_button svg {
 }
 @keyframes close-loading-background {
     0% {
-        r: 42.2;
+        r: 42.8;
     }
     100% {
         r: 0;
