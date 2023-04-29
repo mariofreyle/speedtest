@@ -523,7 +523,7 @@ body:not(.store-data) .store-data_button svg {
 }
 .gauge_stroke-speed {
     stroke: aqua;
-    stroke-dasharray: 404px;
+    stroke-dasharray: 289px;
 }
 .gauge_upload .gauge_stroke-speed {
     stroke: #bf71ff;
