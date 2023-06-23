@@ -977,6 +977,9 @@ body:not(.ready) .stage-options_section:not(:first-child) {
     border-radius: 50%;
     border: 3px solid aqua;
 }
+.stage-ping .stage-options.disabled .start-button, .stage-ping .stage-options.disabled .ping_server-button {
+    border-color: #5db4b9;
+}
 body:not(.ready) .stage-loader {
     pointer-events: none;
     border-color: transparent;
