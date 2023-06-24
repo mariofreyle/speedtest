@@ -1358,6 +1358,9 @@ body:not(.view-ping) .stage-ping .stage-loader:before {
 .main-footer_container {
     height: 2rem;
 }
+.main-footer_item:first-child {
+    padding-right: 0.5rem;
+}
 .load-meta {
     position: relative;
     font-size: 0.8em;
