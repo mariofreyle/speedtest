@@ -1361,6 +1361,12 @@ body:not(.view-ping) .stage-ping .stage-loader:before {
 .main-footer_item:first-child {
     padding-right: 0.5rem;
 }
+.extra-options_button {
+    padding: 0.4rem 0;
+}
+.extra-options_menu {
+    bottom: 105%;
+}
 .load-meta {
     position: relative;
     font-size: 0.8em;
