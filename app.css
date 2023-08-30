@@ -1366,6 +1366,7 @@ body:not(.view-ping) .stage-ping .stage-loader:before {
 }
 body:not(.view-network) .extra-options_button {
     appearance: none;
+    user-select: inherit;
     cursor: text;
 }
 .extra-options_menu {
