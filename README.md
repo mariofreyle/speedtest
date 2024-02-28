@@ -1,4 +1,4 @@
-# ⚡️ iSpeedTest
+## ⚡️ iSpeedTest
 The Simplest, Fastest and most Accurate speed test tool
 
 ## ✔️ Try It
